@@ -541,6 +541,164 @@ html .modal input,html .modal select,html .modal textarea{font-size:16px}
 .cab::after{display:none}
 button,.tile,.pill,label{touch-action:manipulation}
 }
+
+/* ===== Màn hình đăng nhập ===== */
+.ov.au{display:flex;z-index:99;padding:0;background:var(--bg);backdrop-filter:none;-webkit-backdrop-filter:none;overflow:auto;overscroll-behavior:contain;color:var(--tx);font-family:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;transition:opacity .45s ease,transform .45s ease}
+.ov.au.show{animation:au-fade .5s ease backwards}
+.ov.au.au-out{opacity:0;pointer-events:none;transform:scale(1.02)}
+@keyframes au-fade{from{opacity:0}}
+
+/* nền: các khóm tế bào trôi chậm, màu lấy từ 5 tủ */
+.au-bg{position:fixed;inset:-6%;pointer-events:none;z-index:0;transform:translate3d(var(--px,0px),var(--py,0px),0);transition:transform .7s cubic-bezier(.2,.8,.2,1)}
+.au-bg i{position:absolute;left:var(--x);top:var(--y);width:var(--s);height:var(--s);border-radius:50%;
+  background:color-mix(in srgb,var(--c) 20%,transparent);
+  box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--c) 50%,transparent),0 0 70px color-mix(in srgb,var(--c) 16%,transparent);
+  animation:au-cell 1.8s cubic-bezier(.2,.8,.2,1) var(--e,0s) backwards,au-drift var(--d) ease-in-out var(--dl) infinite alternate}
+.au-bg i::after{content:"";position:absolute;width:34%;height:34%;left:30%;top:27%;border-radius:50%;background:color-mix(in srgb,var(--c) 36%,transparent)}
+@keyframes au-cell{from{opacity:0;scale:.3}}
+@keyframes au-drift{from{transform:translate3d(0,0,0)}to{transform:translate3d(2.6vw,-3.2vh,0)}}
+
+.au-wrap{position:relative;z-index:1;margin:auto;width:min(420px,100%);padding:max(28px,env(safe-area-inset-top,0px)) 16px max(28px,env(safe-area-inset-bottom,0px))}
+
+/* thương hiệu */
+.au-brand{text-align:center;margin-bottom:22px}
+.au-mark{width:68px;height:68px;display:block;margin:0 auto 14px;overflow:visible}
+.au-mark .rg{fill:none;stroke:color-mix(in srgb,var(--tx) 32%,transparent);stroke-width:1.6;stroke-dasharray:1;stroke-dashoffset:0;transform-box:fill-box;transform-origin:center;transform:rotate(-90deg);animation:au-draw 1.3s cubic-bezier(.4,.1,.2,1) .1s backwards}
+@keyframes au-draw{from{stroke-dashoffset:1}}
+.au-mark .dg,.au-mark .d{transform-box:fill-box;transform-origin:center}
+.au-mark .d{animation:au-pop .6s cubic-bezier(.3,1.6,.5,1) calc(.55s + var(--i)*.12s) backwards}
+@keyframes au-pop{from{scale:0;opacity:0}}
+.au-mark .d1{fill:var(--h1)}.au-mark .d2{fill:var(--h2)}.au-mark .d3{fill:var(--h3)}.au-mark .d4{fill:var(--h4)}.au-mark .d5{fill:var(--h5)}
+.au.busy .au-mark .dg{animation:au-beat .9s ease-in-out calc(var(--i)*.13s) infinite}
+@keyframes au-beat{50%{transform:scale(1.45)}}
+.au .au-name{display:block;grid-column:auto;min-height:0;margin:0;text-align:center;animation:none;font-size:22px;font-weight:700;letter-spacing:.02em;line-height:1.3;text-wrap:balance;color:var(--tx)}
+.au-sub{margin:6px auto 0;font-size:13.5px;line-height:1.5;color:var(--mu);max-width:30ch}
+
+/* thẻ */
+.au-card{background:color-mix(in srgb,var(--card) 82%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);border:1px solid color-mix(in srgb,var(--bd) 85%,transparent);border-radius:22px;padding:18px;box-shadow:0 1px 0 rgba(255,255,255,.35) inset,0 28px 60px -24px rgba(20,40,70,.38);animation:au-rise .75s cubic-bezier(.2,.8,.2,1) .2s backwards}
+@keyframes au-rise{from{opacity:0;transform:translateY(22px) scale(.97)}}
+.au-card.shake{animation:sh .42s}
+@media(max-width:600px){.au-card{background:var(--card);-webkit-backdrop-filter:none;backdrop-filter:none}}
+
+/* tab đăng nhập / đăng ký: nút trượt */
+.au-tabs{position:relative;display:grid;grid-template-columns:1fr 1fr;height:46px;padding:4px;margin-bottom:16px;border-radius:13px;background:color-mix(in srgb,var(--bd) 45%,transparent);overflow:hidden;transition:height .4s cubic-bezier(.3,.9,.3,1),margin .4s cubic-bezier(.3,.9,.3,1),padding .4s,opacity .25s}
+.au-tabs::before{content:"";position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:10px;background:var(--card);box-shadow:0 1px 5px rgba(20,40,70,.2);transition:transform .42s cubic-bezier(.3,1.25,.4,1)}
+.au-tabs[data-on="register"]::before{transform:translateX(100%)}
+.au-tabs.hide{height:0;padding-top:0;padding-bottom:0;margin-bottom:0;opacity:0;pointer-events:none}
+.au .au-tabs button{position:relative;background:none;box-shadow:none;color:var(--mu);font-weight:500;font-size:14.5px;padding:0;border-radius:10px;transition:color .25s}
+.au .au-tabs button:hover,.au .au-tabs button:active{filter:none;transform:none;box-shadow:none;color:var(--tx)}
+.au-tabs button[aria-selected="true"]{color:var(--tx);font-weight:600}
+
+/* vùng nội dung: tự co giãn chiều cao, trượt khi đổi màn */
+.au-bw{margin:-8px;padding:8px;overflow:hidden;transition:height .42s cubic-bezier(.3,.9,.3,1)}
+.au-v{animation:au-vin .4s cubic-bezier(.2,.8,.2,1) both}
+@keyframes au-vin{from{opacity:0;transform:translate(var(--dx,0px),var(--dy,10px))}}
+
+/* ô nhập: nhãn nổi */
+.au-f{position:relative;margin:0 0 12px}
+.au-f input{width:100%;height:54px;padding:22px 46px 6px 14px;font-size:16px;border:1.5px solid var(--bd);border-radius:13px;background:color-mix(in srgb,var(--card) 68%,var(--bg));transition:border-color .2s,box-shadow .25s,background .2s}
+.au-f input:hover{border-color:color-mix(in srgb,var(--pri) 35%,var(--bd))}
+.au-f input:focus{outline:none;border-color:var(--pri);background:var(--card);box-shadow:0 0 0 4px color-mix(in srgb,var(--pri) 18%,transparent)}
+.au-f label{position:absolute;left:15px;top:0;height:54px;max-width:calc(100% - 64px);display:flex;align-items:center;font-size:16px;white-space:nowrap;overflow:hidden;color:var(--mu);pointer-events:none;transform-origin:left center;transition:transform .22s cubic-bezier(.2,.8,.2,1),color .2s}
+.au-f input:focus+label,.au-f input:not(:placeholder-shown)+label,.au-f input:-webkit-autofill+label{transform:translateY(-12px) scale(.76)}
+.au-f input:focus+label{color:var(--pri)}
+.au-f input:-webkit-autofill{-webkit-box-shadow:0 0 0 100px var(--card) inset;-webkit-text-fill-color:var(--tx)}
+.au-f.bad input{border-color:var(--r);box-shadow:0 0 0 4px color-mix(in srgb,var(--r) 14%,transparent)}
+.au-f.bad label{color:color-mix(in srgb,var(--r) 72%,var(--tx))}
+
+/* nút hiện/ẩn mật khẩu */
+.au .au-eye{position:absolute;box-shadow:none;right:6px;top:7px;width:40px;height:40px;padding:0;display:grid;place-items:center;background:none;color:var(--mu);border-radius:11px;transition:background .2s,color .2s}
+.au .au-eye:hover,.au .au-eye:active{filter:none;transform:none;box-shadow:none;background:color-mix(in srgb,var(--bd) 55%,transparent);color:var(--tx)}
+.au .au-eye:active{scale:.9}
+.au-eye svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.au-eye .sl{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .3s ease}
+.au-eye.on{color:var(--pri)}
+.au-eye.on .sl{stroke-dashoffset:0}
+
+/* gợi ý Caps Lock + độ mạnh mật khẩu */
+.au-caps{display:flex;align-items:center;gap:6px;max-height:0;opacity:0;overflow:hidden;margin:-4px 0 0 2px;font-size:12.5px;color:color-mix(in srgb,var(--o) 75%,var(--tx));transition:max-height .25s,opacity .25s,margin .25s}
+.au-caps svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.au.caps .au-caps{max-height:24px;opacity:1;margin:-4px 0 10px 2px}
+.au-meter{display:grid;grid-template-columns:repeat(4,1fr) auto;align-items:center;gap:5px;margin:-2px 2px 12px}
+.au-meter i{height:4px;border-radius:2px;background:color-mix(in srgb,var(--bd) 80%,transparent);transition:background .3s}
+.au-meter span{min-width:62px;text-align:right;font-size:12px;color:var(--mu)}
+.au-meter[data-s="1"] i:nth-child(-n+1){background:var(--r)}
+.au-meter[data-s="2"] i:nth-child(-n+2){background:var(--o)}
+.au-meter[data-s="3"] i:nth-child(-n+3){background:var(--y)}
+.au-meter[data-s="4"] i:nth-child(-n+4){background:var(--g)}
+
+/* thông báo */
+.au-msg{min-height:20px;margin:2px 2px 10px;font-size:13px;line-height:1.5}
+.au-msg.err{color:color-mix(in srgb,var(--r) 72%,var(--tx));animation:au-msg .35s cubic-bezier(.2,.8,.2,1)}
+.au-msg.ok{color:var(--g);animation:au-msg .35s cubic-bezier(.2,.8,.2,1)}
+@keyframes au-msg{from{opacity:0;transform:translateY(-5px)}}
+.au-sm{margin:0 2px 12px;font-size:13px;line-height:1.55;color:var(--mu)}
+.au-sm b{color:var(--tx);font-weight:600;word-break:break-all}
+
+/* nút chính: tải, thành công */
+.au-go{position:relative;width:100%;height:50px;padding:0;overflow:hidden;font-size:15.5px;font-weight:600;border-radius:13px;background:linear-gradient(180deg,color-mix(in srgb,var(--pri) 86%,#fff),var(--pri));box-shadow:0 10px 22px -10px color-mix(in srgb,var(--pri) 75%,transparent);transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .25s,background .35s}
+.au-go::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.28) 50%,transparent 65%);transform:translateX(-130%);transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+.au-go:hover{filter:none;transform:translateY(-1px);box-shadow:0 14px 26px -10px color-mix(in srgb,var(--pri) 80%,transparent)}
+.au-go:hover::after{transform:translateX(130%)}
+.au-go:active{transform:scale(.98);box-shadow:0 6px 14px -8px color-mix(in srgb,var(--pri) 75%,transparent)}
+.au-go:disabled{cursor:default}
+.au-t{transition:opacity .2s}
+.au-go.busy .au-t,.au-go.ok .au-t{opacity:0}
+.au-go.busy::before{content:"";position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:au-spin .7s linear infinite}
+@keyframes au-spin{to{transform:rotate(360deg)}}
+.au-go.ok{background:var(--g);box-shadow:0 10px 22px -10px color-mix(in srgb,var(--g) 75%,transparent)}
+.au-ck{position:absolute;left:50%;top:50%;width:24px;height:24px;margin:-12px 0 0 -12px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:24;stroke-dashoffset:24;transition:stroke-dashoffset .38s ease .1s}
+.au-go.ok .au-ck{stroke-dashoffset:0}
+
+.au-alt{display:flex;justify-content:center;flex-wrap:wrap;gap:4px;margin-top:10px}
+.au .au-link{box-shadow:none;background:none;color:var(--pri);padding:7px 10px;font-size:13.5px;font-weight:500;border-radius:9px;transition:background .2s}
+.au .au-link:hover,.au .au-link:active{filter:none;transform:none;box-shadow:none;background:color-mix(in srgb,var(--pri) 10%,transparent)}
+.au .au-link:active{scale:.96}
+.au .au-link.mu{color:var(--mu)}
+
+/* biểu tượng trạng thái + đang tải */
+.au-ico{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;margin:2px 0 12px;animation:au-pop .55s cubic-bezier(.3,1.5,.5,1) backwards}
+.au-ico svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.au-ico.wait{background:var(--yb);color:color-mix(in srgb,var(--y) 55%,var(--tx))}
+.au-ico.lock{background:var(--rb);color:var(--r)}
+.au-ico.warn{background:color-mix(in srgb,var(--o) 16%,var(--card));color:var(--o)}
+.au-ico .hand{transform-origin:12px 12px;animation:au-spin 6s linear infinite}
+.au-h{margin:0 0 8px;font-size:19px;font-weight:700;letter-spacing:-.01em}
+.au-load{display:flex;align-items:center;justify-content:center;gap:12px;padding:26px 0;font-size:14px;color:var(--mu)}
+.au-spin{width:20px;height:20px;border-radius:50%;border:2.5px solid color-mix(in srgb,var(--pri) 25%,transparent);border-top-color:var(--pri);animation:au-spin .8s linear infinite}
+
+.au button:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){
+  .au *,.au *::before,.au *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0s!important;transition-duration:.01ms!important}
+}
+
+/* ===== Menu tài khoản ===== */
+.acm{position:fixed;z-index:60;width:236px;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:6px;box-shadow:0 18px 44px -14px rgba(20,40,70,.45);transform-origin:var(--o,top right);animation:acIn .2s cubic-bezier(.2,.8,.2,1)}
+.acm.out{animation:acOut .14s ease forwards;pointer-events:none}
+@keyframes acIn{from{opacity:0;transform:translateY(-6px) scale(.94)}}
+@keyframes acOut{to{opacity:0;transform:scale(.96)}}
+.acm .who{text-align:left;align-items:flex-start;padding:8px 10px 9px;margin-bottom:4px;border-bottom:1px solid var(--bd);display:flex;flex-direction:column;gap:2px;min-width:0}
+.acm .who small{font-size:11.5px;color:var(--mu)}
+.acm .who b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acm button{display:flex;align-items:center;gap:10px;width:100%;min-height:42px;padding:8px 10px;border:0;border-radius:9px;background:none;color:var(--tx);box-shadow:none;font-size:14px;font-weight:500;text-align:left;transform:none;filter:none}
+.acm button:hover,.acm button:focus-visible{background:color-mix(in srgb,var(--pri) 10%,transparent);box-shadow:none;transform:none;filter:none}
+.acm button:active{transform:none;box-shadow:none;background:color-mix(in srgb,var(--pri) 18%,transparent)}
+.acm button.out{color:var(--r)}
+.acm button.out:hover,.acm button.out:focus-visible{background:color-mix(in srgb,var(--r) 10%,transparent)}
+@media(prefers-reduced-motion:reduce){.acm,.acm.out{animation:none}}
+
+/* ===== Đổ bóng cho thanh trạng thái (các ô Đang nuôi cấy / Trống / Hỏng / Cảnh báo) ===== */
+:root{--psh:0 1px 2px rgba(20,40,70,.10),0 6px 14px -4px rgba(20,40,70,.20);--pshh:0 2px 4px rgba(20,40,70,.10),0 12px 22px -6px rgba(20,40,70,.32)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--psh:0 1px 2px rgba(0,0,0,.45),0 6px 14px -4px rgba(0,0,0,.55);--pshh:0 2px 4px rgba(0,0,0,.45),0 12px 22px -6px rgba(0,0,0,.7)}}
+:root[data-theme="dark"]{--psh:0 1px 2px rgba(0,0,0,.45),0 6px 14px -4px rgba(0,0,0,.55);--pshh:0 2px 4px rgba(0,0,0,.45),0 12px 22px -6px rgba(0,0,0,.7)}
+.stats .pill{box-shadow:var(--psh)}
+.stats .pill:hover{box-shadow:var(--pshh)}
+.stats .pill:active{box-shadow:0 1px 2px rgba(20,40,70,.16)}
+
+/* ===== Nhãn TL (góc trên-trái nửa trên) và P.I (góc dưới-trái nửa dưới), to hơn ===== */
+.hf{position:relative}
+.hf .m{position:absolute;top:4px;left:6px;z-index:1;font-size:11px;line-height:1;padding:3px 6px;border-radius:5px;letter-spacing:.2px}
+.hf+.hf .m{top:auto;bottom:4px}
 </style></head><body>
 <header>
 <div class="hrow">
@@ -1060,78 +1218,157 @@ const FB_CFG={
 
   /* ---------- màn hình đăng nhập (khóa toàn bộ app) ---------- */
   const ERR={"auth/invalid-email":"Email không hợp lệ.","auth/invalid-credential":"Sai email hoặc mật khẩu.","auth/wrong-password":"Sai email hoặc mật khẩu.","auth/user-not-found":"Sai email hoặc mật khẩu.","auth/email-already-in-use":"Email này đã được đăng ký. Hãy đăng nhập hoặc dùng “Quên mật khẩu”.","auth/weak-password":"Mật khẩu quá yếu (tối thiểu 6 ký tự).","auth/missing-password":"Hãy nhập mật khẩu.","auth/too-many-requests":"Thao tác quá nhiều lần, hãy thử lại sau ít phút.","auth/network-request-failed":"Lỗi mạng, hãy kiểm tra kết nối.","auth/operation-not-allowed":"Chưa bật đăng nhập Email/Password trong Firebase.","auth/admin-restricted-operation":"Đăng ký tài khoản mới đang bị tắt trong Firebase.","auth/user-disabled":"Tài khoản đã bị khóa.","auth/requires-recent-login":"Hãy đăng nhập lại rồi thử lại."};
-  const RESET_OK="Đã gửi yêu cầu đặt lại mật khẩu tới chủ hệ thống (phanson6996@gmail.com). Hãy liên hệ để nhận mật khẩu mới.";
-  const closeAuth=()=>{if(AV){AV.remove();AV=null}};
-  const fld=(id,type,ph,ac)=>'<div class="row"><input id="'+id+'" type="'+type+'" placeholder="'+ph+'" autocomplete="'+ac+'" style="flex:1"></div>';
-  const pwd=(id,ph,ac)=>'<div class="row"><input id="'+id+'" type="password" placeholder="'+ph+'" autocomplete="'+ac+'" style="flex:1"><button type="button" class="ghost" data-a="eye" data-t="'+id+'" title="Hiện/ẩn mật khẩu">👁</button></div>';
-  const lnk=(v,t)=>'<button type="button" class="ghost" data-v="'+v+'" style="font-size:12.5px;padding:5px 9px">'+t+'</button>';
-  const tab=(cur,v,t)=>'<button type="button" class="'+(cur===v?"":"ghost")+'" data-v="'+v+'" style="flex:1">'+t+'</button>';
-  const sm=t=>'<div style="font-size:13px;line-height:1.5;color:var(--mu)">'+t+'</div>';
+  const RESET_OK="Đã gửi yêu cầu đặt lại mật khẩu.";
+  const reduce=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const closeAuth=()=>{if(!AV)return;const o=AV;AV=null;o.classList.add("au-out");setTimeout(()=>o.remove(),reduce()?0:460)};
+
+  /* --- mảnh giao diện --- */
+  const aSVG=(p,c)=>'<svg viewBox="0 0 24 24" aria-hidden="true"'+(c?' class="'+c+'"':'')+'>'+p+'</svg>';
+  const AIC={
+    eye:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path class="sl" pathLength="1" d="M4 4l16 16"/>',
+    caps:'<path d="M12 4l8 9h-5v4H9v-4H4z"/><path d="M9 20h6"/>',
+    wait:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5"/><path class="hand" d="M12 12l3.5 2"/>',
+    lock:'<rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 018 0v3"/>',
+    warn:'<path d="M12 4l9.5 16h-19z"/><path d="M12 10v4.5"/><path d="M12 17.5v.01"/>'};
+  const aCELLS=[["--h1","6%","10%","clamp(110px,17vw,230px)","23s","-3s","0s"],["--h2","74%","6%","clamp(80px,12vw,170px)","19s","-9s",".15s"],["--h3","84%","52%","clamp(120px,19vw,260px)","27s","-14s",".3s"],["--h4","10%","62%","clamp(90px,14vw,200px)","21s","-6s",".45s"],["--h5","52%","80%","clamp(70px,10vw,150px)","17s","-11s",".6s"],["--h1","40%","-4%","clamp(50px,7vw,100px)","15s","-2s",".75s"],["--h3","24%","36%","clamp(36px,5vw,70px)","13s","-7s",".9s"],["--h2","66%","40%","clamp(40px,6vw,84px)","16s","-12s","1.05s"]]
+    .map(c=>'<i style="--c:var('+c[0]+');--x:'+c[1]+';--y:'+c[2]+';--s:'+c[3]+';--d:'+c[4]+';--dl:'+c[5]+';--e:'+c[6]+'"></i>').join("");
+  const aDOTS=[[32,17],[46.3,27.4],[40.8,44.1],[23.2,44.1],[17.7,27.4]]
+    .map((p,i)=>'<g class="dg" style="--i:'+i+'"><circle class="d d'+(i+1)+'" style="--i:'+i+'" cx="'+p[0]+'" cy="'+p[1]+'" r="5.6"/></g>').join("");
+  const aMARK='<svg class="au-mark" viewBox="0 0 64 64" aria-hidden="true"><circle class="rg" cx="32" cy="32" r="29" pathLength="1"/>'+aDOTS+'</svg>';
+
+  const fld=(id,type,t,ac)=>'<div class="au-f"><input id="'+id+'" type="'+type+'" placeholder=" " autocomplete="'+ac+'"'+(type==="email"?' inputmode="email" autocapitalize="none" spellcheck="false"':'')+'><label for="'+id+'">'+t+'</label></div>';
+  const pwd=(id,t,ac,caps)=>'<div class="au-f au-pw"><input id="'+id+'" type="password" placeholder=" " autocomplete="'+ac+'"><label for="'+id+'">'+t+'</label><button type="button" class="au-eye" data-a="eye" data-t="'+id+'" aria-label="Hiện mật khẩu">'+aSVG(AIC.eye)+'</button></div>'
+    +(caps?'<div class="au-caps">'+aSVG(AIC.caps)+'Caps Lock đang bật</div>':'');
+  const aMETER='<div class="au-meter" data-s="0" aria-live="polite"><i></i><i></i><i></i><i></i><span></span></div>';
+  const go=(a,t)=>'<button type="button" class="au-go" data-a="'+a+'" data-primary><span class="au-t">'+t+'</span><svg class="au-ck" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>';
+  const lnk=(v,t,c)=>'<button type="button" class="au-link'+(c?" "+c:"")+'" data-v="'+v+'">'+t+'</button>';
+  const alk=(a,t,c)=>'<button type="button" class="au-link'+(c?" "+c:"")+'" data-a="'+a+'">'+t+'</button>';
+  const sm=t=>'<p class="au-sm">'+t+'</p>';
+  const ttl=(k,t)=>'<div class="au-ico '+k+'">'+aSVG(AIC[k])+'</div><h3 class="au-h">'+t+'</h3>';
+  const meter=(m,v)=>{let s=0;
+    if(v.length>=6)s++;if(v.length>=10)s++;
+    if((/[a-z]/.test(v)&&/[A-Z]/.test(v))||(/[a-zA-Z]/.test(v)&&/\d/.test(v)))s++;
+    if(/[^A-Za-z0-9]/.test(v)&&v.length>=8)s++;
+    m.dataset.s=s;m.lastElementChild.textContent=v?(v.length<6?"Quá ngắn":["","Yếu","Tạm được","Khá","Mạnh"][s]):""};
+  const aORDER={login:0,register:1};
+
+  /* thay nội dung có hiệu ứng co giãn chiều cao mượt */
+  function fit(fn){
+    if(!AV){fn();return}
+    const w=AV.querySelector(".au-bw"),h0=w.offsetHeight;
+    clearTimeout(w._t);w.style.height="auto";fn();
+    const h1=w.offsetHeight;
+    if(h0!==h1&&!reduce()){w.style.height=h0+"px";void w.offsetHeight;w.style.height=h1+"px";w._t=setTimeout(()=>{w.style.height=""},460)}
+    else w.style.height=""}
+
+  function shell(){
+    AV=document.createElement("div");AV.className="ov show au";
+    AV.innerHTML='<div class="au-bg" aria-hidden="true">'+aCELLS+'</div>'
+      +'<div class="au-wrap"><div class="au-brand">'+aMARK+'<h1 class="au-name">THEO DÕI NUÔI CẤY TIMELAPSE</h1></div>'
+      +'<div class="au-card"><div class="au-tabs hide" role="tablist" data-on="login">'
+      +'<button type="button" role="tab" data-v="login" aria-selected="true">Đăng nhập</button>'
+      +'<button type="button" role="tab" data-v="register" aria-selected="false">Đăng ký</button></div>'
+      +'<div class="au-bw"><div class="au-body"></div></div></div></div>';
+    document.body.appendChild(AV);
+    AV.onclick=onAuthClick;
+    const caps=e=>{if(AV&&e.getModifierState&&e.target.closest&&e.target.closest(".au-pw"))AV.classList.toggle("caps",e.getModifierState("CapsLock"))};
+    AV.onkeydown=e=>{
+      if(e.key==="Enter"&&e.target.tagName==="INPUT"){const b=AV.querySelector("[data-primary]");if(b&&!b.disabled)b.click()}
+      caps(e)};
+    AV.onkeyup=caps;
+    AV.addEventListener("focusout",e=>{const t=e.relatedTarget;if(!t||!t.closest||!t.closest(".au-pw"))AV.classList.remove("caps")});
+    AV.oninput=e=>{
+      const t=e.target;if(t.tagName!=="INPUT")return;
+      if(t.parentElement)t.parentElement.classList.remove("bad");
+      if(t.id==="aP"){const m=AV.querySelector(".au-meter");if(m)meter(m,t.value)}};
+    let raf=0;
+    AV.onpointermove=e=>{
+      if(e.pointerType!=="mouse"||raf||reduce())return;
+      raf=requestAnimationFrame(()=>{raf=0;const bg=AV&&AV.querySelector(".au-bg");
+        if(bg){bg.style.setProperty("--px",((.5-e.clientX/innerWidth)*30).toFixed(1)+"px");bg.style.setProperty("--py",((.5-e.clientY/innerHeight)*30).toFixed(1)+"px")}})}}
 
   function authUI(view,note){
-    if(!AV){AV=document.createElement("div");AV.className="ov show";AV.style.cssText="z-index:99;background:var(--bg);backdrop-filter:none";document.body.appendChild(AV);
-      AV.onclick=onAuthClick;
-      AV.onkeydown=e=>{if(e.key==="Enter"&&e.target.tagName==="INPUT"){const b=AV.querySelector("[data-primary]");if(b)b.click()}}}
-    AV.dataset.view=view;
-    const msg='<div id="aMsg" style="font-size:13px;min-height:18px;margin:4px 0;'+(note?"color:var(--g)":"color:var(--r)")+'">'+(note?esc(note):"")+'</div>';
-    let h='<div style="width:min(420px,100%)"><div style="text-align:center;margin-bottom:14px"><div style="font-size:22px;font-weight:700;letter-spacing:.3px">THEO DÕI NUÔI CẤY</div><div style="font-size:13px;color:var(--mu);margin-top:3px">Tủ GERI · cần đăng nhập để xem và chỉnh sửa</div></div><div class="modal" style="width:100%">';
-    if(view==="login"||view==="register"){
-      h+='<div class="row" style="margin-top:0">'+tab(view,"login","Đăng nhập")+tab(view,"register","Đăng ký")+'</div>';
-      if(view==="login")h+='<h3>Đăng nhập</h3>'+fld("aE","email","Email","username")+pwd("aP","Mật khẩu","current-password")+msg
-        +'<div class="row" style="justify-content:space-between;margin-bottom:0">'+lnk("reset","Quên mật khẩu?")+'<button type="button" data-a="login" data-primary>Đăng nhập</button></div>';
-      else h+='<h3>Tạo tài khoản</h3>'+fld("aE","email","Email","username")+pwd("aP","Mật khẩu (tối thiểu 6 ký tự)","new-password")+pwd("aP2","Nhập lại mật khẩu","new-password")+msg
-        +sm("Yêu cầu xác minh được gửi tới chủ hệ thống (phanson6996@gmail.com). Tài khoản chỉ xem và chỉnh sửa được sau khi chủ hệ thống duyệt.")
-        +'<div class="row" style="justify-content:flex-end;margin-bottom:0"><button type="button" data-a="register" data-primary>Tạo tài khoản</button></div>'}
-    else if(view==="reset"){
-      h+='<h3>Khôi phục mật khẩu</h3>'+sm("Nhập email bạn đã đăng ký. Liên kết đặt lại mật khẩu sẽ được gửi tới chủ hệ thống (phanson6996@gmail.com); hãy liên hệ chủ hệ thống để nhận mật khẩu mới.")+fld("aE","email","Email","username")+msg
-        +'<div class="row" style="justify-content:space-between;margin-bottom:0">'+lnk("login","← Quay lại đăng nhập")+'<button type="button" data-a="reset" data-primary>Gửi yêu cầu</button></div>'}
-    else if(view==="verify"){
-      h+='<h3>⏳ Chờ chủ hệ thống duyệt</h3><div style="font-size:13px;line-height:1.5">Tài khoản <b>'+esc(lab(auth.currentUser))+'</b> đang chờ chủ hệ thống (phanson6996@gmail.com) duyệt. Sau khi chủ hệ thống bấm liên kết xác minh trong email, hãy quay lại bấm “Kiểm tra lại”.</div>'+msg
-        +'<div class="row" style="margin-bottom:0"><button type="button" data-a="verified" data-primary style="flex:1">Kiểm tra lại</button></div>'
-        +'<div class="row" style="justify-content:space-between;margin-bottom:0"><button type="button" class="ghost" data-a="resend">Gửi lại yêu cầu</button><button type="button" class="ghost" data-a="out">Đăng xuất</button></div>'}
-    else if(view==="denied"){
-      h+='<h3>⛔ Chưa có quyền truy cập</h3><div style="font-size:13px;line-height:1.5">Tài khoản <b>'+esc(lab(auth.currentUser))+'</b> chưa được cấp quyền xem dữ liệu. Hãy liên hệ chủ hệ thống (phanson6996@gmail.com).</div>'+msg
-        +'<div class="row" style="justify-content:space-between;margin-bottom:0"><button type="button" data-a="retry" data-primary>Thử lại</button><button type="button" class="ghost" data-a="out">Đăng xuất</button></div>'}
-    else if(view==="fail"){
-      h+='<h3>⚠ Không kết nối được</h3>'+sm("Không tải được Firebase. Hãy kiểm tra kết nối mạng rồi tải lại trang.")+'<div class="row" style="justify-content:flex-end;margin-bottom:0"><button type="button" data-a="reload" data-primary>Tải lại</button></div>'}
-    else h+=sm("Đang kiểm tra đăng nhập…");
-    AV.innerHTML=h+'</div></div>';
-    const f=AV.querySelector("input");if(f)f.focus()}
+    const first=!AV;if(first)shell();
+    const prev=AV.dataset.view,body=AV.querySelector(".au-body"),tabs=AV.querySelector(".au-tabs");
+    const keep=body.querySelector("#aE"),mail=keep?keep.value:"";
+    const isTab=view in aORDER;
+    const msg='<div id="aMsg" class="au-msg'+(note?" ok":"")+'" role="status" aria-live="polite">'+(note?esc(note):"")+'</div>';
+    let h="";
+    if(view==="login")h=fld("aE","email","Email","username")+pwd("aP","Mật khẩu","current-password",1)+msg+go("login","Đăng nhập")+'<div class="au-alt">'+lnk("reset","Quên mật khẩu?")+'</div>';
+    else if(view==="register")h=fld("aE","email","Email","username")+pwd("aP","Mật khẩu (từ 6 ký tự)","new-password",1)+aMETER+pwd("aP2","Nhập lại mật khẩu","new-password")+msg+go("register","Tạo tài khoản")
+      +'<div style="height:12px"></div>'+sm("Yêu cầu xác minh được gửi tới chủ hệ thống (phanson6996@gmail.com). Tài khoản chỉ xem và chỉnh sửa được sau khi chủ hệ thống duyệt.");
+    else if(view==="reset")h='<h3 class="au-h">Khôi phục mật khẩu</h3>'+fld("aE","email","Email","username")+msg+go("reset","Gửi yêu cầu")+'<div class="au-alt">'+lnk("login","← Quay lại đăng nhập")+'</div>';
+    else if(view==="verify")h=ttl("wait","Chờ chủ hệ thống duyệt")+sm("Tài khoản <b>"+esc(lab(auth.currentUser))+"</b> đang chờ chủ hệ thống (phanson6996@gmail.com) duyệt. Sau khi chủ hệ thống bấm liên kết xác minh trong email, hãy quay lại bấm “Kiểm tra lại”.")+msg+go("verified","Kiểm tra lại")
+      +'<div class="au-alt">'+alk("resend","Gửi lại yêu cầu")+alk("out","Đăng xuất","mu")+'</div>';
+    else if(view==="denied")h=ttl("lock","Chưa có quyền truy cập")+sm("Tài khoản <b>"+esc(lab(auth.currentUser))+"</b> chưa được cấp quyền xem dữ liệu. Hãy liên hệ chủ hệ thống (phanson6996@gmail.com).")+msg+go("retry","Thử lại")
+      +'<div class="au-alt">'+alk("out","Đăng xuất","mu")+'</div>';
+    else if(view==="fail")h=ttl("warn","Không kết nối được")+sm("Không tải được Firebase. Hãy kiểm tra kết nối mạng rồi tải lại trang.")+go("reload","Tải lại");
+    else h='<div class="au-load"><span class="au-spin"></span>Đang kiểm tra đăng nhập…</div>';
+
+    const dx=(prev in aORDER&&isTab)?(aORDER[view]>aORDER[prev]?30:-30):0;
+    const swap=()=>{
+      AV.dataset.view=view;
+      tabs.classList.toggle("hide",!isTab);
+      if(isTab)tabs.dataset.on=view;
+      tabs.querySelectorAll("button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.v===view)));
+      body.style.setProperty("--dx",dx+"px");body.style.setProperty("--dy",dx?"0px":"12px");
+      body.innerHTML=h;
+      body.classList.remove("au-v");void body.offsetWidth;body.classList.add("au-v");
+      if(mail&&(isTab||view==="reset")){const e=body.querySelector("#aE");if(e)e.value=mail}};
+    first?swap():fit(swap);
+    const f=mail?body.querySelector("#aP")||body.querySelector("input"):body.querySelector("input");
+    if(f)f.focus({preventScroll:true})}
 
   async function onAuthClick(e){
-    const b=e.target.closest("[data-v],[data-a]");if(!b)return;
-    if(b.dataset.v){authUI(b.dataset.v);return}
-    const a=b.dataset.a,val=id=>{const i=AV.querySelector("#"+id);return i?i.value:""};
-    const msg=(t,ok)=>{const m=AV&&AV.querySelector("#aMsg");if(m){m.textContent=t;m.style.color=ok?"var(--g)":"var(--r)"}};
+    const b=e.target.closest("[data-v],[data-a]");if(!b||!AV)return;
+    if(b.dataset.v){if(AV.dataset.view!==b.dataset.v)authUI(b.dataset.v);return}
+    const a=b.dataset.a,root=AV,val=id=>{const i=root.querySelector("#"+id);return i?i.value:""};
+    const bad=(...ids)=>ids.forEach(id=>{const i=root.querySelector("#"+id);if(i&&i.parentElement)i.parentElement.classList.add("bad")});
+    const msg=(t,ok)=>{
+      const m=root.querySelector("#aMsg");if(!m)return;
+      fit(()=>{m.className="au-msg";void m.offsetWidth;m.className="au-msg "+(ok?"ok":"err");m.textContent=t});
+      if(!ok){const c=root.querySelector(".au-card");if(c){c.classList.remove("shake");void c.offsetWidth;c.classList.add("shake")}}};
     const em=val("aE").trim();
     const okMail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)&&!/[^\x00-\x7f]/.test(em)&&toAlias(em).split("@")[0].length<=64;
-    if(a==="eye"){const i=AV.querySelector("#"+b.dataset.t);i.type=i.type==="password"?"text":"password";return}
+    if(a==="eye"){
+      const i=root.querySelector("#"+b.dataset.t),show=i.type==="password";
+      i.type=show?"text":"password";b.classList.toggle("on",show);b.setAttribute("aria-label",show?"Ẩn mật khẩu":"Hiện mật khẩu");
+      i.focus({preventScroll:true});return}
     if(a==="reload"){location.reload();return}
-    b.disabled=true;
+    let ok=false;
+    b.disabled=true;b.classList.add("busy");root.classList.add("busy");
     try{
       if(a==="login"){
+        if(!em)bad("aE");if(!val("aP"))bad("aP");
         if(!em||!val("aP")){msg("Hãy nhập email và mật khẩu.");return}
-        if(!okMail){msg("Email không hợp lệ hoặc quá dài.");return}
-        await M.signInWithEmailAndPassword(auth,toAlias(em),val("aP"))}
+        if(!okMail){bad("aE");msg("Email không hợp lệ hoặc quá dài.");return}
+        await M.signInWithEmailAndPassword(auth,toAlias(em),val("aP"));ok=true}
       else if(a==="register"){
-        if(!em||!okMail){msg("Hãy nhập email hợp lệ.");return}
-        if(val("aP").length<6){msg("Mật khẩu tối thiểu 6 ký tự.");return}
-        if(val("aP")!==val("aP2")){msg("Hai mật khẩu không khớp.");return}
+        if(!em||!okMail){bad("aE");msg("Hãy nhập email hợp lệ.");return}
+        if(val("aP").length<6){bad("aP");msg("Mật khẩu tối thiểu 6 ký tự.");return}
+        if(val("aP")!==val("aP2")){bad("aP2");msg("Hai mật khẩu không khớp.");return}
         await M.createUserWithEmailAndPassword(auth,toAlias(em),val("aP"));
         try{await M.sendEmailVerification(auth.currentUser)}catch(x){}
         authUI("verify","Đã gửi yêu cầu duyệt tới chủ hệ thống. Tài khoản "+em+" dùng được sau khi được duyệt.")}
       else if(a==="reset"){
-        if(!em||!okMail){msg("Hãy nhập email hợp lệ.");return}
+        if(!em||!okMail){bad("aE");msg("Hãy nhập email hợp lệ.");return}
         await M.sendPasswordResetEmail(auth,toAlias(em));
         msg(RESET_OK,true)}
       else if(a==="resend"){await M.sendEmailVerification(auth.currentUser);msg("Đã gửi lại yêu cầu duyệt tới chủ hệ thống.",true)}
       else if(a==="verified"||a==="retry"){
         const u=auth.currentUser;await u.reload();await u.getIdToken(true);user=auth.currentUser;
-        if(user.emailVerified){denied=false;syncLock()}
+        if(user.emailVerified){ok=true;denied=false;syncLock()}
         else msg("Chưa được duyệt. Hãy liên hệ chủ hệ thống rồi thử lại.")}
       else if(a==="out"){await M.signOut(auth)}
-    }catch(x){console.error(x);if(a==="reset"&&x.code==="auth/user-not-found")msg(RESET_OK,true);else msg(ERR[x.code]||("Lỗi: "+(x.code||x.message)))}
-    finally{b.disabled=false}
+    }catch(x){console.error(x);
+      const c=x.code||"";
+      if(/invalid-credential|wrong-password|user-not-found/.test(c)&&a==="login")bad("aE","aP");
+      else if(/email-already-in-use|invalid-email/.test(c))bad("aE");
+      else if(/weak-password|missing-password/.test(c))bad("aP");
+      if(a==="reset"&&c==="auth/user-not-found")msg(RESET_OK,true);else msg(ERR[c]||("Lỗi: "+(c||x.message)))}
+    finally{
+      root.classList.remove("busy");b.classList.remove("busy");
+      if(ok)b.classList.add("ok");else b.disabled=false}
   }
 
   /* ---------- khóa / mở khóa ---------- */
@@ -1145,17 +1382,92 @@ const FB_CFG={
       const want=!user?"login":!user.emailVerified?"verify":"denied",cur=AV&&AV.dataset.view;
       if(!AV||(cur!==want&&!(want==="login"&&(cur==="register"||cur==="reset"))))authUI(want);
     }else{closeAuth();startSync()}
-    btn.title=user?"Tài khoản: "+lab(user)+" (bấm để đăng xuất)":"Đăng nhập";btn.setAttribute("aria-label",btn.title);
+    btn.title=user?"Tài khoản: "+lab(user):"Đăng nhập";btn.setAttribute("aria-label",btn.title);
     say(lock?"lock":"sync");
     render()}
 
-  const account=async()=>{
+  /* ---------- menu tài khoản + đổi mật khẩu ---------- */
+  const doLogout=async()=>{
     if(!user)return;
     if(!confirm("Đăng xuất tài khoản "+lab(user)+"?\nDữ liệu bệnh nhân sẽ được xóa khỏi bộ nhớ trình duyệt này."))return;
     clearTimeout(timer);
     if(dirty&&authorized()){try{await M.setDoc(ref,payload());dirty=false}catch(e){}}
     M.signOut(auth)};
-  st.onclick=account;btn.onclick=account;
+
+  const ACI={
+    key:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="M10.8 12.2L20 3M16 7l3 3M13.5 9.5l2 2"/></svg>',
+    out:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H6a2 2 0 00-2 2v12a2 2 0 002 2h3"/><path d="M16 8l4 4-4 4M20 12H9"/></svg>'};
+  let MN=null;
+  const closeMenu=(back)=>{
+    if(!MN)return;const m=MN;MN=null;
+    document.removeEventListener("pointerdown",m._o,true);document.removeEventListener("keydown",m._k,true);removeEventListener("resize",m._r);
+    m.classList.add("out");setTimeout(()=>m.remove(),140);
+    if(back&&m._el)m._el.focus()};
+  const openMenu=el=>{
+    if(!user)return;
+    if(MN){const same=MN._el===el;closeMenu();if(same)return}
+    const m=document.createElement("div");m.className="acm";m.setAttribute("role","menu");m._el=el;
+    m.innerHTML='<div class="who"><small>Đang đăng nhập</small><b title="'+esc(lab(user))+'">'+esc(lab(user))+'</b></div>'
+      +'<button type="button" role="menuitem" data-m="pw">'+ACI.key+'Đổi mật khẩu</button>'
+      +'<button type="button" role="menuitem" class="out" data-m="out">'+ACI.out+'Đăng xuất</button>';
+    document.body.appendChild(m);
+    const r=el.getBoundingClientRect(),w=m.offsetWidth,up=r.top>innerHeight/2;
+    m.style.left=Math.max(8,Math.min(r.right-w,innerWidth-w-8))+"px";
+    if(up){m.style.bottom=(innerHeight-r.top+8)+"px";m.style.setProperty("--o","bottom right")}
+    else{m.style.top=(r.bottom+8)+"px";m.style.setProperty("--o","top right")}
+    const items=[...m.querySelectorAll("button")];
+    m.onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;closeMenu();if(b.dataset.m==="pw")openPw();else doLogout()};
+    m._o=e=>{if(!m.contains(e.target)&&!el.contains(e.target))closeMenu()};
+    m._k=e=>{
+      if(e.key==="Escape"){e.preventDefault();closeMenu(true)}
+      else if(e.key==="Tab")closeMenu();
+      else if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();const i=items.indexOf(document.activeElement);items[(i+(e.key==="ArrowDown"?1:-1)+items.length)%items.length].focus()}};
+    m._r=()=>closeMenu();
+    document.addEventListener("pointerdown",m._o,true);document.addEventListener("keydown",m._k,true);addEventListener("resize",m._r);
+    MN=m;items[0].focus()};
+
+  const openPw=()=>{
+    if(!user)return;
+    const old=document.getElementById("ovPw");if(old)old.remove();
+    const o=document.createElement("div");o.className="ov show";o.id="ovPw";
+    const f=(id,t,ac)=>'<label class="fl"><span>'+t+'</span><input id="'+id+'" type="password" autocomplete="'+ac+'"></label>';
+    o.innerHTML='<div class="modal" role="dialog" aria-modal="true" aria-labelledby="pwT" style="width:min(400px,100%)"><h3 id="pwT">Đổi mật khẩu</h3>'
+      +'<div style="font-size:13px;color:var(--mu);margin-bottom:10px">Tài khoản <b style="color:var(--tx)">'+esc(lab(user))+'</b></div>'
+      +'<div style="display:flex;flex-direction:column;gap:10px">'+f("pwC","Mật khẩu hiện tại","current-password")+f("pwN","Mật khẩu mới (tối thiểu 6 ký tự)","new-password")+f("pwN2","Nhập lại mật khẩu mới","new-password")+'</div>'
+      +'<label class="ck" style="margin-top:10px"><input type="checkbox" id="pwShow">Hiện mật khẩu</label>'
+      +'<div id="pwM" role="status" aria-live="polite" style="font-size:13px;min-height:18px;margin:10px 0 0"></div>'
+      +'<div class="row" style="justify-content:flex-end;margin-bottom:0"><button type="button" class="ghost" id="pwX">Hủy</button><button type="button" id="pwGo">Đổi mật khẩu</button></div></div>';
+    document.body.appendChild(o);
+    const q=s=>o.querySelector(s);
+    const kd=e=>{if(!document.body.contains(o)){document.removeEventListener("keydown",kd,true);return}if(e.key==="Escape"){e.preventDefault();close()}};
+    const close=()=>{document.removeEventListener("keydown",kd,true);o.style.transition="opacity .18s";o.style.opacity="0";setTimeout(()=>o.remove(),180)};
+    document.addEventListener("keydown",kd,true);
+    const msg=(t,ok)=>{const m=q("#pwM");m.textContent=t;m.style.color=ok?"var(--g)":"var(--r)";
+      if(!ok){const d=q(".modal");d.classList.remove("shake");void d.offsetWidth;d.classList.add("shake")}};
+    const go=q("#pwGo");
+    const submit=async()=>{
+      const c=q("#pwC").value,n=q("#pwN").value,n2=q("#pwN2").value;
+      if(!c||!n||!n2){msg("Hãy nhập đủ các ô.");return}
+      if(n.length<6){msg("Mật khẩu mới tối thiểu 6 ký tự.");return}
+      if(n!==n2){msg("Hai mật khẩu mới không khớp.");return}
+      if(n===c){msg("Mật khẩu mới phải khác mật khẩu hiện tại.");return}
+      go.disabled=true;q("#pwX").disabled=true;go.textContent="Đang đổi…";
+      try{
+        const u=auth.currentUser;
+        await M.reauthenticateWithCredential(u,M.EmailAuthProvider.credential(u.email,c));
+        await M.updatePassword(u,n);
+        msg("Đã đổi mật khẩu.",true);go.textContent="Đã đổi";setTimeout(close,1300);
+      }catch(x){console.error(x);const k=x.code||"";
+        msg(/wrong-password|invalid-credential/.test(k)?"Mật khẩu hiện tại không đúng.":(ERR[k]||("Lỗi: "+(k||x.message))));
+        go.disabled=false;q("#pwX").disabled=false;go.textContent="Đổi mật khẩu"}};
+    go.onclick=submit;q("#pwX").onclick=close;
+    o.onmousedown=e=>{if(e.target===o)close()};
+    o.onkeydown=e=>{if(e.key==="Enter"&&e.target.tagName==="INPUT"&&e.target.type!=="checkbox"&&!go.disabled)submit()};
+    q("#pwShow").onchange=e=>o.querySelectorAll(".fl input").forEach(i=>{i.type=e.target.checked?"text":"password"});
+    q("#pwC").focus()};
+
+  btn.setAttribute("aria-haspopup","menu");
+  st.onclick=()=>openMenu(st);btn.onclick=()=>openMenu(btn);
 
   authUI("loading");
   try{
