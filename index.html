@@ -436,12 +436,34 @@ h1 small{margin-top:3px;font-size:12px;font-weight:400}
 @media(max-width:900px){.rooms{grid-template-rows:none;grid-auto-rows:92px}}
 
 /* ===== Ô TRẠNG THÁI: mỗi trạng thái một màu ===== */
-.seg label:has(input[name="st"][value="ok"]),.seg label:has(input[name^="u"][value="1"]){border-color:color-mix(in srgb,var(--g) 40%,var(--bd));background:color-mix(in srgb,var(--g) 7%,var(--card))}
-.seg label:has(input[name="st"][value="bad"]){border-color:color-mix(in srgb,var(--r) 40%,var(--bd));background:color-mix(in srgb,var(--r) 7%,var(--card))}
-.seg label:has(input[name^="u"][value="0"]){border-color:color-mix(in srgb,var(--o) 45%,var(--bd));background:color-mix(in srgb,var(--o) 8%,var(--card))}
-.seg label:has(input[name="st"][value="ok"]:checked),.seg label:has(input[name^="u"][value="1"]:checked){border-color:var(--g);background:color-mix(in srgb,var(--g) 24%,var(--card));color:color-mix(in srgb,var(--g) 72%,var(--tx))}
-.seg label:has(input[name="st"][value="bad"]:checked){border-color:var(--r);background:color-mix(in srgb,var(--r) 22%,var(--card));color:color-mix(in srgb,var(--r) 75%,var(--tx))}
-.seg label:has(input[name^="u"][value="0"]:checked){border-color:var(--o);background:color-mix(in srgb,var(--o) 24%,var(--card));color:color-mix(in srgb,var(--o) 70%,var(--tx))}
+/* ===== Yêu cầu nhập NTH 1 & NTH 2 ===== */
+.who{align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.whoMsg{display:none;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--r);background:var(--rb);border:1px solid var(--r);border-radius:999px;padding:4px 10px;white-space:nowrap}
+.whoMsg.show{display:inline-flex;animation:whoIn .25s ease}
+@keyframes whoIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:none}}
+.who input.need{border-color:var(--r);box-shadow:0 0 0 3px rgba(220,38,38,.15)}
+#nthToast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translate(-50%,-140%);z-index:9999;max-width:min(92vw,460px);background:var(--card);color:var(--tx);border:2px solid var(--r);border-radius:14px;padding:11px 16px;font-size:14px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);transition:transform .3s cubic-bezier(.2,.9,.3,1.2);pointer-events:none;text-align:center}
+#nthToast.show{transform:translate(-50%,0)}
+@media(max-width:700px){.whoMsg{width:100%;justify-content:center;white-space:normal}}
+/* ===== Danh sách bệnh nhân: màu theo buồng, nút xóa ===== */
+#ptBody tr.pc1{--h:var(--h1)}#ptBody tr.pc2{--h:var(--h2)}#ptBody tr.pc3{--h:var(--h3)}#ptBody tr.pc4{--h:var(--h4)}#ptBody tr.pc5{--h:var(--h5)}
+#ptBody tr[class^="pc"] td{background:color-mix(in srgb,var(--h) 16%,var(--card));border-bottom:1px solid color-mix(in srgb,var(--h) 38%,var(--bd))}
+#ptBody tr[class^="pc"] td:first-child{box-shadow:inset 4px 0 0 var(--h)}
+button.dng{color:var(--r);border-color:color-mix(in srgb,var(--r) 45%,var(--bd))}
+button.dng.solid{background:var(--r);color:#fff;border:0}
+button.dng.solid:hover{box-shadow:0 9px 20px color-mix(in srgb,var(--r) 38%,transparent)}
+/* ===== Tab chuyển qua lại có nền trượt ===== */
+.seg.tabs{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:0;padding:4px;border-radius:12px;background:color-mix(in srgb,var(--mu) 16%,var(--card));border:1px solid var(--bd)}
+.seg.tabs::before{content:"";position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px)/2);border-radius:9px;background:var(--g);box-shadow:0 4px 12px color-mix(in srgb,var(--g) 40%,transparent);transition:transform .38s cubic-bezier(.2,.9,.3,1.15),background-color .3s,box-shadow .3s}
+.seg.tabs:has(label:nth-child(2) input:checked)::before{transform:translateX(100%)}
+.seg.tabs:has(input[name=st][value=bad]:checked)::before{background:var(--r);box-shadow:0 4px 12px color-mix(in srgb,var(--r) 40%,transparent)}
+.seg.tabs:has(input[name^=u][value="0"]:checked)::before{background:var(--o);box-shadow:0 4px 12px color-mix(in srgb,var(--o) 40%,transparent)}
+.seg.tabs label{position:relative;z-index:1;border:0;background:transparent;border-radius:9px;color:var(--mu);font-weight:600;transition:color .3s}
+.seg.tabs label:has(input:checked){border:0;background:transparent;color:#fff}
+.seg.tabs label:hover{color:var(--tx)}.seg.tabs label:has(input:checked):hover{color:#fff}
+@keyframes tabIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.tabIn{animation:tabIn .35s cubic-bezier(.2,.8,.2,1)}
+@media(prefers-reduced-motion:reduce){.seg.tabs::before,.tabIn{transition:none;animation:none}}
 </style></head><body>
 <header>
 <div class="hrow">
@@ -456,8 +478,8 @@ h1 small{margin-top:3px;font-size:12px;font-weight:400}
   </div>
   </div>
   <div class="tools">
-    <div class="bar acts"><button id="bDue">Cảnh báo <span class="cnt" id="cnt">0</span></button><button class="ghost" id="bHist">📋 Lịch sử</button><button class="ghost" id="bSrc">📥 Nhập thông tin</button><button class="ghost" id="bPt">🧑‍⚕️ Bệnh nhân</button><i class="vsep"></i><button class="ghost ib" id="bCh" title="Biểu đồ" aria-label="Biểu đồ">📈</button><button class="ghost ib" id="bXl" title="Xuất Excel" aria-label="Xuất Excel">📊</button><button class="ghost ib" id="bUi" title="Giao diện" aria-label="Giao diện">🎨</button></div>
-    <div class="who"><input id="who" placeholder="Người thực hiện 1"><input id="who2" placeholder="Người thực hiện 2"></div>
+    <div class="bar acts"><button id="bDue">Cảnh báo <span class="cnt" id="cnt">0</span></button><button class="ghost" id="bHist">Lịch sử</button><button class="ghost" id="bSrc">Nhập thông tin Bệnh nhân</button><button class="ghost" id="bPt">Bệnh nhân</button><i class="vsep"></i><button class="ghost ib" id="bCh" title="Biểu đồ" aria-label="Biểu đồ">📈</button><button class="ghost ib" id="bXl" title="Xuất Excel" aria-label="Xuất Excel">📊</button><button class="ghost ib" id="bUi" title="Giao diện" aria-label="Giao diện">🎨</button></div>
+    <div class="who"><span class="whoMsg" id="whoMsg" role="alert">⚠ Chưa nhập <b>Người thực hiện</b> (tối thiểu 1)</span><input id="who" placeholder="Người thực hiện 1"><input id="who2" placeholder="Người thực hiện 2"></div>
   </div>
 </div>
 <div id="noteBar"></div>
@@ -466,16 +488,16 @@ h1 small{margin-top:3px;font-size:12px;font-weight:400}
 
 <div class="ov" id="ovEdit"><div class="modal">
 <h3 id="eTitle"></h3>
-<div class="row seg">
-<label><input type="radio" name="st" value="ok"><span>🟢 Sử dụng</span></label>
-<label><input type="radio" name="st" value="bad"><span>🔴 Sửa chữa</span></label></div>
+<div class="row seg tabs">
+<label><input type="radio" name="st" value="ok"><span>Sử dụng</span></label>
+<label><input type="radio" name="st" value="bad"><span>Sửa chữa</span></label></div>
 <div id="pBox"></div>
 <div class="row"><label class="fl" style="flex:1"><span>Ghi chú (không bắt buộc)</span><input id="eNote"></label></div>
 <div class="row" style="justify-content:flex-end"><button class="ghost" data-close>Hủy</button><button id="eSave">Lưu</button></div>
 </div></div>
 
 <div class="ov" id="ovDue"><div class="modal" style="width:min(760px,100%)">
-<h3>🔔 Buồng cảnh báo</h3>
+<h3>Buồng cảnh báo</h3>
 <div id="dueSum"></div>
 <div id="dueList"></div>
 <h4>Lịch sử xử lý các buồng cảnh báo</h4>
@@ -484,21 +506,21 @@ h1 small{margin-top:3px;font-size:12px;font-weight:400}
 </div></div>
 
 <div class="ov" id="ovHist"><div class="modal" style="width:min(780px,100%)">
-<h3>📋 Lịch sử thao tác</h3>
-<div class="row"><select id="hCab"><option value="">Tất cả tủ</option></select><button class="ghost" id="hCsv">⬇ Xuất CSV</button><button class="ghost" id="hClr">Xóa lịch sử</button></div>
+<h3>Lịch sử thao tác</h3>
+<div class="row"><select id="hCab"><option value="">Tất cả tủ</option></select><button class="ghost" id="hCsv">Xuất CSV</button><button class="ghost" id="hClr">Xóa lịch sử</button></div>
 <div id="hBody"></div>
 <div class="row" style="justify-content:flex-end"><button class="ghost" data-close>Đóng</button></div>
 </div></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <div class="ov" id="ovPt"><div class="modal" style="width:min(900px,100%)">
-<h3>🧑‍⚕️ Lịch sử bệnh nhân nuôi trong buồng</h3>
-<div class="row"><input id="ptQ" placeholder="Tìm theo tên, mã hồ sơ, STT, năm sinh" style="flex:1"><button class="ghost" id="ptXl">📊 Xuất Excel</button></div>
+<h3>Danh sách bệnh nhân</h3>
+<div class="row"><input id="ptQ" placeholder="Tìm theo tên, mã hồ sơ, STT, năm sinh" style="flex:1"><button class="ghost" id="ptXl">Xuất Excel</button></div>
 <div class="tblw" id="ptBody"></div>
 <div class="row" style="justify-content:flex-end"><button class="ghost" data-close>Đóng</button></div>
 </div></div>
 <div class="ov" id="ovPtE"><div class="modal" style="width:min(560px,100%)">
-<h3>✏️ Sửa thông tin bệnh nhân</h3>
+<h3>Sửa thông tin bệnh nhân</h3>
 <div class="row"><label class="fl" style="flex:1;min-width:120px"><span>MHS</span><input id="peHs"></label><label class="fl" style="width:110px"><span>STT chọc</span><input id="peStt"></label></div>
 <div class="row"><label class="fl" style="flex:1;min-width:150px"><span>Tên</span><input id="peTen"></label><label class="fl" style="width:110px"><span>Năm sinh</span><input id="peNs" inputmode="numeric" maxlength="4"></label></div>
 <div class="row"><label class="fl" style="flex:1"><span>Ngày CH</span><input type="date" id="peCh"></label><label class="fl" style="flex:1"><span>Loại nuôi cấy</span><select id="peMode"><option value="TL">Timelapse</option><option value="PI">P.I</option></select></label><label class="fl" style="flex:1"><span>Buồng</span><select id="peRoom"></select></label></div>
@@ -506,7 +528,7 @@ h1 small{margin-top:3px;font-size:12px;font-weight:400}
 <div class="row" style="justify-content:flex-end"><button class="ghost" data-close>Hủy</button><button id="peSave">Lưu</button></div>
 </div></div>
 <div class="ov" id="ovCh"><div class="modal" style="width:min(880px,100%)">
-<h3>📈 Biểu đồ</h3>
+<h3>Biểu đồ</h3>
 <div class="row"><select id="cMode"><option value="day">Theo ngày (30 ngày gần nhất)</option><option value="month">Theo tháng (12 tháng gần nhất)</option><option value="year">Theo năm (5 năm gần nhất)</option><option value="custom">Thời gian chỉ định</option></select>
 <select id="cCab"><option value="">Tất cả tủ</option></select>
 </div>
@@ -516,13 +538,13 @@ h1 small{margin-top:3px;font-size:12px;font-weight:400}
 <div class="row" style="justify-content:flex-end"><button class="ghost" data-close>Đóng</button></div>
 </div></div>
 <div class="ov" id="ovXl"><div class="modal" style="width:min(460px,100%)">
-<h3>📊 Xuất Excel (lịch sử · hiện trạng · bệnh nhân)</h3>
+<h3>Xuất Excel (lịch sử · hiện trạng · bệnh nhân)</h3>
 <div class="row">Từ ngày <input type="date" id="xFrom"> đến ngày <input type="date" id="xTo"></div>
 <div class="row"><select id="xCab"><option value="">Tất cả tủ</option></select><span id="xCnt" style="color:var(--mu)"></span></div>
 <div class="row" style="justify-content:flex-end"><button class="ghost" data-close>Đóng</button><button id="xGo">Xuất file .xlsx</button></div>
 </div></div>
 <div class="ov" id="ovUi"><div class="modal" style="width:min(480px,100%)">
-<h3>🎨 Tùy chỉnh giao diện</h3>
+<h3>Tùy chỉnh giao diện</h3>
 <div>Chế độ hiển thị</div>
 <div class="row seg"><label><input type="radio" name="th" value="auto"><span>Tự động</span></label><label><input type="radio" name="th" value="light"><span>Sáng</span></label><label><input type="radio" name="th" value="dark"><span>Tối</span></label></div>
 <div>Bảng màu nền các tủ</div>
@@ -532,10 +554,10 @@ h1 small{margin-top:3px;font-size:12px;font-weight:400}
 <div class="row" style="justify-content:flex-end"><button class="ghost" data-close>Đóng</button></div>
 </div></div>
 <div class="ov" id="ovSrc"><div class="modal" style="width:min(1000px,100%)">
-<h3>📥 Source thông tin</h3>
+<h3>Nhập thông tin Bệnh nhân</h3>
 <div class="tblw" id="srcGrid" style="max-height:55vh;overflow:auto"></div>
 <div id="srcWarn" style="color:var(--r);font-size:13px;min-height:18px;margin-top:6px"></div>
-<div class="row"><button id="srcGo">Cập nhật</button><button class="ghost" id="srcAdd">+ Thêm dòng</button><button class="ghost" id="srcClr">Xóa bảng</button><span id="srcSum" style="color:var(--mu);font-size:13px"></span></div>
+<div class="row"><button id="srcGo">Cập nhật bệnh nhân</button><button class="ghost" id="srcAdd">Thêm dòng</button><button class="ghost dng" id="srcClr">Xóa bảng</button><span id="srcSum" style="color:var(--mu);font-size:13px"></span></div>
 <div class="row" style="justify-content:flex-end"><button class="ghost" data-close>Đóng</button></div>
 </div></div>
 <script>
@@ -559,14 +581,22 @@ const roomPts=x=>x.st==="using"?(x.pl||[]):[];
 const dueList=x=>roomPts(x).filter(q=>q.ch&&days(q.ch)>=DAY&&q.snooze!==todayStr());
 const roomDay=x=>{const a=roomPts(x).filter(q=>q.ch).map(q=>days(q.ch));return a.length?Math.max(...a):null};
 const isDue=x=>{const d=roomDay(x);return d!==null&&d>=DAY};
-const who=()=>{const w=$("#who").value.trim();if(!w){const e=$("#who");e.classList.remove("shake");void e.offsetWidth;e.classList.add("shake");e.focus();return null}S.who=w;S.who2=$("#who2").value.trim();save();return w};
+const who=()=>{const w1=$("#who").value.trim(),w2=$("#who2").value.trim();if(!w1&&!w2){[$("#who"),$("#who2")].forEach(e=>{e.classList.remove("shake");void e.offsetWidth;e.classList.add("shake")});$("#who").focus();updWho();return null}S.who=w1;S.who2=w2;save();return w1||w2};
 const needWho=msgEl=>{const a=$("#who"),b=$("#who2"),w1=a.value.trim(),w2=b.value.trim();
-if(w1&&w2){S.who=w1;S.who2=w2;save();return w1}
-[a,b].forEach(e=>{if(!e.value.trim()){e.classList.remove("shake");void e.offsetWidth;e.classList.add("shake")}});
-const miss=[!w1?"NTH 1":"",!w2?"NTH 2":""].filter(Boolean).join(" và ");
-if(msgEl){msgEl.textContent="⚠ Chưa nhập "+miss+" (Người thực hiện). Hãy nhập ở đầu trang trước khi nhập thông tin bệnh nhân.";msgEl.classList.remove("shake");void msgEl.offsetWidth;msgEl.classList.add("shake")}
+if(w1||w2){S.who=w1;S.who2=w2;save();updWho();return w1||w2}
+[a,b].forEach(e=>{e.classList.remove("shake");void e.offsetWidth;e.classList.add("shake")});updWho();
+if(msgEl){msgEl.textContent="⚠ Vui lòng nhập tối thiểu 1 Người thực hiện ở đầu trang trước khi nhập thông tin bệnh nhân.";msgEl.classList.remove("shake");void msgEl.offsetWidth;msgEl.classList.add("shake")}
 return null};
-const addLog=(k,action,person,note)=>{const[c,r]=k.split("-");S.log.unshift({t:new Date().toISOString(),c:+c,r:+r,a:action,p:person,p2:S.who2||"",n:note||""});if(S.log.length>2000)S.log.length=2000};
+const p2of=()=>S.who?(S.who2||""):"";
+const whoMissing=()=>$("#who").value.trim()||$("#who2").value.trim()?[]:["Người thực hiện"];
+const updWho=()=>{const m=whoMissing(),el=$("#whoMsg");el.classList.toggle("show",m.length>0);$("#who").classList.toggle("need",m.length>0);$("#who2").classList.toggle("need",m.length>0)};
+let _tt;const nthToast=txt=>{let t=$("#nthToast");if(!t){t=document.createElement("div");t.id="nthToast";t.setAttribute("role","alert");document.body.appendChild(t)}t.textContent=txt;void t.offsetWidth;t.classList.add("show");clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove("show"),3200)};
+const gateWho=()=>{if(!whoMissing().length){S.who=$("#who").value.trim();S.who2=$("#who2").value.trim();save();updWho();return true}
+updWho();[$("#who"),$("#who2")].forEach(e=>{e.classList.remove("shake");void e.offsetWidth;e.classList.add("shake")});
+const w=$("#whoMsg");w.classList.remove("shake");void w.offsetWidth;w.classList.add("shake");
+$("#who").focus();
+nthToast("⚠ Vui lòng nhập tối thiểu 1 Người thực hiện trước khi tiếp tục.");return false};
+const addLog=(k,action,person,note)=>{const[c,r]=k.split("-");S.log.unshift({t:new Date().toISOString(),c:+c,r:+r,a:action,p:person,p2:p2of(),n:note||""});if(S.log.length>2000)S.log.length=2000};
 
 function setNum(id,v){const e=$("#"+id);if(e.textContent!==String(v)){const first=e.textContent==="0"&&!e.dataset.s;e.textContent=v;e.dataset.s=1;if(!first){e.classList.remove("pop");void e.offsetWidth;e.classList.add("pop")}}}
 let _dh="",_dp=[];
@@ -606,11 +636,12 @@ const open=id=>$(id).classList.add("show"),close=el=>el.classList.remove("show")
 document.querySelectorAll(".ov").forEach(o=>o.addEventListener("click",e=>{if(e.target===o||e.target.hasAttribute("data-close"))close(o)}));
 
 let cur=null;
-$("#main").addEventListener("click",e=>{const r=e.target.closest(".tile");if(!r)return;cur=r.dataset.k;const x=S.rooms[cur],[c,b]=cur.split("-");
+$("#main").addEventListener("click",e=>{const r=e.target.closest(".tile");if(!r)return;if(!gateWho())return;cur=r.dataset.k;const x=S.rooms[cur],[c,b]=cur.split("-");
 $("#eTitle").textContent=`Tủ GERI ${c} · Buồng ${c}.${b}`;
 document.querySelector(`input[name=st][value=${x.st==="bad"?"bad":"ok"}]`).checked=true;
 $("#eNote").value="";fillPt(x);togDate();open("#ovEdit")});
-const togDate=()=>{$("#pBox").style.display=document.querySelector("input[name=st]:checked").value==="bad"?"none":"block";[1,2].forEach(n=>{const c=document.querySelector(`input[name=u${n}]:checked`);$(`#pb${n} .pf`).style.display=c&&c.value==="1"?"block":"none"})};
+const showT=(el,on)=>{const was=el.style.display==="block";el.style.display=on?"block":"none";if(on&&!was){el.classList.remove("tabIn");void el.offsetWidth;el.classList.add("tabIn")}};
+const togDate=()=>{showT($("#pBox"),document.querySelector("input[name=st]:checked").value!=="bad");[1,2].forEach(n=>{const c=document.querySelector(`input[name=u${n}]:checked`);showT($(`#pb${n} .pf`),!!(c&&c.value==="1"))})};
 document.querySelectorAll("input[name=st]").forEach(i=>i.onchange=togDate);
 $("#eSave").onclick=()=>{const isBad=document.querySelector("input[name=st]:checked").value==="bad",p=isBad?who():needWho($("#pErr"));if(!p)return;const sv=document.querySelector("input[name=st]:checked").value,x=S.rooms[cur],was=x.st;
 const a=sv==="bad"?[]:readPt(),err=$("#pErr"),fail=t=>{err.textContent=t;err.classList.remove("shake");void err.offsetWidth;err.classList.add("shake")};
@@ -620,7 +651,7 @@ if(a.some(q=>!(q.hs||q.stt||q.ten||q.ns)))return fail("⚠ Nhập thông tin b�
 if(a.some(q=>!q.ch))return fail("⚠ Cần nhập ngày chọc hút (CH).");
 if(a.some(q=>q.ch>todayStr()))return fail("⚠ Ngày CH không được lớn hơn hôm nay.")}
 {const en=roomPts(x).filter(q=>sv==="bad"||!a.some(n=>n.mode===q.mode));
-if(en.length&&!confirm(`⚠ Xác nhận kết thúc nuôi cấy tại buồng ${cur.replace("-",".")}?\n${en.map(q=>(q.mode==="PI"?"P.I":"Timelapse")+": "+(ptTxt(q)||"—")).join("\n")}\nBệnh nhân sẽ được ghi nhận kết thúc nuôi và không thể sửa thông tin nữa.`))return}
+if(en.length&&!confirm(`⚠ Xác nhận kết thúc nuôi cấy tại buồng ${cur.replace("-",".")}?\n${en.map(q=>(q.mode==="PI"?"P.I":"Timelapse")+": "+(ptTxt(q)||"—")).join("\n")}\nBệnh nhân sẽ được ghi nhận kết thúc nuôi.`))return}
 const nst=sv==="bad"?"bad":a.length?"using":"empty";x.st=nst;delete x.date;
 const note=$("#eNote").value;
 if(nst!==was||note)addLog(cur,{using:"Đặt trạng thái Đang nuôi",empty:"Đặt trạng thái Trống",bad:"Đặt trạng thái Sửa chữa"}[nst],p,note);
@@ -718,7 +749,7 @@ $("#bCh").onclick=()=>{const t=new Date();if(!$("#cTo").value){$("#cTo").value=y
 S.pts=S.pts||[];
 Object.values(S.rooms).forEach(x=>{if(x.pt&&!x.pl)x.pl=[{...x.pt,pid:x.pid}];delete x.pt;delete x.pid;if(!x.pl)x.pl=[]});
 (()=>{const fld=s=>`<div class="pf"><div class="row"><label class="fl" style="flex:1;min-width:120px"><span>Mã hồ sơ</span><input id="pHs${s}"></label><label class="fl" style="width:100px"><span>STT chọc</span><input id="pStt${s}"></label></div><div class="row"><label class="fl" style="flex:1;min-width:150px"><span>Tên bệnh nhân</span><input id="pTen${s}"></label><label class="fl" style="width:100px"><span>Năm sinh</span><input id="pNs${s}" inputmode="numeric" maxlength="4"></label></div><div class="row"><label class="fl" style="flex:1"><span>Ngày chọc hút (CH)</span><input type="date" id="pCh${s}"></label><b id="pDay${s}" style="font-size:13px;min-width:120px;text-align:right"></b></div></div>`;
-const blk=(n,t,s)=>`<div class="pb" id="pb${n}" style="${n>1?"margin-top:10px;padding-top:8px;border-top:1px dashed var(--bd)":""}"><div class="row" style="margin-bottom:0;font-weight:700;font-size:14px">${t}</div><div class="row seg"><label><input type="radio" name="u${n}" value="1"><span>🟢 Đang nuôi</span></label><label><input type="radio" name="u${n}" value="0"><span>⏹ Kết thúc nuôi cấy</span></label></div>${fld(s)}</div>`;
+const blk=(n,t,s)=>`<div class="pb" id="pb${n}" style="${n>1?"margin-top:10px;padding-top:8px;border-top:1px dashed var(--bd)":""}"><div class="row" style="margin-bottom:0;font-weight:700;font-size:14px">${t}</div><div class="row seg tabs"><label><input type="radio" name="u${n}" value="1"><span>Đang nuôi</span></label><label><input type="radio" name="u${n}" value="0"><span>Kết thúc nuôi cấy</span></label></div>${fld(s)}</div>`;
 const pb=$("#pBox");pb.innerHTML=blk(1,"Timelapse","")+blk(2,"P.I","2")+'<div id="pErr" style="color:var(--r);font-size:13px;margin-top:6px"></div>';
 pb.addEventListener("change",e=>{if((e.target.name||"").startsWith("u"))togDate()})})();
 const fmtDT=t=>new Date(t).toLocaleString("vi-VN");
@@ -731,7 +762,7 @@ const fillPt=x=>{if($("#pErr"))$("#pErr").textContent="";const Lp=x.st==="bad"?[
 const readPt=()=>["TL","PI"].map((m,i)=>{const s=i?"2":"";if(document.querySelector(`input[name=u${i+1}]:checked`).value!=="1")return null;const v=id=>$(id+s).value.trim();return{hs:v("#pHs"),stt:v("#pStt"),ten:v("#pTen"),ns:v("#pNs"),ch:v("#pCh"),mode:m}}).filter(Boolean);
 const dupMode=sh=>{const a=readPt(),d=a.length===2&&a[0].mode===a[1].mode,el=$("#pErr");el.textContent=d?"⚠ Mỗi buồng chỉ nuôi 1 đĩa Timelapse và 1 đĩa P.I — không được chọn trùng phương pháp.":"";if(d&&sh){el.classList.remove("shake");void el.offsetWidth;el.classList.add("shake")}return d};
 const endPt=(k,q,why,p)=>{const r=S.pts.find(z=>z.id===q.pid);if(r&&!r.end)r.end=new Date().toISOString();addLog(k,why+": "+ptTxt(q),p)};
-const startPt=(k,np,p)=>{const[c,r]=k.split("-"),id="p"+Date.now()+Math.random().toString(36).slice(2,6);S.pts.push({id,c:+c,r:+r,...np,start:new Date().toISOString(),end:"",p,p2:S.who2||""});addLog(k,"Nhập bệnh nhân: "+ptTxt(np),p);return{...np,pid:id}};
+const startPt=(k,np,p)=>{const[c,r]=k.split("-"),id="p"+Date.now()+Math.random().toString(36).slice(2,6);S.pts.push({id,c:+c,r:+r,...np,start:new Date().toISOString(),end:"",p,p2:p2of()});addLog(k,"Nhập bệnh nhân: "+ptTxt(np),p);return{...np,pid:id}};
 const savePt=(k,st,p)=>{const x=S.rooms[k],old=x.pl||[];
 if(st!=="using"){old.forEach(q=>endPt(k,q,"Kết thúc nuôi bệnh nhân",p));x.pl=[];return}
 const used=new Set(),res=[];
@@ -749,7 +780,7 @@ const ptVal=(r,k)=>k==="room"?r.c*10+r.r:k==="end"?(r.end||"9999"):k==="start"?r
 function getPt(){const q=$("#ptQ").value.trim().toLowerCase(),{k,d}=ptSort;
 return S.pts.filter(r=>!q||[r.hs,r.ten,r.stt,r.ns].join(" ").toLowerCase().includes(q)).sort((a,b)=>{const x=ptVal(a,k),y=ptVal(b,k);return d*(typeof x==="number"?x-y:String(x).localeCompare(String(y),"vi",{numeric:true}))})}
 function drawPt(){const l=getPt();
-$("#ptBody").innerHTML=l.length?`<table><tr>${PTC.map(([k,n])=>`<th data-s="${k}">${n}${ptSort.k===k?(ptSort.d>0?" ▲":" ▼"):""}</th>`).join("")}<th></th></tr>${l.map(r=>`<tr><td>${esc(r.hs)}</td><td>${esc(r.ten)}</td><td>${esc(r.ns)}</td><td>${r.mode==="PI"?"P.I":"TL"}</td><td>${dsd(r.ch)}</td><td>${esc(r.stt)}</td><td>${r.c}.${r.r}</td><td>${dspan(r.start)}</td><td>${r.end?dspan(r.end):'<b style="color:var(--g)">Đang nuôi</b>'}</td><td>${r.end?"":`<button class="ghost" data-e="${r.id}" title="Sửa" style="padding:3px 9px;font-size:12px">✏️ Sửa</button>`}</td></tr>`).join("")}</table>`:'<div class="empty-msg">Chưa có dữ liệu bệnh nhân.</div>'}
+$("#ptBody").innerHTML=l.length?`<table><tr>${PTC.map(([k,n])=>`<th data-s="${k}">${n}${ptSort.k===k?(ptSort.d>0?" ▲":" ▼"):""}</th>`).join("")}<th></th></tr>${l.map(r=>`<tr class="pc${((r.c-1)%5)+1}"><td>${esc(r.hs)}</td><td>${esc(r.ten)}</td><td>${esc(r.ns)}</td><td>${r.mode==="PI"?"P.I":"TL"}</td><td>${dsd(r.ch)}</td><td>${esc(r.stt)}</td><td>${r.c}.${r.r}</td><td>${dspan(r.start)}</td><td>${r.end?dspan(r.end):'<b style="color:var(--g)">Đang nuôi</b>'}</td><td style="white-space:nowrap"><button class="ghost" data-e="${r.id}" title="Sửa" style="padding:3px 9px;font-size:12px">Sửa</button> <button class="ghost dng" data-d="${r.id}" title="Xóa" style="padding:3px 9px;font-size:12px">Xóa</button></td></tr>`).join("")}</table>`:'<div class="empty-msg">Chưa có dữ liệu bệnh nhân.</div>'}
 $("#ptBody").addEventListener("click",e=>{const th=e.target.closest("th[data-s]");if(!th)return;const k=th.dataset.s;ptSort=ptSort.k===k?{k,d:-ptSort.d}:{k,d:1};drawPt()});
 $("#ptXl").onclick=async()=>{const l=getPt();if(!l.length)return;if(typeof XLSX==="undefined"){alert("Chưa tải được thư viện Excel (cần kết nối mạng).");return}
 const nd=r=>r.ch?Math.round((Date.parse(r.end?ymd(new Date(r.end)):todayStr())-Date.parse(r.ch))/864e5):"";
@@ -757,22 +788,39 @@ const ws=XLSX.utils.aoa_to_sheet([["Mã hồ sơ","STT chọc","Tên","Năm sinh
 ws["!cols"]=[{wch:14},{wch:10},{wch:24},{wch:10},{wch:12},{wch:12},{wch:8},{wch:20},{wch:20},{wch:14},{wch:20},{wch:20}];
 const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Bệnh nhân");
 await saveFile(`benh_nhan_${todayStr().replace(/-/g,"")}.xlsx`,XLSX.write(wb,{type:"array",bookType:"xlsx"}))};
-$("#ptQ").oninput=drawPt;$("#bPt").onclick=()=>{drawPt();open("#ovPt")};
+$("#ptQ").oninput=drawPt;$("#bPt").onclick=()=>{if(!gateWho())return;drawPt();open("#ovPt")};
 {const sel=$("#peRoom");let h="";for(let c=1;c<=CABS;c++)for(let r=1;r<=ROOMS;r++)h+=`<option value="${c}-${r}">${c}.${r}</option>`;sel.innerHTML=h}
 let peId=null;
-$("#ptBody").addEventListener("click",e=>{const b=e.target.closest("button[data-e]");if(!b)return;const r=S.pts.find(z=>z.id===b.dataset.e);if(!r||r.end)return;peId=r.id;
+const askConfirm=({title,html,ok="Xác nhận",danger=false})=>new Promise(res=>{const o=document.createElement("div");o.className="ov";o.style.zIndex=30;
+o.innerHTML=`<div class="modal" style="width:min(440px,100%)"><h3>${esc(title)}</h3><div style="font-size:14px;line-height:1.55">${html}</div><div class="row" style="justify-content:flex-end;margin-top:14px"><button class="ghost" data-n>Hủy</button><button data-y class="${danger?"dng solid":""}">${esc(ok)}</button></div></div>`;
+document.body.appendChild(o);const kd=e=>{if(e.key==="Escape")done(false)};
+const done=v=>{document.removeEventListener("keydown",kd);o.classList.remove("show");setTimeout(()=>o.remove(),300);res(v)};
+document.addEventListener("keydown",kd);
+o.addEventListener("click",e=>{if(e.target===o||e.target.closest("[data-n]"))done(false);else if(e.target.closest("[data-y]"))done(true)});
+requestAnimationFrame(()=>{o.classList.add("show");o.querySelector("[data-y]").focus()})});
+$("#ptBody").addEventListener("click",async e=>{const b=e.target.closest("button[data-d]");if(!b)return;const r=S.pts.find(z=>z.id===b.dataset.d);if(!r)return;
+const act=!r.end,k=r.c+"-"+r.r;
+if(!await askConfirm({title:"Xác nhận xóa bệnh nhân",danger:true,ok:"Xóa",html:`<div>Xóa bệnh nhân <b>${esc(ptTxt(r)||"—")}</b> (${r.mode==="PI"?"P.I":"Timelapse"}, buồng ${r.c}.${r.r}${act?", đang nuôi":""})?</div>${act?'<div style="margin-top:8px">Bệnh nhân sẽ được gỡ khỏi buồng đang nuôi.</div>':""}<div style="margin-top:8px;color:var(--r)">Thao tác này không thể hoàn tác.</div>`}))return;
+if(!gateWho())return;const p=S.who||S.who2;
+const x=S.rooms[k];if(act&&x){x.pl=(x.pl||[]).filter(z=>z.pid!==r.id);if(!x.pl.length&&x.st==="using")x.st="empty"}
+S.pts.splice(S.pts.indexOf(r),1);addLog(k,"Xóa bệnh nhân: "+ptTxt(r),p);save();render();drawPt()});
+$("#ptBody").addEventListener("click",e=>{const b=e.target.closest("button[data-e]");if(!b)return;const r=S.pts.find(z=>z.id===b.dataset.e);if(!r)return;peId=r.id;
 $("#peHs").value=r.hs||"";$("#peStt").value=r.stt||"";$("#peTen").value=r.ten||"";$("#peNs").value=r.ns||"";$("#peCh").value=r.ch||"";$("#peMode").value=r.mode||"TL";$("#peRoom").value=r.c+"-"+r.r;$("#peRoom").disabled=!!r.end;$("#peErr").textContent="";open("#ovPtE")});
-$("#peSave").onclick=()=>{const r=S.pts.find(z=>z.id===peId);if(!r||r.end)return;const err=$("#peErr"),fail=t=>{err.textContent=t;err.classList.remove("shake");void err.offsetWidth;err.classList.add("shake")};
+$("#peSave").onclick=async()=>{const r=S.pts.find(z=>z.id===peId);if(!r)return;const err=$("#peErr"),fail=t=>{err.textContent=t;err.classList.remove("shake");void err.offsetWidth;err.classList.add("shake")};
 const np={hs:$("#peHs").value.trim(),stt:$("#peStt").value.trim(),ten:$("#peTen").value.trim(),ns:$("#peNs").value.trim(),ch:$("#peCh").value,mode:$("#peMode").value};
 if(np.ns&&!/^\d{4}$/.test(np.ns))return fail("⚠ Năm sinh gồm 4 chữ số.");
 if(!(np.hs||np.stt||np.ten||np.ns))return fail("⚠ Nhập thông tin bệnh nhân.");
 if(!np.ch)return fail("⚠ Cần nhập ngày CH.");
 if(np.ch>todayStr())return fail("⚠ Ngày CH không được lớn hơn hôm nay.");
 const p=needWho(err);if(!p)return;
-const active=!r.end,ok=r.c+"-"+r.r,nk=active?$("#peRoom").value:ok,lab=k=>k.replace("-","."),tn=m=>m==="PI"?"P.I":"Timelapse";
+let warn="";const active=!r.end,ok=r.c+"-"+r.r,nk=active?$("#peRoom").value:ok,lab=k=>k.replace("-","."),tn=m=>m==="PI"?"P.I":"Timelapse";
 if(active){const x2=S.rooms[nk];if(x2.st==="bad")return fail("⚠ Buồng "+lab(nk)+" đang sửa chữa.");
 const dup=roomPts(x2).find(q=>q.pid!==r.id&&q.mode===np.mode);if(dup)return fail(`⚠ Buồng ${lab(nk)} đã có bệnh nhân ${tn(np.mode)} (${dup.ten||dup.hs||"—"}).`);
-if(nk!==ok){const oth=roomPts(x2).find(q=>q.pid!==r.id);if(!confirm(`⚠ Chuyển bệnh nhân ${ptTxt(np)||"—"} từ buồng ${lab(ok)} sang buồng ${lab(nk)}?\n${oth?"Buồng "+lab(nk)+" đang nuôi "+tn(oth.mode)+" ("+(oth.ten||oth.hs||"—")+").\n":""}Thông tin nuôi cấy sẽ được cập nhật sang buồng mới.`))return}}
+if(nk!==ok){const oth=roomPts(x2).find(q=>q.pid!==r.id);warn=`<div style="margin-top:8px;color:var(--o)">⚠ Chuyển sang buồng ${lab(nk)}.${oth?" Buồng này đang nuôi "+tn(oth.mode)+" ("+esc(oth.ten||oth.hs||"—")+").":""}</div>`}}
+const chg=[["hs","MHS"],["stt","STT chọc"],["ten","Tên"],["ns","Năm sinh"],["ch","Ngày CH"],["mode","Loại nuôi cấy"]].filter(([f])=>String(r[f]||"")!==String(np[f]||"")).map(([f,n])=>{const v=x=>f==="mode"?tn(x||"TL"):f==="ch"?(x?dmy(x):"—"):(x||"—");return `<li><b>${n}:</b> ${esc(v(r[f]))} → ${esc(v(np[f]))}</li>`});
+if(nk!==ok)chg.push(`<li><b>Buồng:</b> ${lab(ok)} → ${lab(nk)}</li>`);
+if(!chg.length)return fail("⚠ Chưa có thay đổi nào để lưu.");
+if(!await askConfirm({title:"Xác nhận sửa thông tin",ok:"Xác nhận",html:`<div>Bệnh nhân <b>${esc(ptTxt(r)||"—")}</b></div><ul style="margin:8px 0 0 18px;padding:0">${chg.join("")}</ul>${warn}`}))return;
 const xo=S.rooms[ok],q=(xo.pl||[]).find(z=>z.pid===r.id);
 if(q&&q.ch!==np.ch)q.snooze="";
 Object.assign(r,np);if(q)Object.assign(q,np);
@@ -835,8 +883,8 @@ buildGrid();syncGrid()});
 $("#srcGrid").addEventListener("change",e=>{const t=e.target;if(t.dataset.i===undefined)return;G[+t.dataset.i][+t.dataset.j]=t.value;syncGrid()});
 $("#srcGrid").addEventListener("keydown",e=>{if(e.key!=="Enter"||e.target.dataset.i===undefined)return;const n=$(`#srcGrid input[data-i="${+e.target.dataset.i+1}"][data-j="${e.target.dataset.j}"]`);if(n)n.focus()});
 $("#srcGo").onclick=syncGrid;
-$("#srcAdd").onclick=()=>{ensureRows(G.length+5);buildGrid();if($("#who").value.trim()&&$("#who2").value.trim())syncGrid()};
-$("#srcClr").onclick=()=>{if(confirm("Xóa bảng source?")){G=[];ensureRows(10);S.srcRows=[];save();buildGrid();$("#srcSum").textContent=""}};
+$("#srcAdd").onclick=()=>{ensureRows(G.length+5);buildGrid();if(!whoMissing().length)syncGrid()};
+$("#srcClr").onclick=async()=>{if(!await askConfirm({title:"Xác nhận xóa bảng",danger:true,ok:"Xóa bảng",html:"<div>Xóa toàn bộ dữ liệu đang nhập trong bảng?</div><div style=\"margin-top:8px;color:var(--r)\">Thao tác này không thể hoàn tác.</div>"}))return;G=[];ensureRows(10);S.srcRows=[];save();buildGrid();$("#srcSum").textContent=""};
 $("#bSrc").onclick=()=>{buildGrid();$("#srcWarn").textContent="";open("#ovSrc")};
 
 function nowRows(){const stN={using:"Đang nuôi cấy",empty:"Trống",bad:"Sửa chữa"},rows=[["Tủ GERI","Buồng","Trạng thái buồng","Phương pháp","Mã hồ sơ","STT chọc","Tên","Năm sinh","Ngày CH","Số ngày nuôi","Tình trạng"]];
@@ -849,7 +897,7 @@ const applyUi=()=>{const r=document.documentElement;if(S.ui.theme==="auto")r.rem
 $("#bUi").onclick=()=>{document.querySelector(`input[name=th][value=${S.ui.theme}]`).checked=true;document.querySelector(`input[name=pal][value=${S.ui.pal}]`).checked=true;document.querySelector(`input[name=bgs][value=${S.ui.bg||"flat"}]`).checked=true;open("#ovUi")};
 document.querySelectorAll("input[name=th],input[name=pal],input[name=bgs]").forEach(i=>i.onchange=()=>{S.ui.theme=document.querySelector("input[name=th]:checked").value;S.ui.pal=document.querySelector("input[name=pal]:checked").value;S.ui.bg=document.querySelector("input[name=bgs]:checked").value;save();applyUi()});
 applyUi();
-$("#who").value=S.who||"";$("#who2").value=S.who2||"";render();
+$("#who").value=S.who||"";$("#who2").value=S.who2||"";["#who","#who2"].forEach(i=>$(i).addEventListener("input",updWho));updWho();render();
 document.querySelectorAll("header .pill,header .acts button,header input").forEach((e,i)=>e.style.setProperty("--i",i+2));
 
 setInterval(render,60000);
@@ -942,13 +990,13 @@ const FB_CFG={
     let h='<div style="width:min(420px,100%)"><div style="text-align:center;margin-bottom:14px"><div style="font-size:22px;font-weight:700;letter-spacing:.3px">THEO DÕI NUÔI CẤY</div><div style="font-size:13px;color:var(--mu);margin-top:3px">Tủ GERI · cần đăng nhập để xem và chỉnh sửa</div></div><div class="modal" style="width:100%">';
     if(view==="login"||view==="register"){
       h+='<div class="row" style="margin-top:0">'+tab(view,"login","Đăng nhập")+tab(view,"register","Đăng ký")+'</div>';
-      if(view==="login")h+='<h3>🔐 Đăng nhập</h3>'+fld("aE","email","Email","username")+pwd("aP","Mật khẩu","current-password")+msg
+      if(view==="login")h+='<h3>Đăng nhập</h3>'+fld("aE","email","Email","username")+pwd("aP","Mật khẩu","current-password")+msg
         +'<div class="row" style="justify-content:space-between;margin-bottom:0">'+lnk("reset","Quên mật khẩu?")+'<button type="button" data-a="login" data-primary>Đăng nhập</button></div>';
-      else h+='<h3>📝 Tạo tài khoản</h3>'+fld("aE","email","Email","username")+pwd("aP","Mật khẩu (tối thiểu 6 ký tự)","new-password")+pwd("aP2","Nhập lại mật khẩu","new-password")+msg
+      else h+='<h3>Tạo tài khoản</h3>'+fld("aE","email","Email","username")+pwd("aP","Mật khẩu (tối thiểu 6 ký tự)","new-password")+pwd("aP2","Nhập lại mật khẩu","new-password")+msg
         +sm("Yêu cầu xác minh được gửi tới chủ hệ thống (phanson6996@gmail.com). Tài khoản chỉ xem và chỉnh sửa được sau khi chủ hệ thống duyệt.")
         +'<div class="row" style="justify-content:flex-end;margin-bottom:0"><button type="button" data-a="register" data-primary>Tạo tài khoản</button></div>'}
     else if(view==="reset"){
-      h+='<h3>🔑 Khôi phục mật khẩu</h3>'+sm("Nhập email bạn đã đăng ký. Liên kết đặt lại mật khẩu sẽ được gửi tới chủ hệ thống (phanson6996@gmail.com); hãy liên hệ chủ hệ thống để nhận mật khẩu mới.")+fld("aE","email","Email","username")+msg
+      h+='<h3>Khôi phục mật khẩu</h3>'+sm("Nhập email bạn đã đăng ký. Liên kết đặt lại mật khẩu sẽ được gửi tới chủ hệ thống (phanson6996@gmail.com); hãy liên hệ chủ hệ thống để nhận mật khẩu mới.")+fld("aE","email","Email","username")+msg
         +'<div class="row" style="justify-content:space-between;margin-bottom:0">'+lnk("login","← Quay lại đăng nhập")+'<button type="button" data-a="reset" data-primary>Gửi yêu cầu</button></div>'}
     else if(view==="verify"){
       h+='<h3>⏳ Chờ chủ hệ thống duyệt</h3><div style="font-size:13px;line-height:1.5">Tài khoản <b>'+esc(lab(auth.currentUser))+'</b> đang chờ chủ hệ thống (phanson6996@gmail.com) duyệt. Sau khi chủ hệ thống bấm liên kết xác minh trong email, hãy quay lại bấm “Kiểm tra lại”.</div>'+msg
