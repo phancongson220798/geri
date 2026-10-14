@@ -464,6 +464,83 @@ button.dng.solid:hover{box-shadow:0 9px 20px color-mix(in srgb,var(--r) 38%,tran
 @keyframes tabIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .tabIn{animation:tabIn .35s cubic-bezier(.2,.8,.2,1)}
 @media(prefers-reduced-motion:reduce){.seg.tabs::before,.tabIn{transition:none;animation:none}}
+/* ===== GIAO DIỆN MỚI: nền tổng thể, màu từng tủ, hiệu ứng mượt ===== */
+.cloudSt{position:fixed;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:50;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:34px;height:34px;padding:0 7px;border-radius:999px;background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:blur(8px);border:1px solid var(--bd);box-shadow:var(--sh);font-size:12.5px;font-weight:600;cursor:default;transition:color .3s,border-color .3s,box-shadow .3s,transform .3s cubic-bezier(.2,.9,.3,1.3)}
+.cloudSt svg{display:block;flex:none;animation:cIn .45s cubic-bezier(.2,.9,.3,1.3)}
+.cloudSt:hover{transform:scale(1.08)}
+.cloudSt.err{padding:0 12px 0 8px;border-color:var(--r);background:color-mix(in srgb,var(--r) 10%,var(--card));max-width:min(92vw,520px)}
+.cloudSt .cspin{transform-origin:12px 14.8px;animation:cSp .8s linear infinite}
+.cloudSt .cchk{stroke-dasharray:16;animation:cCk .5s .1s ease-out backwards}
+@keyframes cSp{to{transform:rotate(360deg)}}@keyframes cCk{from{stroke-dashoffset:16}}
+@keyframes cIn{from{opacity:0;transform:scale(.6)}}
+@media(prefers-reduced-motion:reduce){.cloudSt svg,.cloudSt .cchk{animation:none}.cloudSt .cspin{animation-duration:2s}}
+
+/* nền tổng thể: xanh ngọc – lam khói (sáng) / xanh đêm (tối) */
+:root{--bg:#e2f2f0;--bg2:#d6e6f6;--bg3:#f3fbf9}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a151d;--bg2:#0d1e2a;--bg3:#060c12;--card:#142230;--bd:#27394a}}
+:root[data-theme="dark"]{--bg:#0a151d;--bg2:#0d1e2a;--bg3:#060c12;--card:#142230;--bd:#27394a}
+/* màu từng tủ (bảng màu mặc định): ngọc – lam – tím – hổ phách – hồng */
+:root,:root[data-pal="diu"]{--h1:#2bb8a4;--h2:#5b8def;--h3:#a46be0;--h4:#f0a24c;--h5:#ee6f90}
+/* thẻ tủ: viền sáng nhẹ, nâng lên + tỏa sáng đúng màu tủ khi di chuột */
+.cab{box-shadow:0 6px 18px rgba(20,40,70,.10),inset 0 1px 0 rgba(255,255,255,.22);will-change:transform}
+.cab:hover{transform:translateY(-3px);box-shadow:0 18px 40px color-mix(in srgb,var(--h) 32%,transparent),inset 0 1px 0 rgba(255,255,255,.3)}
+.cab::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .4s ease;background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),color-mix(in srgb,var(--h) 26%,transparent),transparent 65%)}
+.cab:hover::after{opacity:1}
+.cab h2{transition:color .4s,letter-spacing .35s}.cab:hover h2{letter-spacing:.6px}
+/* buồng: nảy lò xo khi chạm / nhấn */
+.tile{transition:transform .32s cubic-bezier(.2,.9,.3,1.25),box-shadow .3s ease,border-color .3s ease,background-color .3s ease,filter .3s ease}
+.tile:hover{transform:translateY(-2px) scale(1.045)}
+.tile:active{transform:scale(.96);transition-duration:.1s}
+.tile:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+.pill{transition:transform .25s cubic-bezier(.2,.9,.3,1.3),box-shadow .25s}.pill:hover{transform:translateY(-1px) scale(1.03)}
+.modal{transition:transform .36s cubic-bezier(.2,.9,.3,1.1),opacity .26s ease}
+@media(prefers-reduced-motion:reduce){.cab:hover,.tile:hover,.pill:hover{transform:none}.cab::after{display:none}}
+/* ===== Đồng bộ phông chữ trong mọi pop-up: Be Vietnam Pro ===== */
+.ov,.ov *{font-family:var(--ff)}
+.modal{font-size:14px;line-height:1.5;font-weight:400;font-variant-numeric:tabular-nums}
+.modal h3{font-size:18px;font-weight:600;letter-spacing:-.1px}
+.modal h4{font-weight:600}
+.modal th{font-weight:600;font-size:12.5px}
+.modal td{font-size:13px}
+.modal input,.modal select,.modal textarea{font-size:14px;font-weight:400}
+.modal textarea{font-size:13px;line-height:1.5}
+.modal button{font-size:13.5px;font-weight:600}
+.modal .fl span{font-size:12.5px;font-weight:400}
+.modal .sg input{font-size:13px}.modal .sg th{font-size:12.5px}
+/* ===== ĐIỆN THOẠI: chỉ áp dụng khi màn hình ≤ 700px hoặc thiết bị cảm ứng; giao diện máy tính giữ nguyên ===== */
+@media(max-width:700px){
+html{height:auto}
+body{height:auto;min-height:100vh;min-height:100dvh;overflow-x:hidden;overflow-y:auto}
+body::before{animation:none}
+header{padding:6px 8px 0}
+.hrow{padding:8px 10px;gap:8px}
+.dtab{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.stats{width:100%}.stats .pill{flex:1 1 auto;justify-content:center}
+.tools .bar.acts{gap:6px;justify-content:flex-start}
+.tools .bar.acts button{flex:1 1 auto;min-height:40px;padding:8px 10px}
+.tools .bar.acts .ib{flex:0 0 auto;width:40px;height:40px}
+.vsep{display:none}
+.who input{min-height:40px;font-size:16px}
+main{flex:none;overflow:visible;gap:10px;padding:8px 8px calc(64px + env(safe-area-inset-bottom,0px))}
+.cab{padding:8px}
+.ov{padding:8px;align-items:flex-end}
+.modal{padding:16px;max-height:92vh;max-height:calc(100dvh - 16px);border-radius:16px 16px 12px 12px}
+.modal h3{font-size:17px}
+html .modal input,html .modal select,html .modal textarea{font-size:16px}
+.modal button{min-height:40px}
+.modal td,.modal th{padding:6px 7px}
+#hBody table,#dueHist table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+#cSvg{overflow-x:auto}
+.tblw,#srcGrid{-webkit-overflow-scrolling:touch}
+#nthToast{font-size:13.5px}
+}
+@media(hover:none){
+.cab:hover,.tile:hover,.pill:hover,.cloudSt:hover,header .acts button:hover{transform:none}
+.cab:hover{box-shadow:0 6px 18px rgba(20,40,70,.10),inset 0 1px 0 rgba(255,255,255,.22)}
+.cab::after{display:none}
+button,.tile,.pill,label{touch-action:manipulation}
+}
 </style></head><body>
 <header>
 <div class="hrow">
@@ -478,7 +555,7 @@ button.dng.solid:hover{box-shadow:0 9px 20px color-mix(in srgb,var(--r) 38%,tran
   </div>
   </div>
   <div class="tools">
-    <div class="bar acts"><button id="bDue">Cảnh báo <span class="cnt" id="cnt">0</span></button><button class="ghost" id="bHist">Lịch sử</button><button class="ghost" id="bSrc">Nhập thông tin Bệnh nhân</button><button class="ghost" id="bPt">Bệnh nhân</button><i class="vsep"></i><button class="ghost ib" id="bCh" title="Biểu đồ" aria-label="Biểu đồ">📈</button><button class="ghost ib" id="bXl" title="Xuất Excel" aria-label="Xuất Excel">📊</button><button class="ghost ib" id="bUi" title="Giao diện" aria-label="Giao diện">🎨</button></div>
+    <div class="bar acts"><button id="bDue">Cảnh báo <span class="cnt" id="cnt">0</span></button><button class="ghost" id="bHist">Lịch sử</button><button class="ghost" id="bSrc">Nhận bệnh</button><button class="ghost" id="bPt">Bệnh nhân</button><i class="vsep"></i><button class="ghost ib" id="bCh" title="Biểu đồ" aria-label="Biểu đồ">📈</button><button class="ghost ib" id="bXl" title="Xuất Excel" aria-label="Xuất Excel">📊</button><button class="ghost ib" id="bUi" title="Giao diện" aria-label="Giao diện">🎨</button></div>
     <div class="who"><span class="whoMsg" id="whoMsg" role="alert">⚠ Chưa nhập <b>Người thực hiện</b> (tối thiểu 1)</span><input id="who" placeholder="Người thực hiện 1"><input id="who2" placeholder="Người thực hiện 2"></div>
   </div>
 </div>
@@ -554,7 +631,7 @@ button.dng.solid:hover{box-shadow:0 9px 20px color-mix(in srgb,var(--r) 38%,tran
 <div class="row" style="justify-content:flex-end"><button class="ghost" data-close>Đóng</button></div>
 </div></div>
 <div class="ov" id="ovSrc"><div class="modal" style="width:min(1000px,100%)">
-<h3>Nhập thông tin Bệnh nhân</h3>
+<h3>Nhận bệnh</h3>
 <div class="tblw" id="srcGrid" style="max-height:55vh;overflow:auto"></div>
 <div id="srcWarn" style="color:var(--r);font-size:13px;min-height:18px;margin-top:6px"></div>
 <div class="row"><button id="srcGo">Cập nhật bệnh nhân</button><button class="ghost" id="srcAdd">Thêm dòng</button><button class="ghost dng" id="srcClr">Xóa bảng</button><span id="srcSum" style="color:var(--mu);font-size:13px"></span></div>
@@ -900,6 +977,7 @@ applyUi();
 $("#who").value=S.who||"";$("#who2").value=S.who2||"";["#who","#who2"].forEach(i=>$(i).addEventListener("input",updWho));updWho();render();
 document.querySelectorAll("header .pill,header .acts button,header input").forEach((e,i)=>e.style.setProperty("--i",i+2));
 
+{let raf=0;$("#main").addEventListener("pointermove",e=>{const c=e.target.closest(".cab");if(!c||raf)return;const x=e.clientX,y=e.clientY;raf=requestAnimationFrame(()=>{raf=0;const b=c.getBoundingClientRect();c.style.setProperty("--mx",(x-b.left)+"px");c.style.setProperty("--my",(y-b.top)+"px")})})}
 setInterval(render,60000);
 
 /* hiệu ứng gợn sóng khi bấm nút */
@@ -919,9 +997,17 @@ const FB_CFG={
 };
 (async()=>{
   const st=document.createElement("div");
-  st.style.cssText="position:fixed;right:10px;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:50;font-size:12px;padding:3px 9px;border-radius:12px;background:var(--card);border:1px solid var(--bd);color:var(--mu);box-shadow:var(--sh);cursor:pointer";
-  const say=(t,c)=>{st.textContent=t;st.style.color=c||"var(--mu)"};
-  document.body.appendChild(st);say("🔒 Chưa đăng nhập");
+  st.className="cloudSt";
+  const CL='<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>';
+  const IC={ok:CL+'<path class="cchk" d="M8.8 14.6l2.4 2.4 4.2-4.6"/>',
+    sync:CL+'<circle class="cspin" cx="12" cy="14.8" r="3" stroke-dasharray="9.5 9.5"/>',
+    lock:CL+'<path d="M3 3l18 18"/>',err:CL+'<path d="M12 12.4v3M12 17.6v.2"/>'};
+  const say=(k,m)=>{const C={ok:"var(--g)",sync:"var(--pri)",lock:"var(--mu)",err:"var(--r)"};
+    st.dataset.k=k;st.style.color=C[k];st.classList.toggle("err",k==="err");
+    st.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+IC[k]+'</svg>'+(k==="err"&&m?'<span>'+esc(m)+'</span>':"");
+    const t=k==="ok"?"Đã đồng bộ · "+lab(user):k==="sync"?"Đang đồng bộ…":k==="lock"?"Chưa đăng nhập":m||"Lỗi đồng bộ";
+    st.title=t;st.setAttribute("role","status");st.setAttribute("aria-label",t)};
+  document.body.appendChild(st);say("lock");
   const btn=document.createElement("button");btn.className="ghost ib";btn.id="bAuth";btn.textContent="👤";btn.title="Đăng nhập";btn.setAttribute("aria-label","Tài khoản");
   const bar=document.querySelector("header .bar.acts");if(bar)bar.appendChild(btn);
 
@@ -950,25 +1036,26 @@ const FB_CFG={
 
   window.cloudPush=()=>{if(!authorized())return;dirty=true;clearTimeout(timer);timer=setTimeout(async()=>{
     if(!authorized())return;
-    try{await M.setDoc(ref,payload());dirty=false;say("☁ "+lab(user)+" · đã đồng bộ","var(--g)")}
+    say("sync");
+    try{await M.setDoc(ref,payload());dirty=false;say("ok")}
     catch(e){console.error(e);dirty=false;
       if(e.code==="permission-denied"){denied=true;wipeLocal();syncLock()}
-      else say("☁ Lỗi lưu cloud: "+(e.code||e.message),"var(--r)")}
+      else say("err","Lỗi lưu cloud: "+(e.code||e.message))}
   },800)};
 
   const startSync=()=>{if(unsub)return;
-    let got=false;setTimeout(()=>{if(!got&&unsub)say("☁ Chưa kết nối được Firestore (kiểm tra database / rules)","var(--r)")},12000);
+    let got=false;setTimeout(()=>{if(!got&&unsub)say("err","Chưa kết nối được Firestore (kiểm tra database / rules)")},12000);
     unsub=M.onSnapshot(ref,snap=>{
       got=true;
       if(snap.metadata.hasPendingWrites)return;
       if(!snap.exists()){window.cloudPush();return}          // project mới: đẩy dữ liệu đang có trên máy này lên lần đầu
       if(dirty)return;
       applyRemote(snap.data());
-      say("☁ "+lab(user)+" · đã đồng bộ","var(--g)");
+      say("ok");
       if(!popped){popped=true;if(dueRooms().length)showDue(false)}
     },err=>{console.error(err);unsub=null;
       if(err.code==="permission-denied"){denied=true;wipeLocal();syncLock()}
-      else say("☁ Lỗi đọc dữ liệu: "+(err.code||err.message),"var(--r)")})};
+      else say("err","Lỗi đọc dữ liệu: "+(err.code||err.message))})};
   const stopSync=()=>{if(unsub){unsub();unsub=null}};
 
   /* ---------- màn hình đăng nhập (khóa toàn bộ app) ---------- */
@@ -1059,7 +1146,7 @@ const FB_CFG={
       if(!AV||(cur!==want&&!(want==="login"&&(cur==="register"||cur==="reset"))))authUI(want);
     }else{closeAuth();startSync()}
     btn.title=user?"Tài khoản: "+lab(user)+" (bấm để đăng xuất)":"Đăng nhập";btn.setAttribute("aria-label",btn.title);
-    say(lock?"🔒 Chưa đăng nhập":"☁ "+lab(user)+" · đang đồng bộ…",lock?"":"var(--g)");
+    say(lock?"lock":"sync");
     render()}
 
   const account=async()=>{
