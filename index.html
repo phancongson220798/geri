@@ -716,6 +716,9 @@ button,.tile,.pill,label{touch-action:manipulation}
 .xchip span{display:inline-block;padding:4px 11px;border:1px solid var(--bd);border-radius:16px;font-size:12.5px;color:var(--mu);background:var(--card);transition:.15s}
 .xchip input:checked+span{background:var(--pri);border-color:var(--pri);color:#fff}
 .xchip input:focus-visible+span{outline:2px solid var(--pri);outline-offset:2px}
+.xsec:not(.open) .xc{display:none}
+.xsec:not(.open) .xa .sel{display:none}
+.xa .sel{display:flex;gap:2px}
 .xsec.off .xchip{pointer-events:none}
 
 /* ===== Hộp thoại xác nhận dùng chung ===== */
@@ -791,6 +794,88 @@ h1 small{font-size:13px;font-weight:500;color:color-mix(in srgb,var(--mu) 65%,va
 .tools .bar.acts .ib{width:40px;height:36px;padding:0}
 .who input{background:var(--card);border-color:transparent;box-shadow:var(--psh)}
 .who input.need{border-color:var(--r)}
+
+/* ===== Màu nền giao diện tổng ===== */
+:root[data-sk="hoang"]{--bg:#fde6d6;--bg2:#f9d9d9;--bg3:#fff4ec}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"])[data-sk="hoang"]{--bg:#1d1210;--bg2:#241418;--bg3:#140c0a}}
+:root[data-theme="dark"][data-sk="hoang"]{--bg:#1d1210;--bg2:#241418;--bg3:#140c0a}
+:root[data-sk="lav"]{--bg:#ebe4f7;--bg2:#e0e6f8;--bg3:#f6f2fc}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"])[data-sk="lav"]{--bg:#14101f;--bg2:#181a2b;--bg3:#0d0a15}}
+:root[data-theme="dark"][data-sk="lav"]{--bg:#14101f;--bg2:#181a2b;--bg3:#0d0a15}
+:root[data-sk="bac"]{--bg:#e0f3e8;--bg2:#d4ecee;--bg3:#f1fbf5}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"])[data-sk="bac"]{--bg:#0b1b14;--bg2:#0c1f20;--bg3:#07120d}}
+:root[data-theme="dark"][data-sk="bac"]{--bg:#0b1b14;--bg2:#0c1f20;--bg3:#07120d}
+:root[data-sk="dao"]{--bg:#fde4e9;--bg2:#f7dfee;--bg3:#fff3f5}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"])[data-sk="dao"]{--bg:#1e1016;--bg2:#25111e;--bg3:#140a0e}}
+:root[data-theme="dark"][data-sk="dao"]{--bg:#1e1016;--bg2:#25111e;--bg3:#140a0e}
+:root[data-sk="dai"]{--bg:#dcebfb;--bg2:#cfe0f7;--bg3:#eef6ff}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"])[data-sk="dai"]{--bg:#0a1626;--bg2:#0c1c33;--bg3:#060d18}}
+:root[data-theme="dark"][data-sk="dai"]{--bg:#0a1626;--bg2:#0c1c33;--bg3:#060d18}
+:root[data-sk="nang"]{--bg:#fdf1cc;--bg2:#fbe8c8;--bg3:#fffbea}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"])[data-sk="nang"]{--bg:#1c180a;--bg2:#241c0c;--bg3:#131007}}
+:root[data-theme="dark"][data-sk="nang"]{--bg:#1c180a;--bg2:#241c0c;--bg3:#131007}
+:root[data-sk="xam"]{--bg:#e6e9ee;--bg2:#dadfe6;--bg3:#f5f6f8}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"])[data-sk="xam"]{--bg:#121418;--bg2:#16191e;--bg3:#0b0c0e}}
+:root[data-theme="dark"][data-sk="xam"]{--bg:#121418;--bg2:#16191e;--bg3:#0b0c0e}
+body{transition:background-color .6s ease}
+button:active:not(:disabled){transform:scale(.96)}
+input,select,textarea{transition:border-color .2s ease,box-shadow .25s ease,background-color .25s ease}
+input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--pri) 20%,transparent)}
+.xsec.open .xc{animation:xin .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes xin{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.modal h3{animation:xin .35s ease both}
+.seg label:hover{transform:translateY(-1px)}
+.seg label{transition:transform .2s ease,border-color .2s,background-color .25s}
+
+/* ô Người thực hiện: chữ nhỏ vừa ô */
+.who input::placeholder{font-size:12px;letter-spacing:-.1px}
+@media(hover:hover) and (pointer:fine){.who input{font-size:12.5px;padding:6px 8px}}
+/* số ở thanh trạng thái trong ngoặc */
+.stats .pill b::before{content:"(";font-weight:500;opacity:.7;margin-right:1px}
+.stats .pill b::after{content:")";font-weight:500;opacity:.7;margin-left:1px}
+.dt td.nz,.dt td.sm{cursor:pointer}
+
+/* popup Lịch sử thao tác: cột Ghi chú rộng, bố cục cân đối */
+#hBody{overflow-x:auto;max-height:62vh;overflow-y:auto}
+#hBody .hl{width:100%}
+#hBody .hl th:nth-child(1),#hBody .hl td:nth-child(1){width:96px}
+#hBody .hl th:nth-child(2),#hBody .hl td:nth-child(2){width:110px}
+#hBody .hl th:nth-child(3),#hBody .hl td:nth-child(3){width:130px}
+#hBody .hl th:nth-child(4),#hBody .hl td:nth-child(4),#hBody .hl th:nth-child(5),#hBody .hl td:nth-child(5){width:120px;max-width:120px;overflow:hidden;text-overflow:ellipsis}
+#hBody .hl th:nth-child(6){width:auto;text-align:left}
+#hBody .hl td.nc{max-width:560px;min-width:320px;text-align:left}
+
+/* ===== KIỂM TRA BÌNH ẨM: ô buồng xanh toàn bộ ===== */
+.tile.ck{grid-template-rows:1fr}
+.tile.ck .hf.ck{grid-row:1/-1;background:linear-gradient(135deg,color-mix(in srgb,var(--g) 42%,var(--gb)),color-mix(in srgb,var(--g) 18%,var(--gb)))}
+.tile.ck .hf.ck.al{background:var(--ob)}
+.tile.ck{background:linear-gradient(135deg,color-mix(in srgb,var(--g) 55%,#fff),color-mix(in srgb,var(--g) 30%,var(--gb)));}
+.tile.ck:not(.due){border-color:var(--g)}
+.tile.ck .hf.ck.on{background:transparent}
+.tile.ck .hf.ck.al{background:var(--ob)}
+
+/* ô KIỂM TRA BÌNH ẨM: nội dung căn giữa */
+.tile.ck .hf.ck{flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:3px;padding:4px 46px}
+.tile.ck .hf.ck .tx{flex:none;align-items:center;max-width:100%}
+.tile.ck .hf.ck .tx b{font-size:14px;letter-spacing:.4px;text-transform:uppercase}
+.tile.ck .hf.ck .dy{flex-direction:row;align-items:center;justify-content:center;gap:8px}
+/* KIỂM TRA BÌNH ẨM khi báo động: đỏ toàn bộ ô, dùng chung hiệu ứng .tile.due (dueGlow + dueWash) như buồng có bệnh nhân */
+.tile.ck.due{background:var(--ob)}
+.tile.ck.due .hf.ck,.tile.ck.due .hf.ck.al{grid-row:1/-1;align-self:stretch;height:100%;background:var(--ob)}
+.hf.ck .m{background:#16a34a}
+.dtg.ck{background:#16a34a}
+/* ===== Hiệu ứng bấm / kéo trên nền ===== */
+#fx{position:fixed;inset:0;pointer-events:none;z-index:2147483000;overflow:hidden}
+.fxr{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:2px solid color-mix(in srgb,var(--h2) 70%,#fff);background:color-mix(in srgb,var(--h1) 20%,transparent);animation:fxr .8s cubic-bezier(.2,.7,.2,1) forwards}
+.fxr.big{animation-duration:1s;border-width:3px}
+@keyframes fxr{from{transform:scale(.3);opacity:.95}to{transform:scale(7);opacity:0}}
+.fxd{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--h1) 85%,#fff) 0%,color-mix(in srgb,var(--h2) 40%,transparent) 55%,transparent 72%);animation:fxd .85s ease-out forwards}
+@keyframes fxd{to{transform:scale(.2) translateY(12px);opacity:0}}
+.fxh{position:absolute;width:96px;height:96px;margin:-48px 0 0 -48px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--h2) 48%,transparent),transparent 68%);animation:fxh .45s ease-out both;transition:opacity .3s ease}
+.fxh.out{opacity:0}
+@keyframes fxh{from{transform:scale(.2);opacity:0}to{transform:scale(1);opacity:1}}
+body.fxp{-webkit-user-select:none;user-select:none}
+@media(prefers-reduced-motion:reduce){#fx{display:none}}
 </style></head><body>
 <header>
 <div class="hrow">
@@ -832,7 +917,13 @@ h1 small{font-size:13px;font-weight:500;color:color-mix(in srgb,var(--mu) 65%,va
 <div class="row" style="justify-content:flex-end"><button class="ghost" data-close>Đóng</button></div>
 </div></div>
 
-<div class="ov" id="ovHist"><div class="modal" style="width:min(780px,100%)">
+<div class="ov" id="ovDay"><div class="modal" style="width:min(680px,100%)">
+<h3 id="dayT">Bệnh nhân theo ngày phôi</h3>
+<div id="dayS" style="color:var(--mu);font-size:13px;margin-bottom:6px"></div>
+<div class="tblw" id="dayB" style="max-height:60vh;overflow:auto"></div>
+<div class="row" style="justify-content:flex-end"><button class="ghost" data-close>Đóng</button></div>
+</div></div>
+<div class="ov" id="ovHist"><div class="modal" style="width:min(1100px,100%)">
 <h3>Lịch sử thao tác</h3>
 <div class="row"><select id="hCab"><option value="">Tất cả tủ</option></select></div>
 <div id="hBody"></div>
@@ -850,7 +941,7 @@ h1 small{font-size:13px;font-weight:500;color:color-mix(in srgb,var(--mu) 65%,va
 <h3>Sửa thông tin bệnh nhân</h3>
 <div class="row"><label class="fl" style="flex:1;min-width:120px"><span>MHS</span><input id="peHs"></label><label class="fl" style="width:110px"><span>STT chọc</span><input id="peStt"></label></div>
 <div class="row"><label class="fl" style="flex:1;min-width:150px"><span>Tên</span><input id="peTen"></label><label class="fl" style="width:130px"><span>Ngày sinh</span><input id="peNs" placeholder="dd/mm/yyyy" maxlength="10"></label></div>
-<div class="row"><label class="fl" style="flex:1"><span>Ngày CH</span><input type="date" id="peCh"></label><label class="fl" style="flex:1"><span>Loại nuôi cấy</span><select id="peMode"><option value="TL">Timelapse</option><option value="PI">P.I</option></select></label><label class="fl" style="flex:1"><span>Buồng</span><select id="peRoom"></select></label></div>
+<div class="row"><label class="fl" style="flex:1"><span>Ngày CH</span><input type="date" id="peCh"></label><label class="fl" style="flex:1"><span>Loại nuôi cấy</span><select id="peMode"><option value="TL">Timelapse</option><option value="PI">P.I</option><option value="CK">Check</option></select></label><label class="fl" style="flex:1"><span>Buồng</span><select id="peRoom"></select></label></div>
 <div id="peErr" style="color:var(--r);font-size:13px;min-height:18px"></div>
 <div class="row" style="justify-content:flex-end"><button class="ghost" data-close>Hủy</button><button id="peSave">Lưu</button></div>
 </div></div>
@@ -875,6 +966,8 @@ h1 small{font-size:13px;font-weight:500;color:color-mix(in srgb,var(--mu) 65%,va
 <h3>Tùy chỉnh giao diện</h3>
 <div>Chế độ hiển thị</div>
 <div class="row seg"><label><input type="radio" name="th" value="auto"><span>Tự động</span></label><label><input type="radio" name="th" value="light"><span>Sáng</span></label><label><input type="radio" name="th" value="dark"><span>Tối</span></label></div>
+<div>Màu nền giao diện</div>
+<div class="row seg g2"><label><input type="radio" name="sk" value="mac"><span><i class=sw style=background:#2bb8a4></i>Mặc định</span></label><label><input type="radio" name="sk" value="hoang"><span><i class=sw style=background:#f0a24c></i>Hoàng hôn</span></label><label><input type="radio" name="sk" value="lav"><span><i class=sw style=background:#a46be0></i>Oải hương</span></label><label><input type="radio" name="sk" value="bac"><span><i class=sw style=background:#4cc38a></i>Bạc hà</span></label><label><input type="radio" name="sk" value="dao"><span><i class=sw style=background:#ee6f90></i>Hồng đào</span></label><label><input type="radio" name="sk" value="dai"><span><i class=sw style=background:#5b8def></i>Đại dương</span></label><label><input type="radio" name="sk" value="nang"><span><i class=sw style=background:#e0b52f></i>Nắng mai</span></label><label><input type="radio" name="sk" value="xam"><span><i class=sw style=background:#7f8c9b></i>Xám than</span></label></div>
 <div>Bảng màu nền các tủ</div>
 <div class="row seg g2"><label><input type="radio" name="pal" value="diu"><span><i class=sw style=background:#6b9ac4></i><i class=sw style=background:#9a8fc9></i><i class=sw style=background:#c98fa5></i>Dịu</span></label><label><input type="radio" name="pal" value="dat"><span><i class=sw style=background:#c08a5a></i><i class=sw style=background:#8aa05a></i><i class=sw style=background:#b0707a></i>Đất</span></label><label><input type="radio" name="pal" value="bien"><span><i class=sw style=background:#5b8fb9></i><i class=sw style=background:#4fa3a5></i><i class=sw style=background:#7b8cc4></i>Biển</span></label><label><input type="radio" name="pal" value="rung"><span><i class=sw style=background:#6fa383></i><i class=sw style=background:#8fae6f></i><i class=sw style=background:#5f9a97></i>Rừng</span></label><label><input type="radio" name="pal" value="hoa"><span><i class=sw style=background:#d19aa9></i><i class=sw style=background:#c9a0c4></i><i class=sw style=background:#e0aa95></i>Hoa đào</span></label><label><input type="radio" name="pal" value="tim"><span><i class=sw style=background:#9b8fd0></i><i class=sw style=background:#8aa1d6></i><i class=sw style=background:#b58fcb></i>Tím nhạt</span></label><label><input type="radio" name="pal" value="nang"><span><i class=sw style=background:#d9a35f></i><i class=sw style=background:#d98a6a></i><i class=sw style=background:#cfb25e></i>Nắng</span></label><label><input type="radio" name="pal" value="than"><span><i class=sw style=background:#7f8c9b></i><i class=sw style=background:#8d98a5></i><i class=sw style=background:#76828f></i>Than</span></label></div>
 <div>Kiểu nền ô tủ</div>
@@ -887,7 +980,7 @@ h1 small{font-size:13px;font-weight:500;color:color-mix(in srgb,var(--mu) 65%,va
 <div id="srcWarn" style="color:var(--r);font-size:13px;min-height:18px;margin-top:6px"></div>
 <div class="row"><button class="ghost" id="srcXl">Nhập excel chọc hút</button><input type="file" id="srcFile" accept=".xls,.xlsx,.csv" hidden><button class="ghost" id="srcAdd">Thêm dòng</button><button class="ghost dng" id="srcClr">Xóa bảng</button><span id="srcSum" style="color:var(--mu);font-size:13px"></span></div>
 <div id="srcInfo" style="font-size:13px;color:var(--mu);min-height:18px"></div>
-<div class="row" style="justify-content:flex-end"><button class="ghost" data-close>Đóng</button><button id="srcGo">Cập nhật bệnh nhân</button></div>
+<div class="row" style="justify-content:flex-end"><button class="ghost" data-close>Đóng</button><button id="srcGo">Xác nhận</button></div>
 </div></div>
 <script>
 const CABS=5,ROOMS=6,KEY="geri_humid_v1";const DAY=5;
@@ -920,22 +1013,32 @@ const p2of=()=>S.who?(S.who2||""):"";
 const whoMissing=()=>$("#who").value.trim()||$("#who2").value.trim()?[]:["Người thực hiện"];
 const updWho=()=>{const m=whoMissing(),el=$("#whoMsg");el.classList.toggle("show",m.length>0);$("#who").classList.toggle("need",m.length>0);$("#who2").classList.toggle("need",m.length>0)};
 let _tt;const nthToast=txt=>{let t=$("#nthToast");if(!t){t=document.createElement("div");t.id="nthToast";t.setAttribute("role","alert");document.body.appendChild(t)}t.textContent=txt;void t.offsetWidth;t.classList.add("show");clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove("show"),3200)};
-const gateWho=()=>{if(!whoMissing().length){S.who=$("#who").value.trim();S.who2=$("#who2").value.trim();save();updWho();return true}
+const gateWho=(msg)=>{if(!whoMissing().length){S.who=$("#who").value.trim();S.who2=$("#who2").value.trim();save();updWho();return true}
 updWho();[$("#who"),$("#who2")].forEach(e=>{e.classList.remove("shake");void e.offsetWidth;e.classList.add("shake")});
 const w=$("#whoMsg");w.classList.remove("shake");void w.offsetWidth;w.classList.add("shake");
 $("#who").focus();
-nthToast("⚠ Vui lòng nhập tối thiểu 1 Người thực hiện trước khi tiếp tục.");return false};
-const addLog=(k,action,person,note)=>{const[c,r]=k.split("-");S.log.unshift({t:new Date().toISOString(),c:+c,r:+r,a:action,p:person,p2:p2of(),n:note||""});if(S.log.length>2000)S.log.length=2000};
+nthToast(msg||"⚠ Vui lòng nhập tối thiểu 1 Người thực hiện trước khi tiếp tục.");return false};
+const addLog=(k,action,person,note,pt)=>{const[c,r]=k.split("-"),e={t:new Date().toISOString(),c:+c,r:+r,a:action,p:person,p2:p2of(),n:note||""};if(pt)e.q={stt:pt.stt||"",ten:pt.ten||"",ns:pt.ns||"",hs:pt.hs||"",ch:pt.ch||"",mode:pt.mode||""};S.log.unshift(e);if(S.log.length>2000)S.log.length=2000};
 
 function setNum(id,v){const e=$("#"+id);if(e.textContent!==String(v)){const first=e.textContent==="0"&&!e.dataset.s;e.textContent=v;e.dataset.s=1;if(!first){e.classList.remove("pop");void e.offsetWidth;e.classList.add("pop")}}}
 let _dh="",_dp=[];
 function drawDays(){const N=7,tl=Array(N).fill(0),pi=Array(N).fill(0);
-Object.values(S.rooms).forEach(x=>roomPts(x).forEach(q=>{if(!q.ch)return;const d=days(q.ch);if(d<0)return;(q.mode==="PI"?pi:tl)[Math.min(d,N-1)]++}));
+Object.values(S.rooms).forEach(x=>roomPts(x).forEach(q=>{if(!q.ch||q.mode==="CK")return;const d=days(q.ch);if(d<0)return;(q.mode==="PI"?pi:tl)[Math.min(d,N-1)]++}));
 const L=["N0","N1","N2","N3","N4","N5","N6+"],tot=tl.map((v,i)=>v+pi[i]),sum=a=>a.reduce((p,v)=>p+v,0),flat=[...tl,...pi,...tot];
-const cell=(a,i,off)=>`<td class="${a[i]?"nz":"z"}${_dp.length&&_dp[off+i]!==a[i]?" chg":""}" title="${L[i]}: ${tot[i]} bệnh nhân (TL ${tl[i]} · P.I ${pi[i]})">${a[i]}</td>`;
-const row=(lab,a,off,cl)=>`<tr class="${cl||""}"><th>${lab}</th>${L.map((_,i)=>cell(a,i,off)).join("")}<td class="sm">${sum(a)}</td></tr>`;
+const cell=(a,i,off)=>`<td class="${a[i]?"nz":"z"}${_dp.length&&_dp[off+i]!==a[i]?" chg":""}" data-i="${i}" data-m="${off===0?"TL":off===N?"PI":"ALL"}" title="${L[i]}: ${tot[i]} bệnh nhân (TL ${tl[i]} · P.I ${pi[i]}) — bấm để xem danh sách">${a[i]}</td>`;
+const row=(lab,a,off,cl)=>`<tr class="${cl||""}"><th>${lab}</th>${L.map((_,i)=>cell(a,i,off)).join("")}<td class="sm" data-i="-1" data-m="${off===0?"TL":off===N?"PI":"ALL"}" title="Bấm để xem danh sách">${sum(a)}</td></tr>`;
 const h=`<table class="dt"><tr><th>Ngày phôi</th>${L.map((l,i)=>`<th class="${i>=5?"hot":""}">${l}</th>`).join("")}<th>Σ</th></tr>${row("TL",tl,0)}${row("P.I",pi,N)}${row("Tổng",tot,2*N,"tt")}</table>`;
 if(h!==_dh){$("#dTab").innerHTML=h;_dh=h;_dp=flat}}
+
+$("#dTab").addEventListener("click",e=>{const td=e.target.closest("td[data-i]");if(!td||td.textContent.trim()==="0")return;
+const i=+td.dataset.i,m=td.dataset.m,N=7,out=[];
+Object.entries(S.rooms).forEach(([k,x])=>roomPts(x).forEach(q=>{if(!q.ch||q.mode==="CK")return;const d=days(q.ch);if(d<0)return;const dd=Math.min(d,N-1);
+if(i>=0&&dd!==i)return;const pi=q.mode==="PI";if(m==="TL"&&pi||m==="PI"&&!pi)return;out.push({k,q,d})}));
+out.sort((a,b)=>b.d-a.d||(+a.k.split("-")[0]-+b.k.split("-")[0])||(+a.k.split("-")[1]-+b.k.split("-")[1]));
+const mn={TL:"Timelapse",PI:"P.I",ALL:"Tất cả"}[m],dl=i>=0?(i===N-1?"N6+":"N"+i):"Tất cả các ngày";
+$("#dayT").textContent="Ngày phôi "+dl+" · "+mn;$("#dayS").textContent=out.length+" bệnh nhân";
+$("#dayB").innerHTML=out.length?`<table class="hl"><tr><th>Buồng</th><th>Tủ GERI</th><th>PP</th><th>Tên</th><th>Mã hồ sơ</th><th>STT</th><th>Ngày CH</th><th>Ngày phôi</th></tr>${out.map(({k,q,d})=>{const[c,r]=k.split("-");return`<tr><td><b>${c}.${r}</b></td><td>GERI ${c}</td><td>${q.mode==="PI"?"P.I":"TL"}</td><td>${esc(q.ten||"")}</td><td>${esc(q.hs||"")}</td><td>${esc(q.stt||"")}</td><td>${q.ch?dmy(q.ch):""}</td><td>N${d}</td></tr>`}).join("")}</table>`:'<div class="empty-msg">Không có bệnh nhân.</div>';
+open("#ovDay")});
 function render(){
 if(window.LOCKED){$("#main").innerHTML="";window._lh="";window._revDone=false;window._revWant=false;$("#dTab").innerHTML="";_dh="";_dp=[];["nOk","nEm","nBad"].forEach(i=>{const e=$("#"+i);e.textContent="0";delete e.dataset.s});$("#nDue").textContent="0/0";$("#cnt").style.display="none";$("#noteBar").style.display="none";return}
 const m=$("#main"),td=todayStr();let out="",ok=0,em=0,bad=0,due=0;const notes=[];
@@ -953,7 +1056,11 @@ if(act.length){due++;cDue++}
 pl.forEach(q=>{if(q.ch){const dd=days(q.ch);if(far===null||dd<far){far=dd;farCh=q.ch}}});
 const nt=pl.filter(q=>q.sa==="Nuôi tiếp"&&q.snooze===td&&q.ch&&days(q.ch)>=DAY);
 if(nt.length)notes.push(`${c}.${r} (ngày ${Math.max(...nt.map(q=>days(q.ch)))})`);
-dots+=`<i class="${act.length?"due":pl.length?"ok":"em"}"></i>`;rh+=`<div class="tile ${pl.length?"ok":"empty"}${act.length?" due":""}" data-k="${k}">${no}${half("TL")}${half("PI")}</div>`}
+dots+=`<i class="${act.length?"due":pl.length?"ok":"em"}"></i>`;
+const ck=pl.find(z=>z.mode==="CK");
+if(ck){const dd=ck.ch?days(ck.ch):null,al=act.includes(ck),nt=ck.sa==="Nuôi tiếp"&&ck.snooze===td&&dd!==null&&dd>=DAY;
+rh+=`<div class="tile ok ck${act.length?" due":""}" data-k="${k}">${no}<div class="hf ${al?"al":"on"} ck" title="${esc(ptFull(ck))}"><div class="tx"><b>KIỂM TRA BÌNH ẨM</b><small>${esc([ck.ch?"CH "+dmy(ck.ch).slice(0,5):"",ck.stt?"#"+ck.stt:""].filter(Boolean).join(" · "))}</small></div><div class="dy">${dd!==null?`<em class="d${al?" al":""}">N${dd}</em>`:`<span class="at">Thiếu CH</span>`}${al?`<span class="at">🔔 THAY NƯỚC</span>`:nt?`<span class="nt">↪ Nuôi tiếp</span>`:""}</div></div></div>`}
+else rh+=`<div class="tile ${pl.length?"ok":"empty"}${act.length?" due":""}" data-k="${k}">${no}${half("TL")}${half("PI")}</div>`}
 const bAl=cDue>0;
 out+=`<div class="cab c${c}" style="--n:${c}"><h2 class="${bAl?"bal":""}"><b class="nm">${bAl?"🔔 ":""}GERI ${c}</b><div class="cdots" title="${cOk}/${ROOMS} buồng đang nuôi">${dots}</div></h2><div class="rooms">${rh}</div></div>`}
 if(out!==window._lh){if(window._revWant){window._revWant=false;m.classList.add("rev");clearTimeout(window._revT);window._revT=setTimeout(()=>m.classList.remove("rev"),1500)}m.innerHTML=out;window._lh=out}
@@ -970,9 +1077,9 @@ $("#eTitle").textContent=`GERI ${c} - BUỒNG ${c}.${b}`;
 document.querySelector(`input[name=st][value=${x.st==="bad"?"bad":"ok"}]`).checked=true;
 $("#eNote").value="";fillPt(x);togDate();open("#ovEdit")});
 const showT=(el,on)=>{const was=el.style.display==="block";el.style.display=on?"block":"none";if(on&&!was){el.classList.remove("tabIn");void el.offsetWidth;el.classList.add("tabIn")}};
-const togDate=()=>{showT($("#pBox"),document.querySelector("input[name=st]:checked").value!=="bad");[1,2].forEach(n=>{const c=document.querySelector(`input[name=u${n}]:checked`);showT($(`#pb${n} .pf`),!!(c&&c.value==="1"))})};
+const togDate=()=>{showT($("#pBox"),document.querySelector("input[name=st]:checked").value!=="bad");[1,2,3].forEach(n=>{const c=document.querySelector(`input[name=u${n}]:checked`);showT($(`#pb${n} .pf`),!!(c&&c.value==="1"))})};
 document.querySelectorAll("input[name=st]").forEach(i=>i.onchange=togDate);
-const tnm=m=>m==="PI"?"P.I":"Timelapse";
+const tnm=m=>mFull(m);
 const ptLn=q=>`<b>${tnm(q.mode)}</b> ${[q.stt?esc(q.stt)+".":"",esc(q.ten||""),esc(q.ns||""),esc(q.hs||"")].filter(Boolean).join(" ")}`;
 const resetRoom=()=>{const x=S.rooms[cur];document.querySelector(`input[name=st][value=${x.st==="bad"?"bad":"ok"}]`).checked=true;$("#eNote").value="";fillPt(x);togDate()};
 function diffRoom(x,a,sv){const old=roomPts(x),items=[];let ending=false;
@@ -994,7 +1101,8 @@ const saveRoom=async()=>{const isBad=document.querySelector("input[name=st]:chec
 const a=sv==="bad"?[]:readPt(),err=$("#pErr"),fail=t=>{err.textContent=t;err.classList.remove("shake");void err.offsetWidth;err.classList.add("shake")};
 if(sv!=="bad"){
 if(a.some(q=>q.ns&&nsNorm(q.ns)===null))return fail("⚠ Ngày sinh nhập dạng dd/mm/yyyy.");a.forEach(q=>{if(q.ns)q.ns=nsNorm(q.ns)});
-if(a.some(q=>!(q.hs||q.stt||q.ten||q.ns)))return fail("⚠ Nhập thông tin bệnh nhân đang nuôi.");
+if(a.some(q=>q.mode==="CK")&&a.length>1)return fail("⚠ KIỂM TRA BÌNH ẨM không dùng chung buồng với Timelapse / P.I.");
+if(a.some(q=>q.mode!=="CK"&&!(q.hs||q.stt||q.ten||q.ns)))return fail("⚠ Nhập thông tin bệnh nhân đang nuôi.");
 if(a.some(q=>!q.ch))return fail("⚠ Cần nhập ngày chọc hút (CH).");
 if(a.some(q=>q.ch>todayStr()))return fail("⚠ Ngày CH không được lớn hơn hôm nay.")}
 const note=$("#eNote").value.trim(),{items,ending}=diffRoom(x,a,sv);
@@ -1016,16 +1124,18 @@ $("#dueHist").innerHTML=l.length?`<table class="hl"><tr><th>Ngày</th><th>Buồn
 function dueRooms(){return Object.keys(S.rooms).filter(k=>dueList(S.rooms[k]).length>0).sort()}
 function showDue(){dueN=7;const l=dueRooms(),box=$("#dueList");
 if(!l.length){box.innerHTML='<div class="empty-msg">✅ Không còn buồng nào chờ xử lý.</div>'}
-else box.innerHTML=l.map((k,i)=>{const[c,r]=k.split("-"),x=S.rooms[k],tg=dueList(x);return `<div class="due-item" style="animation-delay:${i*50}ms"><div class="t">GERI ${c} - BUỒNG ${c}.${r} <small>— ngày ${roomDay(x)} · ${esc(tg.map(q=>(q.mode==="PI"?"P.I: ":"TL: ")+(q.ten||q.hs||"—")+" (ngày "+days(q.ch)+")").join(" & "))}</small></div><div class="btns"><button class="b1" data-a="Thay nước" data-k="${k}"><span class="ic">💧</span>Thay nước</button><button class="b3" data-a="Đã kiểm tra" data-k="${k}"><span class="ic">✅</span>Đã kiểm tra</button><button class="b2" data-a="Nuôi tiếp" data-k="${k}"><span class="ic">⏭️</span>Nuôi tiếp</button><button class="b4" data-a="Thay mới" data-k="${k}"><span class="ic">🔄</span>Thay mới</button></div></div>`}).join("");
+else box.innerHTML=l.map((k,i)=>{const[c,r]=k.split("-"),x=S.rooms[k],tg=dueList(x);return `<div class="due-item" style="animation-delay:${i*50}ms"><div class="t">GERI ${c} - BUỒNG ${c}.${r} <small>— ngày ${roomDay(x)} · ${esc(tg.map(q=>(q.mode==="PI"?"P.I: ":q.mode==="CK"?"Check: ":"TL: ")+(q.mode==="CK"?"KIỂM TRA BÌNH ẨM":(q.ten||q.hs||"—"))+" (ngày "+days(q.ch)+")").join(" & "))}</small></div><div class="btns"><button class="b1" data-a="Thay nước" data-k="${k}"><span class="ic">💧</span>Thay nước</button><button class="b3" data-a="Đã kiểm tra" data-k="${k}"><span class="ic">✅</span>Đã kiểm tra</button><button class="b2" data-a="Nuôi tiếp" data-k="${k}"><span class="ic">⏭️</span>Nuôi tiếp</button><button class="b4" data-a="Thay mới" data-k="${k}"><span class="ic">🔄</span>Thay mới</button></div></div>`}).join("");
 dueExtra();open("#ovDue")}
 $("#dueList").addEventListener("click",async e=>{const b=e.target.closest("button");if(!b)return;const p=who();if(!p)return;
 const k=b.dataset.k,a=b.dataset.a,x=S.rooms[k],it=b.closest(".due-item");let tg=dueList(x);if(!tg.length)return;
-let end=false;
-if(a!=="Nuôi tiếp"){
-const rows=tg.map(q=>`<div class="dp"><span class="dtg ${q.mode==="PI"?"pi":"tl"}">${q.mode==="PI"?"P.I":"TL"}</span><b>${esc(q.ten||q.hs||"—")}</b><small>ngày ${days(q.ch)}</small></div>`).join("");
-const r=await askConfirm({title:"Bạn có muốn kết thúc chu kì nuôi cấy?",tone:"end",ok:"Có",cancel:"Không",tri:true,html:`<div><b>GERI ${k.split("-")[0]} - BUỒNG ${k.replace("-",".")}</b> vừa được ghi nhận “${esc(a)}”.</div><div class="dpl">${rows}</div><div class="dnote">Chọn “Có” để kết thúc nuôi cấy các bệnh nhân trên. Chọn “Không” để tiếp tục nuôi.</div>`});
+let end=false;const isCk=tg.every(q=>q.mode==="CK"),td0=todayStr();
+if(a!=="Nuôi tiếp"&&!isCk){
+const rows=tg.map(q=>`<div class="dp"><span class="dtg ${q.mode==="PI"?"pi":q.mode==="CK"?"ck":"tl"}">${mShort(q.mode)}</span><b>${esc(q.mode==="CK"?"KIỂM TRA BÌNH ẨM":(q.ten||q.hs||"—"))}</b><small>ngày ${days(q.ch)}</small></div>`).join("");
+const r=await askConfirm({title:"Bạn có muốn kết thúc chu kì nuôi cấy?",tone:"end",ok:"Có",cancel:"Không",tri:true,html:`<div><b>GERI ${k.split("-")[0]} - BUỒNG ${k.replace("-",".")}</b> vừa được ghi nhận “${esc(a)}”.</div><div class="dpl">${rows}</div><div class="dnote">Chọn “Có” để kết thúc nuôi cấy các bệnh nhân trên. Chọn “Không” để chuyển buồng về KIỂM TRA BÌNH ẨM (ngày chọc hút là hôm nay).</div>`});
 if(r===null)return;end=r;tg=dueList(x);if(!tg.length)return}
-tg.forEach(q=>{q.snooze=todayStr();q.sa=a});addLog(k,a,p,tg.map(ptTxt).join(" & "));
+tg.forEach(q=>{q.snooze=todayStr();q.sa=a});addLog(k,a,p,tg.map(ptTxt).join(" & ")+(isCk&&a!=="Nuôi tiếp"?" · CH "+dmy(td0):""));
+if(isCk&&a!=="Nuôi tiếp")tg.forEach(q=>{q.ch=td0;q.snooze="";q.sa=a;const rr=S.pts.find(z=>z.id===q.pid);if(rr)rr.ch=td0});
+else if(!end&&a!=="Nuôi tiếp"){[...(x.pl||[])].forEach(q=>endPt(k,q,"Kết thúc nuôi bệnh nhân",p));x.pl=[];x.pl.push(startPt(k,{hs:"",stt:"",ten:"",ns:"",ch:td0,mode:"CK"},p));x.st="using"}
 if(end){tg.forEach(q=>endPt(k,q,"Kết thúc nuôi bệnh nhân",p));x.pl=(x.pl||[]).filter(z=>!tg.includes(z));if(!x.pl.length&&x.st==="using"){x.st="empty";delete x.date}}
 save();render();
 if(it){it.style.transition=".3s";it.style.opacity=0;it.style.transform="translateX(30px)"}
@@ -1036,9 +1146,15 @@ let histN=7,dueN=7;
 const ACT_MAP={"Nhập bệnh nhân":"Nhận bệnh","Kết thúc nuôi bệnh nhân":"Kết thúc","Sửa thông tin bệnh nhân":"Sửa thông tin","Chuyển bệnh nhân đi":"Chuyển đi","Chuyển bệnh nhân đến":"Chuyển đến","Xóa bệnh nhân":"Xóa bệnh nhân"};
 const splitA=a=>{a=String(a);const i=a.indexOf(": ");if(i>0&&ACT_MAP[a.slice(0,i)])return[ACT_MAP[a.slice(0,i)],a.slice(i+2)];return[a.startsWith("Thay mới")?"Thay mới":a,""]};
 const actOf=a=>splitA(a)[0];
-const noteOf=x=>[splitA(x.a)[1],x.n||""].filter(Boolean).join(" · ");
+const isPtAct=a=>{a=String(a);const i=a.indexOf(": ");return i>0&&!!ACT_MAP[a.slice(0,i)]};
+const patNote=x=>{if(!isPtAct(x.a))return"";let q=x.q;if(q&&q.mode==="CK"||/Check bình ẩm|KIỂM TRA BÌNH ẨM/.test(splitA(x.a)[1]))return"KIỂM TRA BÌNH ẨM";const txt=splitA(x.a)[1];
+if(!q){const[t1,t2]=txt.split(" · ");q=[...S.pts].reverse().find(r=>(t2&&r.hs===t2)||(!t2&&(r.hs===t1||r.ten===t1))||(t2&&r.ten===t1&&r.hs===t2))}
+if(!q)return txt;
+const main=[q.stt?q.stt+".":"",q.ten,q.ns,q.hs].filter(Boolean).join(" ");
+return main+(q.ch?" · CH "+dmy(q.ch):"")};
+const noteOf=x=>[patNote(x)||splitA(x.a)[1],x.n||""].filter(Boolean).join(" · ");
 const moreBtn=(id,left)=>left>0?`<div class="row" style="justify-content:center"><button class="ghost" id="${id}">Xem thêm (${left} dòng nữa)</button></div>`:"";
-function hist(){const f=$("#hCab").value,all=S.log.filter(x=>!f||x.c==f),l=all.slice(0,histN);
+function hist(){const f=$("#hCab").value,all=S.log.filter(x=>!String(x.a).startsWith("Đặt trạng thái")&&(!f||x.c==f)),l=all.slice(0,histN);
 $("#hBody").innerHTML=l.length?`<table class="hl"><tr><th>Ngày</th><th>Vị trí</th><th>Hành động</th><th>NTH 1</th><th>NTH 2</th><th>Ghi chú</th></tr>${l.map(x=>`<tr><td>${dspan(x.t)}</td><td>${x.r?"Buồng "+x.c+"."+x.r:"Tủ "+x.c}</td><td>${esc(actOf(x.a))}</td><td>${esc(x.p)}</td><td>${esc(x.p2||"")}</td><td class="nc" title="${esc(noteOf(x))}">${esc(noteOf(x))}</td></tr>`).join("")}</table>`+moreBtn("hMore",all.length-l.length):'<div class="empty-msg">Chưa có lịch sử.</div>'}
 $("#hBody").addEventListener("click",e=>{if(e.target.id==="hMore"){histN+=20;hist()}});
 $("#dueHist").addEventListener("click",e=>{if(e.target.id==="dueMore"){dueN+=20;dueExtra()}});
@@ -1053,36 +1169,40 @@ try{dlBlob(name,data)}catch(e){askAlert({title:"Không thể lưu file",html:"<d
 for(let c=1;c<=CABS;c++)$("#xCab").insertAdjacentHTML("beforeend",`<option value="${c}">Tủ GERI ${c}</option>`);
 const xlRows=()=>{const a=$("#xFrom").value,b=$("#xTo").value,f=$("#xCab").value;return S.log.filter(x=>{const d=ymd(new Date(x.t));return(!a||d>=a)&&(!b||d<=b)&&(!f||x.c==f)}).reverse()};
 const XSH=[
-{id:"his",n:"Lịch sử",cols:["Ngày","Giờ","Tủ GERI","Buồng","Hành động","Người thực hiện 1","Người thực hiện 2","Ghi chú"],w:[12,10,10,8,34,20,20,26]},
-{id:"pt2",n:"Bệnh nhân",cols:["Mã hồ sơ","Tên","Ngày sinh","Ngày CH","STT chọc hút","Phương pháp","Buồng","Tủ GERI","Ngày phôi","Tình trạng","Cảnh báo","Vào","Ra","Người thực hiện 1","Người thực hiện 2"],w:[14,24,12,12,12,12,8,10,11,13,12,20,20,20,20]}];
+{id:"pt",n:"Danh sách bệnh nhân",pre:"DSBN",pick:true,cols:["Mã hồ sơ","Tên","Ngày sinh","Ngày CH","STT chọc hút","Phương pháp","Buồng","Tủ GERI","Ngày phôi","Tình trạng","Cảnh báo","Vào","Ra","Người thực hiện 1","Người thực hiện 2"],w:[14,24,12,12,12,12,8,10,11,13,12,20,20,20,20]},
+{id:"wc",n:"Lịch sử thay nước",pre:"LSTN",cols:["Ngày thực hiện","Hành động","Tủ","Buồng","Người thực hiện 1","Người thực hiện 2"],w:[20,20,10,8,22,22]},
+{id:"op",n:"Lịch sử thao tác",pre:"LSTT",cols:["Ngày","Vị trí","Hành động","Người thực hiện 1","Người thực hiện 2","Ghi chú"],w:[20,14,22,22,22,40]}];
 const xlPts=()=>{const a=$("#xFrom").value,b=$("#xTo").value,f=$("#xCab").value,td=todayStr(),cur=a<=td&&td<=b;
 return S.pts.filter(r=>{if(f&&r.c!=f)return false;const d=ymd(new Date(r.start));return(d>=a&&d<=b)||(!r.end&&cur)}).map(r=>{const dd=r.ch?Math.round((Date.parse(r.end?ymd(new Date(r.end)):td)-Date.parse(r.ch))/864e5):"";
-return[r.hs||"",r.ten||"",r.ns||"",r.ch?dmy(r.ch):"",r.stt||"",r.mode==="PI"?"P.I":"Timelapse",r.c+"."+r.r,"GERI "+r.c,dd,r.end?"Hoàn thành":"Đang nuôi",!r.end&&dd!==""&&dd>=DAY?(dd>DAY?"Quá hạn":"Đến hạn"):"",fmtDT(r.start),r.end?fmtDT(r.end):"",r.p||"",r.p2||""]})};
+return[r.hs||"",r.ten||"",r.ns||"",r.ch?dmy(r.ch):"",r.stt||"",mFull(r.mode),r.c+"."+r.r,"GERI "+r.c,dd,r.end?"Hoàn thành":"Đang nuôi",!r.end&&dd!==""&&dd>=DAY?(dd>DAY?"Quá hạn":"Đến hạn"):"",fmtDT(r.start),r.end?fmtDT(r.end):"",r.p||"",r.p2||""]})};
 const xlData={
-his:()=>xlRows().map(x=>{const d=new Date(x.t);return[dmy(ymd(d)),d.toLocaleTimeString("vi-VN"),"Tủ "+x.c,x.r?x.c+"."+x.r:"",actOf(x.a),x.p,x.p2||"",noteOf(x)]}),
-pt2:xlPts};
+pt:xlPts,
+wc:()=>xlRows().filter(x=>HANDLE(x.a)||x.a==="Đã thêm nước").map(x=>[fmtDT(x.t),actOf(x.a),"GERI "+x.c,x.r?x.c+"."+x.r:"",x.p||"",x.p2||""]),
+op:()=>xlRows().filter(x=>!String(x.a).startsWith("Đặt trạng thái")).map(x=>[fmtDT(x.t),x.r?"Buồng "+x.c+"."+x.r:"Tủ "+x.c,actOf(x.a),x.p||"",x.p2||"",noteOf(x)])};
+const xOpen=new Set();
 const xlGet=sh=>{S.ui=S.ui||{};const o=S.ui.xl||(S.ui.xl={});return o[sh.id]||(o[sh.id]={on:true,cols:sh.cols.map((_,i)=>i)})};
-const xlIdx=sh=>{const st=xlGet(sh);return st.on?st.cols.filter(i=>i<sh.cols.length).sort((a,b)=>a-b):[]};
-function xlRender(){$("#xSecs").innerHTML=XSH.map(sh=>{const st=xlGet(sh);
-return`<div class="xsec${st.on?"":" off"}" data-s="${sh.id}"><div class="xh"><label class="xm"><input type="checkbox" data-m="${sh.id}"${st.on?" checked":""}><b>${sh.n}</b></label><span class="xn" id="xn_${sh.id}"></span><span class="xa"><button type="button" class="lnk" data-all="${sh.id}">Chọn tất cả</button><button type="button" class="lnk" data-none="${sh.id}">Bỏ chọn</button></span></div><div class="xc">${sh.cols.map((c,i)=>`<label class="xchip"><input type="checkbox" data-s="${sh.id}" data-i="${i}"${st.cols.includes(i)?" checked":""}><span>${c}</span></label>`).join("")}</div></div>`}).join("")}
-const xlCount=()=>{let tot=0,act=0;XSH.forEach(sh=>{const n=xlData[sh.id]().length,ix=xlIdx(sh);$("#xn_"+sh.id).textContent=n+" bản ghi · "+(xlGet(sh).on?ix.length:0)+"/"+sh.cols.length+" trường";if(ix.length){act++;tot+=n}});
-$("#xCnt").textContent=act?act+" sheet được chọn":"Chưa chọn trường nào";
-const go=$("#xGo");go.disabled=!act||!tot||!$("#xFrom").value||!$("#xTo").value;go.style.opacity=go.disabled?.5:1};
+const xlIdx=sh=>{const st=xlGet(sh);if(!st.on)return[];return sh.pick?st.cols.filter(i=>i<sh.cols.length).sort((a,b)=>a-b):sh.cols.map((_,i)=>i)};
+function xlRender(){$("#xSecs").innerHTML=XSH.map(sh=>{const st=xlGet(sh),op=xOpen.has(sh.id);
+return`<div class="xsec${st.on?"":" off"}${op?" open":""}" data-s="${sh.id}"><div class="xh"><label class="xm"><input type="checkbox" data-m="${sh.id}"${st.on?" checked":""}><b>${sh.n}</b></label><span class="xn" id="xn_${sh.id}"></span>${sh.pick?`<span class="xa"><span class="sel"><button type="button" class="lnk" data-all="${sh.id}">Chọn tất cả</button><button type="button" class="lnk" data-none="${sh.id}">Bỏ chọn</button></span><button type="button" class="lnk" data-tg="${sh.id}">${op?"Thu gọn ▴":"Chọn trường ▾"}</button></span>`:""}</div>${sh.pick?`<div class="xc">${sh.cols.map((c,i)=>`<label class="xchip"><input type="checkbox" data-s="${sh.id}" data-i="${i}"${st.cols.includes(i)?" checked":""}><span>${c}</span></label>`).join("")}</div>`:""}</div>`}).join("")}
+const xlCount=()=>{let act=0,ok=0;XSH.forEach(sh=>{const n=xlData[sh.id]().length,ix=xlIdx(sh);$("#xn_"+sh.id).textContent=n+" bản ghi"+(sh.pick?" · "+(xlGet(sh).on?ix.length:0)+"/"+sh.cols.length+" trường":"");if(ix.length){act++;if(n)ok++}});
+$("#xCnt").textContent=act?act+" mục được chọn":"Chưa chọn mục nào";
+const go=$("#xGo");go.disabled=!ok||!$("#xFrom").value||!$("#xTo").value;go.style.opacity=go.disabled?.5:1};
 ["#xFrom","#xTo","#xCab"].forEach(s=>$(s).onchange=xlCount);
 $("#xSecs").addEventListener("change",e=>{const t=e.target,sec=t.closest(".xsec");if(!sec)return;const sh=XSH.find(x=>x.id===sec.dataset.s),st=xlGet(sh);
-if(t.dataset.m){st.on=t.checked;sec.classList.toggle("off",!st.on);if(st.on&&!st.cols.length){st.cols=sh.cols.map((_,i)=>i);sec.querySelectorAll(".xchip input").forEach(c=>c.checked=true)}}
+if(t.dataset.m){st.on=t.checked;sec.classList.toggle("off",!st.on);if(st.on&&sh.pick&&!st.cols.length){st.cols=sh.cols.map((_,i)=>i);sec.querySelectorAll(".xchip input").forEach(c=>c.checked=true)}}
 else if(t.dataset.i!==undefined){const i=+t.dataset.i;st.cols=t.checked?[...new Set([...st.cols,i])]:st.cols.filter(x=>x!==i)}
 save();xlCount()});
-$("#xSecs").addEventListener("click",e=>{const t=e.target.closest("[data-all],[data-none]");if(!t)return;const all=t.dataset.all!==undefined,sh=XSH.find(x=>x.id===(t.dataset.all||t.dataset.none)),st=xlGet(sh),sec=t.closest(".xsec");
+$("#xSecs").addEventListener("click",e=>{const g=e.target.closest("[data-tg]");if(g){const id=g.dataset.tg,sec=g.closest(".xsec"),op=!xOpen.has(id);op?xOpen.add(id):xOpen.delete(id);sec.classList.toggle("open",op);g.textContent=op?"Thu gọn ▴":"Chọn trường ▾";return}
+const t=e.target.closest("[data-all],[data-none]");if(!t)return;const all=t.dataset.all!==undefined,sh=XSH.find(x=>x.id===(t.dataset.all||t.dataset.none)),st=xlGet(sh),sec=t.closest(".xsec");
 st.cols=all?sh.cols.map((_,i)=>i):[];st.on=all?true:st.on;sec.classList.toggle("off",!st.on);sec.querySelector("[data-m]").checked=st.on;sec.querySelectorAll(".xchip input").forEach(c=>c.checked=all);save();xlCount()});
 $("#bXl").onclick=()=>{const t=new Date();$("#xTo").value=ymd(t);$("#xFrom").value=ymd(new Date(t.getFullYear(),t.getMonth(),1));xlRender();xlCount();open("#ovXl")};
 $("#xGo").onclick=async()=>{if(typeof XLSX==="undefined"){askAlert({title:"Chưa xuất được Excel",html:"<div>Chưa tải được thư viện Excel. Hãy kiểm tra kết nối mạng rồi thử lại.</div>"});return}
-const wb=XLSX.utils.book_new();let n=0;
-XSH.forEach(sh=>{const ix=xlIdx(sh);if(!ix.length)return;const rows=xlData[sh.id]();
-const ws=XLSX.utils.aoa_to_sheet([ix.map(i=>sh.cols[i]),...rows.map(r=>ix.map(i=>r[i]))]);ws["!cols"]=ix.map(i=>({wch:sh.w[i]}));XLSX.utils.book_append_sheet(wb,ws,sh.n);n++});
-if(!n)return;
-const buf=XLSX.write(wb,{type:"array",bookType:"xlsx"});
-await saveFile(`lich_su_binh_am_${$("#xFrom").value.replace(/-/g,"")}_${$("#xTo").value.replace(/-/g,"")}.xlsx`,buf)};
+const p=todayStr().split("-"),stamp=p[2]+p[1]+p[0].slice(2);let first=true;
+for(const sh of XSH){const ix=xlIdx(sh);if(!ix.length)continue;const rows=xlData[sh.id]();if(!rows.length)continue;
+const ws=XLSX.utils.aoa_to_sheet([ix.map(i=>sh.cols[i]),...rows.map(r=>ix.map(i=>r[i]))]);ws["!cols"]=ix.map(i=>({wch:sh.w[i]}));
+const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,sh.n);
+if(!first)await new Promise(r=>setTimeout(r,500));first=false;
+await saveFile(sh.pre+stamp+".xlsx",XLSX.write(wb,{type:"array",bookType:"xlsx"}))}};
 const CSER=[{id:"tl",n:"Bệnh nhân nuôi Timelapse",c:"#5b8fb9"},{id:"pi",n:"Bệnh nhân nuôi PI",c:"#7c5cbf"},{id:"tn",n:"Thay nước",c:"#3fae6a"},{id:"kt",n:"Đã kiểm tra",c:"#d9822b"},{id:"nt",n:"Nuôi tiếp",c:"#c9a23a"},{id:"tm",n:"Thay mới",c:"#d1495b"}];
 const RCOL=["#6b9ac4","#9a8fc9","#c98fa5","#c9a874","#6fb5a8","#8aa05a"];
 const addD=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
@@ -1119,7 +1239,7 @@ if(!ser.length){$("#cSum").textContent="";$("#cSvg").innerHTML='<div class="empt
 const idx={};b.forEach((x,i)=>idx[x.k]=i);
 const data=b.map(()=>ser.map(()=>0));let tot=0;
 const add=(key,id)=>{const i=idx[String(key).slice(0,g)],j=ser.findIndex(q=>q.id===id);if(i===undefined||j<0)return;data[i][j]++;tot++};
-S.pts.forEach(r=>{if(cab&&r.c!=cab)return;add(r.ch||ymd(new Date(r.start)),r.mode==="PI"?"pi":"tl")});
+S.pts.forEach(r=>{if(cab&&r.c!=cab||r.mode==="CK")return;add(r.ch||ymd(new Date(r.start)),r.mode==="PI"?"pi":"tl")});
 const aid=a=>a==="Đã thêm nước"?"wt":a==="Thay nước"?"tn":a==="Đã kiểm tra"?"kt":a==="Nuôi tiếp"?"nt":String(a).startsWith("Thay mới")?"tm":null;
 S.log.forEach(x=>{if(cab&&x.c!=cab)return;const id=aid(x.a);if(id)add(ymd(new Date(x.t)),id)});
 const sums=data.map(r=>r.reduce((p,v)=>p+v,0));
@@ -1140,19 +1260,30 @@ S.pts=S.pts||[];
 Object.values(S.rooms).forEach(x=>{if(x.pt&&!x.pl)x.pl=[{...x.pt,pid:x.pid}];delete x.pt;delete x.pid;if(!x.pl)x.pl=[]});
 (()=>{const fld=s=>`<div class="pf"><div class="row"><label class="fl" style="flex:1;min-width:120px"><span>Mã hồ sơ</span><input id="pHs${s}"></label><label class="fl" style="width:100px"><span>STT chọc</span><input id="pStt${s}"></label></div><div class="row"><label class="fl" style="flex:1;min-width:150px"><span>Tên bệnh nhân</span><input id="pTen${s}"></label><label class="fl" style="width:130px"><span>Ngày sinh</span><input id="pNs${s}" placeholder="dd/mm/yyyy" maxlength="10"></label></div><div class="row"><label class="fl" style="flex:1"><span>Ngày chọc hút (CH)</span><input type="date" id="pCh${s}"></label><b id="pDay${s}" style="font-size:13px;min-width:120px;text-align:right"></b></div></div>`;
 const blk=(n,t,s)=>`<div class="pb" id="pb${n}" style="${n>1?"margin-top:10px;padding-top:8px;border-top:1px dashed var(--bd)":""}"><div class="row" style="margin-bottom:0;font-weight:700;font-size:14px">${t}</div><div class="row seg tabs"><label><input type="radio" name="u${n}" value="1"><span>Đang nuôi</span></label><label><input type="radio" name="u${n}" value="0"><span>Kết thúc nuôi cấy</span></label></div>${fld(s)}</div>`;
-const pb=$("#pBox");pb.innerHTML=blk(1,"Timelapse","")+blk(2,"P.I","2")+'<div id="pErr" style="color:var(--r);font-size:13px;margin-top:6px"></div>';
-pb.addEventListener("change",e=>{if((e.target.name||"").startsWith("u"))togDate()})})();
+const pb=$("#pBox");const blkCk=`<div class="pb" id="pb3" style="margin-top:10px;padding-top:8px;border-top:1px dashed var(--bd)"><div class="row" style="margin-bottom:0;font-weight:700;font-size:14px">KIỂM TRA BÌNH ẨM</div><div class="row seg tabs"><label><input type="radio" name="u3" value="1"><span>Đang kiểm tra</span></label><label><input type="radio" name="u3" value="0"><span>Kết thúc kiểm tra</span></label></div><div class="pf"><div class="row"><label class="fl" style="flex:1"><span>Ngày chọc hút (CH)</span><input type="date" id="pCh3"></label><b id="pDay3" style="font-size:13px;min-width:120px;text-align:right"></b></div></div></div>`;
+pb.innerHTML=blk(1,"Timelapse","")+blk(2,"P.I","2")+blkCk+'<div id="pErr" style="color:var(--r);font-size:13px;margin-top:6px"></div>';
+pb.addEventListener("change",async e=>{const t=e.target,nm=t.name||"";if(!nm.startsWith("u"))return;
+const g=n=>document.querySelector(`input[name=u${n}]:checked`),setv=(n,v)=>{document.querySelector(`input[name=u${n}][value="${v}"]`).checked=true};
+if(t.value==="1"&&(nm==="u1"||nm==="u2")&&g(3)&&g(3).value==="1"){
+const ok=await askConfirm({title:"Buồng đang KIỂM TRA BÌNH ẨM",tone:"warn",ok:"Nhập bệnh nhân",cancel:"Giữ kiểm tra",html:'<div>Buồng này đang <b>KIỂM TRA BÌNH ẨM</b>.</div><div style="margin-top:8px">Nếu nhập bệnh nhân, trạng thái kiểm tra bình ẩm của buồng sẽ được bỏ và buồng tính lại theo <b>ngày chọc hút</b> của bệnh nhân.</div>'});
+if(ok)setv(3,0);else setv(+nm.slice(1),0)}
+else if(nm==="u3"&&t.value==="1"&&[1,2].some(n=>g(n)&&g(n).value==="1")){
+const ok=await askConfirm({title:"Chuyển sang KIỂM TRA BÌNH ẨM?",tone:"warn",ok:"Chuyển sang kiểm tra",cancel:"Giữ bệnh nhân",html:'<div>Buồng này đang nuôi bệnh nhân.</div><div style="margin-top:8px">Nếu chuyển sang <b>KIỂM TRA BÌNH ẨM</b>, bệnh nhân đang nuôi sẽ kết thúc và không còn được tính vào bảng tổng phôi.</div>'});
+if(ok){setv(1,0);setv(2,0)}else setv(3,0)}
+togDate()})})();
 const fmtDT=t=>new Date(t).toLocaleString("vi-VN");
-const ptFull=q=>`Mã HS: ${q.hs||"-"} | Tên: ${q.ten||"-"} | Ngày sinh: ${q.ns||"-"} | Ngày CH: ${q.ch?dmy(q.ch)+" (ngày "+days(q.ch)+")":"-"} | STT chọc: ${q.stt||"-"} | ${q.mode==="PI"?"P.I":"Timelapse"}`;
-const ptTxt=q=>[q.ten,q.hs].filter(Boolean).join(" · ");
+const ptFull=q=>`Mã HS: ${q.hs||"-"} | Tên: ${q.ten||"-"} | Ngày sinh: ${q.ns||"-"} | Ngày CH: ${q.ch?dmy(q.ch)+" (ngày "+days(q.ch)+")":"-"} | STT chọc: ${q.stt||"-"} | ${mFull(q.mode)}`;
+const ptTxt=q=>q.mode==="CK"?"KIỂM TRA BÌNH ẨM":[q.ten,q.hs].filter(Boolean).join(" · ");
+const mFull=m=>m==="PI"?"P.I":m==="CK"?"Check":"Timelapse",mShort=m=>m==="PI"?"P.I":m==="CK"?"Check":"TL";
 const PF=["hs","stt","ten","ns","ch","mode"];
 const dayHint=s=>{const v=$("#pCh"+s).value;$("#pDay"+s).textContent=v?(days(v)<0?"⚠ ngày tương lai":"Ngày phôi: "+days(v)):""};
-["","2"].forEach(s=>$("#pCh"+s).addEventListener("input",()=>dayHint(s)));
-const fillPt=x=>{if($("#pErr"))$("#pErr").textContent="";const Lp=x.st==="bad"?[]:(x.pl||[]);["TL","PI"].forEach((m,i)=>{const q=Lp.find(z=>z.mode===m),o=q||{},s=i?"2":"";document.querySelector(`input[name=u${i+1}][value="${q?1:0}"]`).checked=true;$("#pHs"+s).value=o.hs||"";$("#pStt"+s).value=o.stt||"";$("#pTen"+s).value=o.ten||"";$("#pNs"+s).value=o.ns||"";$("#pCh"+s).value=o.ch||todayStr();dayHint(s)})};
-const readPt=()=>["TL","PI"].map((m,i)=>{const s=i?"2":"";if(document.querySelector(`input[name=u${i+1}]:checked`).value!=="1")return null;const v=id=>$(id+s).value.trim();return{hs:v("#pHs"),stt:v("#pStt"),ten:v("#pTen"),ns:v("#pNs"),ch:v("#pCh"),mode:m}}).filter(Boolean);
+["","2","3"].forEach(s=>$("#pCh"+s).addEventListener("input",()=>dayHint(s)));
+const fillPt=x=>{if($("#pErr"))$("#pErr").textContent="";const Lp=x.st==="bad"?[]:(x.pl||[]);["TL","PI"].forEach((m,i)=>{const q=Lp.find(z=>z.mode===m),o=q||{},s=i?"2":"";document.querySelector(`input[name=u${i+1}][value="${q?1:0}"]`).checked=true;$("#pHs"+s).value=o.hs||"";$("#pStt"+s).value=o.stt||"";$("#pTen"+s).value=o.ten||"";$("#pNs"+s).value=o.ns||"";$("#pCh"+s).value=o.ch||todayStr();dayHint(s)});const ck=Lp.find(z=>z.mode==="CK");document.querySelector(`input[name=u3][value="${ck?1:0}"]`).checked=true;$("#pCh3").value=ck&&ck.ch?ck.ch:todayStr();dayHint("3")};
+const readPt0=()=>["TL","PI"].map((m,i)=>{const s=i?"2":"";if(document.querySelector(`input[name=u${i+1}]:checked`).value!=="1")return null;const v=id=>$(id+s).value.trim();return{hs:v("#pHs"),stt:v("#pStt"),ten:v("#pTen"),ns:v("#pNs"),ch:v("#pCh"),mode:m}}).filter(Boolean);
+const readPt=()=>{const a=readPt0(),c=document.querySelector("input[name=u3]:checked");if(c&&c.value==="1"){const ex=((S.rooms[cur]||{}).pl||[]).find(q=>q.mode==="CK")||{};a.push({hs:ex.hs||"",stt:ex.stt||"",ten:ex.ten||"",ns:ex.ns||"",ch:$("#pCh3").value.trim(),mode:"CK"})}return a};
 const dupMode=sh=>{const a=readPt(),d=a.length===2&&a[0].mode===a[1].mode,el=$("#pErr");el.textContent=d?"⚠ Mỗi buồng chỉ nuôi 1 đĩa Timelapse và 1 đĩa P.I — không được chọn trùng phương pháp.":"";if(d&&sh){el.classList.remove("shake");void el.offsetWidth;el.classList.add("shake")}return d};
-const endPt=(k,q,why,p)=>{const r=S.pts.find(z=>z.id===q.pid);if(r&&!r.end)r.end=new Date().toISOString();addLog(k,why+": "+ptTxt(q),p)};
-const startPt=(k,np,p)=>{const[c,r]=k.split("-"),id="p"+Date.now()+Math.random().toString(36).slice(2,6);S.pts.push({id,c:+c,r:+r,...np,start:new Date().toISOString(),end:"",p,p2:p2of()});addLog(k,"Nhập bệnh nhân: "+ptTxt(np),p);return{...np,pid:id}};
+const endPt=(k,q,why,p)=>{const r=S.pts.find(z=>z.id===q.pid);if(r&&!r.end)r.end=new Date().toISOString();addLog(k,why+": "+ptTxt(q),p,"",q)};
+const startPt=(k,np,p)=>{const[c,r]=k.split("-"),id="p"+Date.now()+Math.random().toString(36).slice(2,6);S.pts.push({id,c:+c,r:+r,...np,start:new Date().toISOString(),end:"",p,p2:p2of()});addLog(k,"Nhập bệnh nhân: "+ptTxt(np),p,"",np);return{...np,pid:id}};
 const savePt=(k,st,p)=>{const x=S.rooms[k],old=x.pl||[];
 if(st!=="using"){old.forEach(q=>endPt(k,q,"Kết thúc nuôi bệnh nhân",p));x.pl=[];return}
 const used=new Set(),res=[];
@@ -1160,7 +1291,7 @@ readPt().forEach(np=>{
 let m=old.findIndex((q,i)=>!used.has(i)&&PF.every(f=>q[f]===np[f]));
 if(m>=0){used.add(m);res.push(old[m]);return}
 m=np.hs?old.findIndex((q,i)=>!used.has(i)&&q.hs===np.hs):-1;
-if(m>=0){used.add(m);const q=old[m],r=S.pts.find(z=>z.id===q.pid);if(q.ch!==np.ch)q.snooze="";Object.assign(q,np);if(r)Object.assign(r,np);addLog(k,"Sửa thông tin bệnh nhân: "+ptTxt(np),p);res.push(q);return}
+if(m>=0){used.add(m);const q=old[m],r=S.pts.find(z=>z.id===q.pid);if(q.ch!==np.ch)q.snooze="";Object.assign(q,np);if(r)Object.assign(r,np);addLog(k,"Sửa thông tin bệnh nhân: "+ptTxt(np),p,"",np);res.push(q);return}
 res.push(startPt(k,np,p))});
 old.forEach((q,i)=>{if(!used.has(i))endPt(k,q,"Kết thúc nuôi bệnh nhân",p)});
 x.pl=res};
@@ -1170,7 +1301,7 @@ const ptVal=(r,k)=>k==="room"?r.c*10+r.r:k==="end"?(r.end||"9999"):k==="start"?r
 function getPt(){const q=$("#ptQ").value.trim().toLowerCase(),{k,d}=ptSort;
 return S.pts.filter(r=>!q||[r.hs,r.ten,r.stt,r.ns].join(" ").toLowerCase().includes(q)).sort((a,b)=>{const x=ptVal(a,k),y=ptVal(b,k);return d*(typeof x==="number"?x-y:String(x).localeCompare(String(y),"vi",{numeric:true}))})}
 const ptOpen=new Set(),PTA=PTC.filter(([k])=>k!=="end");
-const ptRow=(r,done)=>`<tr class="pc${((r.c-1)%5)+1}"><td>${esc(r.hs)}</td><td>${esc(r.ten)}</td><td>${esc(r.ns)}</td><td>${r.mode==="PI"?"P.I":"TL"}</td><td>${dsd(r.ch)}</td><td>${esc(r.stt)}</td><td>${r.c}.${r.r}</td><td>${dspan(r.start)}</td>${done?`<td>${dspan(r.end)}</td>`:`<td style="white-space:nowrap"><button class="ghost" data-e="${r.id}" title="Sửa" style="padding:3px 9px;font-size:12px">Sửa</button> <button class="ghost dng" data-d="${r.id}" title="Xóa" style="padding:3px 9px;font-size:12px">Xóa</button></td>`}</tr>`;
+const ptRow=(r,done)=>`<tr class="pc${((r.c-1)%5)+1}"><td>${esc(r.hs)}</td><td>${esc(r.ten)}</td><td>${esc(r.ns)}</td><td>${mShort(r.mode)}</td><td>${dsd(r.ch)}</td><td>${esc(r.stt)}</td><td>${r.c}.${r.r}</td><td>${dspan(r.start)}</td>${done?`<td>${dspan(r.end)}</td>`:`<td style="white-space:nowrap"><button class="ghost" data-e="${r.id}" title="Sửa" style="padding:3px 9px;font-size:12px">Sửa</button> <button class="ghost dng" data-d="${r.id}" title="Xóa" style="padding:3px 9px;font-size:12px">Xóa</button></td>`}</tr>`;
 const ptTbl=(l,done)=>`<table><tr>${(done?PTC:PTA).map(([k,n])=>`<th data-s="${k}">${n}${ptSort.k===k?(ptSort.d>0?" ▲":" ▼"):""}</th>`).join("")}${done?"":"<th></th>"}</tr>${l.map(r=>ptRow(r,done)).join("")}</table>`;
 function drawPt(){const l=getPt(),q=$("#ptQ").value.trim(),act=l.filter(r=>!r.end),fin=l.filter(r=>r.end),gm={};
 if(!S.pts.length){$("#ptBody").innerHTML='<div class="empty-msg">Chưa có dữ liệu bệnh nhân.</div>';return}
@@ -1183,7 +1314,7 @@ $("#ptBody").addEventListener("click",e=>{const h=e.target.closest(".pgh");if(!h
 $("#ptBody").addEventListener("click",e=>{const th=e.target.closest("th[data-s]");if(!th)return;const k=th.dataset.s;ptSort=ptSort.k===k?{k,d:-ptSort.d}:{k,d:1};drawPt()});
 $("#ptXl").onclick=async()=>{const l=getPt();if(!l.length)return;if(typeof XLSX==="undefined"){askAlert({title:"Chưa xuất được Excel",html:"<div>Chưa tải được thư viện Excel. Hãy kiểm tra kết nối mạng rồi thử lại.</div>"});return}
 const nd=r=>r.ch?Math.round((Date.parse(r.end?ymd(new Date(r.end)):todayStr())-Date.parse(r.ch))/864e5):"";
-const ws=XLSX.utils.aoa_to_sheet([["Mã hồ sơ","Tên","Ngày sinh","Ngày CH","STT chọc hút","Phương pháp","Buồng","Vào","Ra","Ngày phôi","Người thực hiện 1","Người thực hiện 2"],...l.map(r=>[r.hs,r.ten,r.ns,r.ch?dmy(r.ch):"",r.stt,r.mode==="PI"?"P.I":"Timelapse",r.c+"."+r.r,fmtDT(r.start),r.end?fmtDT(r.end):"Đang nuôi",nd(r),r.p||"",r.p2||""])]);
+const ws=XLSX.utils.aoa_to_sheet([["Mã hồ sơ","Tên","Ngày sinh","Ngày CH","STT chọc hút","Phương pháp","Buồng","Vào","Ra","Ngày phôi","Người thực hiện 1","Người thực hiện 2"],...l.map(r=>[r.hs,r.ten,r.ns,r.ch?dmy(r.ch):"",r.stt,mFull(r.mode),r.c+"."+r.r,fmtDT(r.start),r.end?fmtDT(r.end):"Đang nuôi",nd(r),r.p||"",r.p2||""])]);
 ws["!cols"]=[{wch:14},{wch:24},{wch:12},{wch:12},{wch:12},{wch:12},{wch:8},{wch:20},{wch:20},{wch:11},{wch:20},{wch:20}];
 const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Bệnh nhân");
 await saveFile(`benh_nhan_${todayStr().replace(/-/g,"")}.xlsx`,XLSX.write(wb,{type:"array",bookType:"xlsx"}))};
@@ -1204,22 +1335,27 @@ requestAnimationFrame(()=>{o.classList.add("show");const f=o.querySelector(dange
 const askAlert=({title,html,ok="Đã hiểu",tone="warn"})=>askConfirm({title,html,ok,tone,single:true});
 $("#ptBody").addEventListener("click",async e=>{const b=e.target.closest("button[data-d]");if(!b)return;const r=S.pts.find(z=>z.id===b.dataset.d);if(!r||r.end)return;
 const act=!r.end,k=r.c+"-"+r.r;
-if(!await askConfirm({title:"Xác nhận xóa bệnh nhân",danger:true,ok:"Xóa",html:`<div>Xóa bệnh nhân <b>${esc(ptTxt(r)||"—")}</b> (${r.mode==="PI"?"P.I":"Timelapse"}, buồng ${r.c}.${r.r}${act?", đang nuôi":""})?</div>${act?'<div style="margin-top:8px">Bệnh nhân sẽ được gỡ khỏi buồng đang nuôi.</div>':""}<div style="margin-top:8px;color:var(--r)">Thao tác này không thể hoàn tác.</div>`}))return;
+if(!await askConfirm({title:"Xác nhận xóa bệnh nhân",danger:true,ok:"Xóa",html:`<div>Xóa bệnh nhân <b>${esc(ptTxt(r)||"—")}</b> (${mFull(r.mode)}, buồng ${r.c}.${r.r}${act?", đang nuôi":""})?</div>${act?'<div style="margin-top:8px">Bệnh nhân sẽ được gỡ khỏi buồng đang nuôi.</div>':""}<div style="margin-top:8px;color:var(--r)">Thao tác này không thể hoàn tác.</div>`}))return;
 if(!gateWho())return;const p=S.who||S.who2;
 const x=S.rooms[k];if(act&&x){x.pl=(x.pl||[]).filter(z=>z.pid!==r.id);if(!x.pl.length&&x.st==="using")x.st="empty"}
-S.pts.splice(S.pts.indexOf(r),1);addLog(k,"Xóa bệnh nhân: "+ptTxt(r),p);save();render();drawPt()});
+S.pts.splice(S.pts.indexOf(r),1);addLog(k,"Xóa bệnh nhân: "+ptTxt(r),p,"",r);save();render();drawPt()});
 $("#ptBody").addEventListener("click",e=>{const b=e.target.closest("button[data-e]");if(!b)return;const r=S.pts.find(z=>z.id===b.dataset.e);if(!r||r.end)return;peId=r.id;
 $("#peHs").value=r.hs||"";$("#peStt").value=r.stt||"";$("#peTen").value=r.ten||"";$("#peNs").value=r.ns||"";$("#peCh").value=r.ch||"";$("#peMode").value=r.mode||"TL";$("#peRoom").value=r.c+"-"+r.r;$("#peRoom").disabled=!!r.end;$("#peErr").textContent="";open("#ovPtE")});
 $("#peSave").onclick=async()=>{const r=S.pts.find(z=>z.id===peId);if(!r)return;const err=$("#peErr"),fail=t=>{err.textContent=t;err.classList.remove("shake");void err.offsetWidth;err.classList.add("shake")};
 const np={hs:$("#peHs").value.trim(),stt:$("#peStt").value.trim(),ten:$("#peTen").value.trim(),ns:$("#peNs").value.trim(),ch:$("#peCh").value,mode:$("#peMode").value};
 if(np.ns&&nsNorm(np.ns)===null)return fail("⚠ Ngày sinh nhập dạng dd/mm/yyyy.");if(np.ns)np.ns=nsNorm(np.ns);
-if(!(np.hs||np.stt||np.ten||np.ns))return fail("⚠ Nhập thông tin bệnh nhân.");
+if(np.mode!=="CK"&&!(np.hs||np.stt||np.ten||np.ns))return fail("⚠ Nhập thông tin bệnh nhân.");
+if(r.mode==="CK"&&np.mode!=="CK"&&!(np.hs||np.ten))return fail("⚠ Nhập Mã hồ sơ hoặc Tên để chuyển KIỂM TRA BÌNH ẨM thành bệnh nhân.");
 if(!np.ch)return fail("⚠ Cần nhập ngày CH.");
 if(np.ch>todayStr())return fail("⚠ Ngày CH không được lớn hơn hôm nay.");
 const p=needWho(err);if(!p)return;
-let warn="";const active=!r.end,ok=r.c+"-"+r.r,nk=active?$("#peRoom").value:ok,lab=k=>k.replace("-","."),tn=m=>m==="PI"?"P.I":"Timelapse";
+let warn="";const active=!r.end,ok=r.c+"-"+r.r,nk=active?$("#peRoom").value:ok,lab=k=>k.replace("-","."),tn=m=>mFull(m);
 if(active){const x2=S.rooms[nk];if(x2.st==="bad")return fail("⚠ Buồng "+lab(nk)+" đang sửa chữa.");
 const dup=roomPts(x2).find(q=>q.pid!==r.id&&q.mode===np.mode);if(dup)return fail(`⚠ Buồng ${lab(nk)} đã có bệnh nhân ${tn(np.mode)} (${dup.ten||dup.hs||"—"}).`);
+const mix=roomPts(x2).find(q=>q.pid!==r.id&&(q.mode==="CK"||np.mode==="CK"));if(mix)return fail(`⚠ Buồng ${lab(nk)} đang nuôi ${tn(mix.mode)} – KIỂM TRA BÌNH ẨM không dùng chung buồng với TL/P.I.`);
+if(r.mode!=="CK"&&np.mode==="CK")warn+=`<div style="margin-top:8px;color:var(--o)">⚠ Chuyển sang KIỂM TRA BÌNH ẨM: bệnh nhân này sẽ không còn được tính vào bảng tổng phôi.</div>`;
+else if(r.mode==="CK"&&np.mode!=="CK")warn+=`<div style="margin-top:8px;color:var(--o)">⚠ Chuyển KIỂM TRA BÌNH ẨM thành bệnh nhân ${tn(np.mode)}: sẽ được tính vào bảng tổng phôi.</div>`;
+else if(np.mode==="CK"&&(np.hs||np.ten||np.ns))warn+=`<div style="margin-top:8px;color:var(--o)">⚠ Đang là KIỂM TRA BÌNH ẨM: thông tin bệnh nhân chưa được tính. Đổi sang Timelapse / P.I để tính như bệnh nhân.</div>`;
 if(nk!==ok){const oth=roomPts(x2).find(q=>q.pid!==r.id);warn=`<div style="margin-top:8px;color:var(--o)">⚠ Chuyển sang buồng ${lab(nk)}.${oth?" Buồng này đang nuôi "+tn(oth.mode)+" ("+esc(oth.ten||oth.hs||"—")+").":""}</div>`}}
 const chg=[["hs","MHS"],["stt","STT chọc"],["ten","Tên"],["ns","Ngày sinh"],["ch","Ngày CH"],["mode","Loại nuôi cấy"]].filter(([f])=>String(r[f]||"")!==String(np[f]||"")).map(([f,n])=>{const v=x=>f==="mode"?tn(x||"TL"):f==="ch"?(x?dmy(x):"—"):(x||"—");return `<li><b>${n}:</b> ${esc(v(r[f]))} → ${esc(v(np[f]))}</li>`});
 if(nk!==ok)chg.push(`<li><b>Buồng:</b> ${lab(ok)} → ${lab(nk)}</li>`);
@@ -1231,8 +1367,8 @@ Object.assign(r,np);if(q)Object.assign(q,np);
 if(active&&nk!==ok){r.c=+nk.split("-")[0];r.r=+nk.split("-")[1];
 const qq=q||{...np,pid:r.id};xo.pl=(xo.pl||[]).filter(z=>z!==q);if(!xo.pl.length&&xo.st==="using")xo.st="empty";
 const xn=S.rooms[nk];if(xn.st!=="using"){xn.st="using";xn.pl=[]}xn.pl=xn.pl||[];xn.pl.push(qq);
-addLog(ok,"Chuyển bệnh nhân đi: "+ptTxt(np),p,"→ buồng "+lab(nk));addLog(nk,"Chuyển bệnh nhân đến: "+ptTxt(np),p,"từ buồng "+lab(ok))}
-else addLog(ok,"Sửa thông tin bệnh nhân: "+ptTxt(np),p);
+addLog(ok,"Chuyển bệnh nhân đi: "+ptTxt(np),p,"→ buồng "+lab(nk),np);addLog(nk,"Chuyển bệnh nhân đến: "+ptTxt(np),p,"từ buồng "+lab(ok),np)}
+else addLog(ok,"Sửa thông tin bệnh nhân: "+ptTxt(np),p,"",np);
 save();render();drawPt();close($("#ovPtE"))};
 const norm=t=>String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/gi,"d").toLowerCase().trim();
 function parseDate(v){v=String(v||"").trim();if(!v)return"";
@@ -1257,34 +1393,44 @@ const ensureRows=n=>{while(G.length<n)G.push(SG.map(()=>""))};ensureRows(10);
 function gridRow(i,r){const[hs,ten,ns,ch,stt,lo,room]=r.map(v=>v.trim());const w={i:i+1,c:0,r:0,np:{hs,stt,ten,ns:"",ch:"",mode:""},err:""};
 const m=room.match(/(\d+)\D+(\d+)/);if(m){w.c=+m[1];w.r=+m[2]}
 const nsv=nsNorm(ns);w.np.ns=nsv||"";
-const pm=norm(lo);w.np.mode=/^p\.?\s*i/.test(pm)?"PI":/time|^tl$/.test(pm)?"TL":"";
+const pm=norm(lo);w.np.mode=/^(check|ck|kiem tra)/.test(pm)?"CK":/^p\.?\s*i/.test(pm)?"PI":/time|^tl$/.test(pm)?"TL":"";
 const d=parseDate(ch);w.np.ch=d||"";
 if(!(w.c>=1&&w.c<=CABS&&w.r>=1&&w.r<=ROOMS))w.err="Buồng không hợp lệ";
-else if(!hs&&!ten)w.err="Thiếu tên / MHS";
+else if(w.np.mode!=="CK"&&!hs&&!ten)w.err="Thiếu tên / MHS";
 else if(nsv===null)w.err="Ngày sinh sai định dạng (dd/mm/yyyy)";
 else if(!w.np.mode)w.err="Thiếu loại nuôi cấy";
 else if(d===""||d===null)w.err=d===null?"Ngày CH sai định dạng":"Thiếu ngày CH";
 else if(d>todayStr())w.err="Ngày CH lớn hơn hôm nay";
 return w}
 function applyRow(k,np,p){const x=S.rooms[k];if(x.st==="bad")return{err:"Buồng đang sửa chữa"};
-const cur=x.st==="using"?(x.pl||[]):[],same=cur.find(q=>q.mode===np.mode),other=cur.find(q=>q.mode!==np.mode);
-if(same){if(PF.every(f=>same[f]===np[f]))return{res:"Không đổi"};return{err:"Trùng buồng và loại nuôi cấy – không nhập"}}
+const cur=x.st==="using"?(x.pl||[]):[],same=cur.find(q=>q.mode===np.mode),other=cur.find(q=>q.mode!==np.mode),ck=np.mode==="CK";
+const info=ck&&!!(np.hs||np.ten||np.ns),INFOW="⚠ KIỂM TRA BÌNH ẨM – đã nhập thông tin bệnh nhân, đổi loại nuôi cấy sang TL/P.I để tính như bệnh nhân";
+if(same){if(PF.every(f=>same[f]===np[f]))return ck?{res:info?INFOW:"KIỂM TRA BÌNH ẨM",warn:info?1:0}:{res:"Không đổi"};return{err:"Trùng buồng và loại nuôi cấy – không nhập"}}
+if(ck&&other){cur.forEach(q=>endPt(k,q,"Kết thúc nuôi bệnh nhân",p));x.pl=[];x.pl.push(startPt(k,np,p));return{res:"⚠ Buồng đang nuôi "+mFull(other.mode)+" ("+(other.ten||other.hs||"—")+") – đã chuyển sang KIỂM TRA BÌNH ẨM",warn:1}}
+if(!ck&&other&&other.mode==="CK"){endPt(k,other,"Kết thúc nuôi bệnh nhân",p);x.pl=cur.filter(q=>q!==other);x.pl.push(startPt(k,np,p));return{res:"⚠ Buồng đang KIỂM TRA BÌNH ẨM – đã chuyển thành bệnh nhân "+mFull(np.mode),warn:1}}
 if(x.st!=="using"){x.st="using";x.pl=[];addLog(k,"Đặt trạng thái Đang nuôi",p,"Source")}x.pl=x.pl||[];
 x.pl.push(startPt(k,np,p));
-return other?{res:"⚠ Buồng đang nuôi "+(other.mode==="PI"?"P.I":"Timelapse")+" ("+(other.ten||other.hs||"—")+") – đã thêm",warn:1}:{res:"Thêm mới"}}
+if(ck)return info?{res:INFOW,warn:1}:{res:"KIỂM TRA BÌNH ẨM"};
+return other?{res:"⚠ Buồng đang nuôi "+mFull(other.mode)+" ("+(other.ten||other.hs||"—")+") – đã thêm",warn:1}:{res:"Thêm mới"}}
 function buildGrid(){$("#srcGrid").innerHTML=`<table class="sg"><tr><th>#</th>${SG.map((h,j)=>`<th data-c="${j}" title="Bấm để chọn cả cột">${h}</th>`).join("")}<th>Kết quả</th></tr>${G.map((r,i)=>`<tr><td class="rn" data-r="${i}" title="Bấm để chọn cả hàng">${i+1}</td>${r.map((v,j)=>`<td><input data-i="${i}" data-j="${j}" value="${esc(v)}" autocomplete="off"></td>`).join("")}<td class="sres" id="sr${i}"></td></tr>`).join("")}</table>`;paintSel()}
 const SR={};
-function syncGrid(){S.srcRows=G;if(!G.some(r=>r.some(v=>String(v).trim()))){$("#srcWarn").textContent="";return}
-const p=needWho($("#srcWarn"));if(!p)return;$("#srcWarn").textContent="";const seen=new Set();let n=0,e=0,ww=0;
+function syncGrid(commit){commit=commit===true;S.srcRows=G;if(!G.some(r=>r.some(v=>String(v).trim()))){$("#srcWarn").textContent="";$("#srcSum").textContent="";return}
+let p,snap=null;
+if(commit){p=needWho($("#srcWarn"));if(!p)return}
+else{p=$("#who").value.trim()||$("#who2").value.trim()||"—";snap=JSON.stringify({rooms:S.rooms,pts:S.pts,log:S.log})}
+$("#srcWarn").textContent="";const seen=new Set();let n=0,e=0,ww=0;
+try{
 G.forEach((r,i)=>{const cell=$("#sr"+i);if(!r.some(v=>v.trim())){if(cell)cell.textContent="";return}
 const w=gridRow(i,r);
-if(!w.err){const key=w.c+"-"+w.r+"-"+w.np.mode;if(seen.has(key))w.err="Trùng buồng + loại nuôi cấy";else{seen.add(key);const a=applyRow(w.c+"-"+w.r,w.np,p),sig=JSON.stringify(r);
-if(a.err){w.err=a.err;delete SR[i]}
-else if(a.warn){w.res=a.res;w.warn=1;SR[i]={sig,res:a.res}}
+if(!w.err){const rk=w.c+"-"+w.r,key=rk+"-"+w.np.mode;if(seen.has(key))w.err="Trùng buồng + loại nuôi cấy";else if(w.np.mode==="CK"?(seen.has(rk+"-TL")||seen.has(rk+"-PI")):seen.has(rk+"-CK"))w.err="KIỂM TRA BÌNH ẨM không dùng chung buồng với TL/P.I";else{seen.add(key);const a=applyRow(w.c+"-"+w.r,w.np,p),sig=JSON.stringify(r);
+if(a.err){w.err=a.err;if(commit)delete SR[i]}
+else if(a.warn){w.res=a.res;w.warn=1;if(commit)SR[i]={sig,res:a.res}}
 else if(a.res==="Không đổi"&&SR[i]&&SR[i].sig===sig){w.res=SR[i].res;w.warn=1}
-else{w.res=a.res;delete SR[i]}}}
-n++;if(w.err)e++;if(w.warn)ww++;if(cell){cell.textContent=w.err||w.res;cell.style.color=(w.err||w.warn)?"var(--r)":"var(--g)"}});
-$("#srcSum").textContent=n?`${n} dòng · ${n-e} hợp lệ${ww?" · "+ww+" cảnh báo":""}${e?" · "+e+" lỗi":""}`:"";save();render()}
+else{w.res=a.res;if(commit)delete SR[i]}}}
+n++;if(w.err)e++;if(w.warn)ww++;if(cell){cell.textContent=w.err||w.res;cell.style.color=(w.err||w.warn)?"var(--r)":commit?"var(--g)":"var(--mu)"}})
+}finally{if(snap){const o=JSON.parse(snap);S.rooms=o.rooms;S.pts=o.pts;S.log=o.log}}
+$("#srcSum").textContent=n?`${n} dòng · ${n-e} hợp lệ${ww?" · "+ww+" cảnh báo":""}${e?" · "+e+" lỗi":""}${commit?" · đã cập nhật":" · chưa cập nhật, bấm Xác nhận"}`:"";
+if(commit){save();render()}}
 $("#srcGrid").addEventListener("paste",e=>{const t=e.target;if(t.dataset.i===undefined)return;
 const txt=(e.clipboardData||window.clipboardData).getData("text").replace(/\r?\n$/,""),multi=selMulti(),sb=selBox();
 if(multi&&!/[\t\n]/.test(txt)){e.preventDefault();const v=txt.trim();for(let i=sb.i0;i<=sb.i1;i++)for(let j=sb.j0;j<=sb.j1;j++)G[i][j]=v;buildGrid();syncGrid();return}
@@ -1316,10 +1462,10 @@ if(e.key==="Delete"&&selMulti()){e.preventDefault();const b=selBox();for(let i=b
 if(e.key==="Tab"){const nj=SG.length,dir=e.shiftKey?-1:1,i=+t.dataset.i,j=+t.dataset.j;
 for(let p=i*nj+j+dir;p>=0&&p<G.length*nj;p+=dir){const ii=Math.floor(p/nj),jj=p%nj;if(!String(G[ii][jj]).trim()){const n=gIn(ii,jj);if(n){e.preventDefault();n.focus();n.select();return}}}}})}
 $("#srcGrid").addEventListener("keydown",e=>{if(e.key!=="Enter"||e.target.dataset.i===undefined)return;const n=$(`#srcGrid input[data-i="${+e.target.dataset.i+1}"][data-j="${e.target.dataset.j}"]`);if(n)n.focus()});
-$("#srcGo").onclick=syncGrid;
+$("#srcGo").onclick=()=>syncGrid(true);
 $("#srcAdd").onclick=()=>{ensureRows(G.length+5);buildGrid();if(!whoMissing().length)syncGrid()};
 $("#srcClr").onclick=async()=>{if(!await askConfirm({title:"Xác nhận xóa bảng",danger:true,ok:"Xóa bảng",html:"<div>Xóa toàn bộ dữ liệu đang nhập trong bảng?</div><div style=\"margin-top:8px;color:var(--r)\">Thao tác này không thể hoàn tác.</div>"}))return;G=[];ensureRows(10);S.srcRows=[];save();buildGrid();$("#srcSum").textContent=""};
-$("#bSrc").onclick=()=>{buildGrid();$("#srcWarn").textContent="";$("#srcInfo").textContent="";open("#ovSrc")};
+$("#bSrc").onclick=()=>{if(!gateWho("⚠ Vui lòng nhập tối thiểu 1 Người thực hiện ở đầu trang trước khi nhập thông tin bệnh nhân"))return;buildGrid();$("#srcWarn").textContent="";$("#srcInfo").textContent="";open("#ovSrc")};
 /* ===== Nhận bệnh: đọc file Excel báo cáo chọc hút ===== */
 function parseSrcRows(aoa){let h=-1,map=[];
 for(let i=0;i<Math.min(aoa.length,15);i++){const m=(aoa[i]||[]).map(sgIdx);if(m.filter(v=>v>=0).length>=3){h=i;map=m;break}}
@@ -1353,12 +1499,13 @@ ov.addEventListener("drop",e=>{const f=e.dataTransfer&&e.dataTransfer.files[0];i
 function nowRows(cab){const stN={using:"Đang nuôi cấy",empty:"Trống",bad:"Sửa chữa"},rows=[["Tủ GERI","Buồng","Trạng thái buồng","Phương pháp","Mã hồ sơ","STT chọc","Tên","Ngày sinh","Ngày CH","Số ngày nuôi","Tình trạng"]];
 for(let c=1;c<=CABS;c++)for(let r=1;r<=ROOMS;r++){if(cab&&c!=cab)continue;const x=S.rooms[c+"-"+r],pl=roomPts(x);
 if(!pl.length){rows.push(["GERI "+c,c+"."+r,stN[x.st]||"","","","","","","","",""]);continue}
-pl.forEach(q=>{const dd=q.ch?days(q.ch):"";rows.push(["GERI "+c,c+"."+r,stN[x.st],q.mode==="PI"?"P.I":"Timelapse",q.hs||"",q.stt||"",q.ten||"",q.ns||"",q.ch?dmy(q.ch):"",dd,dd!==""&&dd>=DAY?(dd>DAY?"Quá hạn":"Đến hạn"):""])})}
+pl.forEach(q=>{const dd=q.ch?days(q.ch):"";rows.push(["GERI "+c,c+"."+r,stN[x.st],mFull(q.mode),q.hs||"",q.stt||"",q.ten||"",q.ns||"",q.ch?dmy(q.ch):"",dd,dd!==""&&dd>=DAY?(dd>DAY?"Quá hạn":"Đến hạn"):""])})}
 return rows}
 S.ui=S.ui||{theme:"auto",pal:"diu"};
-const applyUi=()=>{const r=document.documentElement;if(S.ui.theme==="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",S.ui.theme);r.setAttribute("data-pal",S.ui.pal);r.setAttribute("data-bg",S.ui.bg||"flat")};
-$("#bUi").onclick=()=>{document.querySelector(`input[name=th][value=${S.ui.theme}]`).checked=true;document.querySelector(`input[name=pal][value=${S.ui.pal}]`).checked=true;document.querySelector(`input[name=bgs][value=${S.ui.bg||"flat"}]`).checked=true;open("#ovUi")};
+const applyUi=()=>{const r=document.documentElement;if(S.ui.theme==="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",S.ui.theme);r.setAttribute("data-pal",S.ui.pal);if(S.ui.sk&&S.ui.sk!=="mac")r.setAttribute("data-sk",S.ui.sk);else r.removeAttribute("data-sk");r.setAttribute("data-bg",S.ui.bg||"flat")};
+$("#bUi").onclick=()=>{document.querySelector(`input[name=th][value=${S.ui.theme}]`).checked=true;document.querySelector(`input[name=pal][value=${S.ui.pal}]`).checked=true;document.querySelector(`input[name=bgs][value=${S.ui.bg||"flat"}]`).checked=true;document.querySelector(`input[name=sk][value=${S.ui.sk||"mac"}]`).checked=true;open("#ovUi")};
 document.querySelectorAll("input[name=th],input[name=pal],input[name=bgs]").forEach(i=>i.onchange=()=>{S.ui.theme=document.querySelector("input[name=th]:checked").value;S.ui.pal=document.querySelector("input[name=pal]:checked").value;S.ui.bg=document.querySelector("input[name=bgs]:checked").value;save();applyUi()});
+document.querySelectorAll("input[name=sk]").forEach(i=>i.onchange=()=>{S.ui.sk=document.querySelector("input[name=sk]:checked").value;save();applyUi()});
 applyUi();
 $("#who").value=S.who||"";$("#who2").value=S.who2||"";["#who","#who2"].forEach(i=>$(i).addEventListener("input",updWho));updWho();render();
 document.querySelectorAll("header .pill,header .acts button,header input").forEach((e,i)=>e.style.setProperty("--i",i+2));
@@ -1371,6 +1518,25 @@ document.addEventListener("pointerdown",e=>{const b=e.target.closest&&e.target.c
   const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height)*2,sp=document.createElement("span");
   sp.className="rip";sp.style.cssText="width:"+d+"px;height:"+d+"px;left:"+(e.clientX-r.left-d/2)+"px;top:"+(e.clientY-r.top-d/2)+"px";
   b.appendChild(sp);setTimeout(()=>sp.remove(),700)},true);
+
+
+/* hiệu ứng bấm / giữ / kéo chuột trên nền (không có đích) */
+{const fx=document.createElement("div");fx.id="fx";document.body.appendChild(fx);
+const rm=window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches;
+const isBg=t=>!(t&&t.closest&&t.closest("button,a,input,select,textarea,label,.cab,.modal,.ov,.pill,[role=button],[onclick]"));
+const mk=(c,x,y,life)=>{while(fx.childElementCount>80)fx.firstChild.remove();const e=document.createElement("i");e.className=c;e.style.left=x+"px";e.style.top=y+"px";fx.appendChild(e);if(life)setTimeout(()=>e.remove(),life);return e};
+let P=null;
+const end=()=>{if(!P)return;clearTimeout(P.tm);if(P.h){const h=P.h;h.classList.add("out");setTimeout(()=>h.remove(),320)}
+if(P.moved||P.held)mk("fxr big",P.lx,P.ly,1100);P=null;document.body.classList.remove("fxp")};
+if(!rm){
+document.addEventListener("pointerdown",e=>{if(e.button>0||!isBg(e.target))return;end();
+P={lx:e.clientX,ly:e.clientY,h:null,moved:false,held:false,id:e.pointerId};
+mk("fxr",e.clientX,e.clientY,900);document.body.classList.add("fxp");
+P.tm=setTimeout(()=>{if(P&&!P.h){P.held=true;P.h=mk("fxh",P.lx,P.ly)}},260)},true);
+document.addEventListener("pointermove",e=>{if(!P||e.pointerId!==P.id)return;const x=e.clientX,y=e.clientY;
+if(!P.h){P.h=mk("fxh",x,y)}P.h.style.left=x+"px";P.h.style.top=y+"px";
+const d=Math.hypot(x-P.lx,y-P.ly);if(d>16){P.moved=true;mk("fxd",x,y,900);P.lx=x;P.ly=y}},true);
+["pointerup","pointercancel","blur"].forEach(t=>addEventListener(t,end,true))}}
 
 /* ===== FIREBASE: ĐĂNG NHẬP BẮT BUỘC → MỚI XEM / SỬA ĐƯỢC DỮ LIỆU ===== */
 const FB_CFG={
