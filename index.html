@@ -1124,6 +1124,7 @@ animation:rmIn .45s cubic-bezier(.2,.9,.3,1.2) both}
 #ttlCab{color:#fff!important;padding:0 .38em;margin-left:.12em;border-radius:.3em;text-shadow:0 1px 3px rgba(0,0,0,.3);transition:background .5s,box-shadow .5s}
 #ttlCab[data-v=geri],#ttlCab:not([data-v]){background:linear-gradient(135deg,#f97316,#e11d48);box-shadow:0 4px 18px rgba(225,29,72,.45)}
 #ttlCab[data-v=bt]{background:linear-gradient(135deg,#06b6d4,#10b981);box-shadow:0 4px 18px rgba(6,182,212,.5)}
+.acm [data-m=empty]{color:#dc2626;font-weight:800;letter-spacing:.6px}.acm [data-m=empty] .ai{filter:none}
 </style></head><body>
 <header>
 <div class="hrow">
@@ -1973,12 +1974,12 @@ const FB_CFG={
     st.dataset.k=k;st.style.color=C[k];st.classList.toggle("err",k==="err");
     st.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+IC[k]+'</svg>'+(k==="err"&&m?'<span>'+esc(m)+'</span>':"");
     const t=k==="ok"?"Đã đồng bộ · "+lab(user):k==="sync"?"Đang đồng bộ…":k==="lock"?"Chưa đăng nhập":m||"Lỗi đồng bộ";
-    st.title=t;st.setAttribute("role","status");st.setAttribute("aria-label",t)};
+    st.title=t;st.setAttribute("role","status");st.setAttribute("aria-label",t);};
   document.body.appendChild(st);say("lock");
   const btn=document.createElement("button");btn.className="ghost ib";btn.id="bAuth";btn.textContent="👤";btn.title="Đăng nhập";btn.setAttribute("aria-label","Tài khoản");
   const bar=document.querySelector("header .trow1");if(bar)bar.appendChild(btn);
 
-  let M,auth,db,ref,user=null,denied=false,timer=null,dirty=false,unsub=null,popped=false,AV=null;
+  let M,auth,db,ref,user=null,freshLogin=false,denied=false,timer=null,dirty=false,unsub=null,popped=false,AV=null;
   const OWNER="phanson6996",DOM="gmail.com";
   const toAlias=e=>OWNER+"+"+String(e||"").trim().toLowerCase().replace(/[^a-z0-9._]/g,c=>c==="@"?"-at-":"-"+c.charCodeAt(0).toString(16).padStart(2,"0")+"-")+"@"+DOM;
   const fromAlias=a=>{a=String(a||"");const p=OWNER+"+",q="@"+DOM;
@@ -2000,6 +2001,21 @@ const FB_CFG={
   // Xóa dữ liệu bệnh nhân khỏi bộ nhớ trình duyệt (giữ lại tên người thực hiện + giao diện)
   const wipeLocal=()=>{S.rooms={};S.log=[];S.pts=[];S.srcRows=[];S.bt=null;btFix();fillRooms();G=[];ensureRows(10);
     try{localStorage.setItem(KEY,JSON.stringify({rooms:S.rooms,log:[],pts:[],ui:S.ui,who:S.who,who2:S.who2}))}catch(e){}};
+
+  /* ---------- Nút "Xóa toàn bộ dữ liệu": CHỈ tài khoản quản trị mới thấy ---------- */
+  const ADMIN="phanson6996@gmail.com";
+  const isAdmin=()=>authorized()&&lab(user).trim().toLowerCase()===ADMIN;
+  const wipeAll=async()=>{if(!isAdmin())return;
+    if(!await askConfirm({title:"Xóa TOÀN BỘ dữ liệu?",tone:"warn",danger:true,ok:"Tiếp tục",html:"<div>Toàn bộ dữ liệu <b>GERI và BT37</b> (buồng, bệnh nhân, lịch sử thao tác, danh sách nhận bệnh) sẽ bị xóa khỏi <b>cloud và mọi thiết bị</b>.</div><div class=\"dnote\">Một file sao lưu (.json) sẽ tự tải về trước khi xóa. Thao tác không thể hoàn tác trong ứng dụng.</div>"}))return;
+    if(!await askConfirm({title:"Xác nhận lần cuối",tone:"warn",danger:true,ok:"Xóa toàn bộ",cancel:"Hủy",html:"<div>Bạn <b>chắc chắn</b> muốn xóa sạch dữ liệu?</div>"}))return;
+    if(!isAdmin())return;
+    const bk=payload();
+    try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(bk)],{type:"application/json"}));a.download="geri_backup_"+todayStr()+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000)}catch(e){}
+    clearTimeout(timer);dirty=false;say("sync");
+    document.querySelectorAll(".ov.show:not(.au):not(.dlgov)").forEach(o=>o.classList.remove("show"));
+    wipeLocal();
+    try{await M.setDoc(ref,payload());say("ok");render();nthToast("🗑 Đã xóa toàn bộ dữ liệu")}
+    catch(e){console.error(e);applyRemote(bk);say("err","Không xóa được: "+(e.code||e.message))}};
 
   window.cloudPush=()=>{if(!authorized())return;dirty=true;clearTimeout(timer);timer=setTimeout(async()=>{
     if(!authorized())return;
@@ -2151,12 +2167,12 @@ const FB_CFG={
         if(!em)bad("aE");if(!val("aP"))bad("aP");
         if(!em||!val("aP")){msg("Hãy nhập email và mật khẩu.");return}
         if(!okMail){bad("aE");msg("Email không hợp lệ hoặc quá dài.");return}
-        await M.signInWithEmailAndPassword(auth,toAlias(em),val("aP"));ok=true}
+        freshLogin=true;try{await M.signInWithEmailAndPassword(auth,toAlias(em),val("aP"))}catch(e2){freshLogin=false;throw e2}ok=true}
       else if(a==="register"){
         if(!em||!okMail){bad("aE");msg("Hãy nhập email hợp lệ.");return}
         if(val("aP").length<6){bad("aP");msg("Mật khẩu tối thiểu 6 ký tự.");return}
         if(val("aP")!==val("aP2")){bad("aP2");msg("Hai mật khẩu không khớp.");return}
-        await M.createUserWithEmailAndPassword(auth,toAlias(em),val("aP"));
+        freshLogin=true;try{await M.createUserWithEmailAndPassword(auth,toAlias(em),val("aP"))}catch(e2){freshLogin=false;throw e2}
         try{await M.sendEmailVerification(auth.currentUser)}catch(x){}
         authUI("verify","Đã gửi yêu cầu duyệt tới chủ hệ thống. Tài khoản "+em+" dùng được sau khi được duyệt.")}
       else if(a==="reset"){
@@ -2216,7 +2232,7 @@ const FB_CFG={
     if(!user)return;
     if(MN){const same=MN._el===el;closeMenu();if(same)return}
     const m=document.createElement("div");m.className="acm";m.setAttribute("role","menu");m._el=el;
-    const AI=[["src","📝","Nhận bệnh"],["ch","📈","Biểu đồ"],["xl","📊","Xuất Excel"],["ui","🎨","Giao diện"],["hist","🕘","Lịch sử thao tác"],["pt","👥","Danh sách bệnh nhân"],["pw","🔑","Đổi mật khẩu"]];
+    const AI=[["src","📝","Nhận bệnh"],["ch","📈","Biểu đồ"],["xl","📊","Xuất Excel"],["ui","🎨","Giao diện"],["hist","🕘","Lịch sử thao tác"],["pt","👥","Danh sách bệnh nhân"],["pw","🔑","Đổi mật khẩu"]];if(isAdmin())AI.push(["empty","🗑","EMPTY"]);
     m.classList.add("wide");
     m.innerHTML='<div class="who"><small>Đang đăng nhập</small><b title="'+esc(lab(user))+'">'+esc(lab(user))+'</b></div>'
       +'<div class="acr">'+AI.map(i=>'<button type="button" role="menuitem" data-m="'+i[0]+'"><span class="ai">'+i[1]+'</span><span>'+i[2]+'</span></button>').join("")+'</div>'
@@ -2228,7 +2244,7 @@ const FB_CFG={
     if(up){m.style.bottom=(innerHeight-r.top+8)+"px";m.style.setProperty("--o","bottom right")}
     else{m.style.top=(r.bottom+8)+"px";m.style.setProperty("--o","top right")}
     const items=[...m.querySelectorAll("button")];
-    m.onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;closeMenu();const k=b.dataset.m;if(k==="pw")openPw();else if(k==="out")doLogout();else{const T={src:"#bSrc",ch:"#bCh",xl:"#bXl",ui:"#bUi",hist:"#bHist",pt:"#bPt"}[k],x=T&&document.querySelector(T);if(x)x.click()}};
+    m.onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;closeMenu();const k=b.dataset.m;if(k==="pw")openPw();else if(k==="empty")wipeAll();else if(k==="out")doLogout();else{const T={src:"#bSrc",ch:"#bCh",xl:"#bXl",ui:"#bUi",hist:"#bHist",pt:"#bPt"}[k],x=T&&document.querySelector(T);if(x)x.click()}};
     m._o=e=>{if(!m.contains(e.target)&&!el.contains(e.target))closeMenu()};
     m._k=e=>{
       if(e.key==="Escape"){e.preventDefault();closeMenu(true)}
@@ -2289,8 +2305,16 @@ const FB_CFG={
   }catch(e){authUI("fail");return}
   const app=M.initializeApp(FB_CFG);auth=M.getAuth(app);db=M.getFirestore(app,"default");ref=M.doc(db,"geri","state");
   auth.languageCode="vi";
+  /* Thiết bị lạ: phiên đăng nhập chỉ được công nhận trên thiết bị đã đăng nhập bằng mật khẩu tại chính thiết bị đó */
+  const TK=uid=>"geri_trust_"+uid;
+  const isTrust=uid=>{try{return localStorage.getItem(TK(uid))==="1"}catch(e){return false}};
   M.onAuthStateChanged(auth,u=>{
+    if(u){
+      if(freshLogin){freshLogin=false;try{localStorage.setItem(TK(u.uid),"1")}catch(e){}}
+      else if(!isTrust(u.uid)){wipeLocal();M.signOut(auth);try{nthToast("🔒 Thiết bị mới — vui lòng đăng nhập")}catch(e){}return}
+    }
     const was=user;user=u;denied=false;
+    if(!u&&was){try{localStorage.removeItem(TK(was.uid))}catch(e){}}
     if(!u&&was)wipeLocal();                                  // đăng xuất / hết phiên → xóa dữ liệu khỏi máy
     syncLock()});
 })();
