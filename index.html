@@ -1227,7 +1227,7 @@ animation:rmIn .45s cubic-bezier(.2,.9,.3,1.2) both}
 <style>.modal.pdk{--tx:#f1f5f9;--mu:#cbd5e1;--bd:rgba(255,255,255,.3);--card:rgba(255,255,255,.14);color:#f1f5f9}.modal.plt{--tx:#1b2733;--mu:#475569;--bd:rgba(0,0,0,.18);--card:#fff;color:#1b2733}</style>
 <div class="ov" id="ovPt"><div class="modal" style="width:min(1100px,100%)">
 <h3>Danh sách bệnh nhân</h3>
-<div class="row"><input id="ptQ" placeholder="Tìm theo tên, mã hồ sơ, STT, ngày sinh" style="flex:1"><input type="file" id="ptImpFile" accept=".xls,.xlsx,.csv" hidden><button class="ghost" id="ptXl">Xuất Excel</button></div>
+<div class="row"><input id="ptQ" placeholder="Tìm theo tên, mã hồ sơ, STT, ngày sinh" style="flex:1"><input type="file" id="ptImpFile" accept=".xls,.xlsx,.csv" hidden></div>
 <style>#ptBody tr.pcb{--h:#00a6c8}#ptBody tr.pcn{--h:#94a3b8}#ptBody td.pti{vertical-align:middle}.ptn{font-size:11px;color:var(--mu);font-weight:600;margin-left:6px;white-space:nowrap}.bx{padding:0 7px;margin-left:6px;font-size:14px;line-height:20px;font-weight:800}.pa{display:flex;align-items:center;gap:4px;white-space:nowrap}.pa+.pa{margin-top:3px}</style>
 <div class="tblw" id="ptBody"></div>
 <div class="row" style="justify-content:flex-end"><button class="ghost" data-close>Đóng</button></div>
@@ -1254,6 +1254,7 @@ animation:rmIn .45s cubic-bezier(.2,.9,.3,1.2) both}
 <h3>Xuất Excel</h3>
 <div class="row">Từ ngày <input type="date" id="xFrom"> đến ngày <input type="date" id="xTo"></div>
 <div class="row"><select id="xCab"><option value="">Tất cả tủ</option></select><span id="xCnt" style="color:var(--mu)"></span></div>
+<div style="font-size:12px;color:var(--mu);margin:2px 0 6px">Danh sách bệnh nhân xuất toàn bộ (Đang nuôi + Hoàn thành), không lọc theo khoảng ngày.</div>
 <div id="xSecs"></div>
 <div class="row" style="justify-content:flex-end"><button class="ghost" data-close>Đóng</button><button id="xGo">Xuất file .xlsx</button></div>
 </div></div>
@@ -1475,18 +1476,18 @@ try{dlBlob(name,data)}catch(e){askAlert({title:"Không thể lưu file",html:"<d
 for(let c=1;c<=CABS;c++)$("#xCab").insertAdjacentHTML("beforeend",`<option value="${c}">Tủ GERI ${c}</option>`);$("#xCab").insertAdjacentHTML("beforeend",'<option value="BT37">Tủ BT37</option>');
 const xlRows=()=>{const a=$("#xFrom").value,b=$("#xTo").value,f=$("#xCab").value;return S.log.filter(x=>{const d=ymd(new Date(x.t));return(!a||d>=a)&&(!b||d<=b)&&(!f||x.c==f)}).reverse()};
 const XSH=[
-{id:"pt",n:"Danh sách bệnh nhân",pre:"DSBN",pick:true,cols:["Mã hồ sơ","Tên","Ngày sinh","Ngày CH","STT chọc hút","Phương pháp","Buồng","Tủ","Ngày phôi","Tình trạng","Cảnh báo","Vào","Ra","Người thực hiện 1","Người thực hiện 2"],w:[14,24,12,12,12,12,8,10,11,13,12,20,20,20,20]},
+{id:"pt",n:"Danh sách bệnh nhân",pre:"DSBN",pick:true,cols:["Mã hồ sơ","Tên","Ngày sinh","Ngày CH","STT chọc hút","Phương pháp","Tủ","Buồng","Ngày phôi","Người thực hiện 1","Người thực hiện 2","Trạng thái"],w:[14,24,12,12,12,12,10,10,11,20,20,13]},
 {id:"wc",n:"Lịch sử thay nước",pre:"LSTN",cols:["Ngày thực hiện","Hành động","Tủ","Buồng","Người thực hiện 1","Người thực hiện 2"],w:[20,20,10,8,22,22]},
 {id:"op",n:"Lịch sử thao tác",pre:"LSTT",cols:["Ngày","Vị trí","Hành động","Người thực hiện 1","Người thực hiện 2","Ghi chú"],w:[20,14,22,22,22,40]}];
-const xlPts=()=>xlPtsG().concat(btPtsRows());const xlPtsG=()=>{const a=$("#xFrom").value,b=$("#xTo").value,f=$("#xCab").value,td=todayStr(),cur=a<=td&&td<=b;
-return S.pts.filter(r=>{if(f&&r.c!=f)return false;const d=ymd(new Date(r.start));return(d>=a&&d<=b)||(!r.end&&cur)}).map(r=>{const dd=r.ch&&!r.imp?Math.round((Date.parse(r.end?ymd(new Date(r.end)):td)-Date.parse(r.ch))/864e5):"";
-return[r.hs||"",r.ten||"",r.ns||"",r.ch?dmy(r.ch):"",r.stt||"",mFull(r.mode),r.c+"."+r.r,"GERI "+r.c,dd,r.end?"Hoàn thành":"Đang nuôi",!r.end&&dd!==""&&dd>=DAY?(dd>DAY?"Quá hạn":"Đến hạn"):"",fmtDT(r.start),r.end?(r.imp?"Updated":fmtDT(r.end)):"",r.p||"",r.p2||""]})};
+const xlPts=()=>xlPtsG().concat(btPtsRows());const xlPtsG=()=>{const f=$("#xCab").value,td=todayStr();
+return S.pts.filter(r=>!f||r.c==f).map(r=>{const dd=r.ch&&!r.imp?Math.round((Date.parse(r.end?ymd(new Date(r.end)):td)-Date.parse(r.ch))/864e5):"";
+return[r.hs||"",r.ten||"",r.ns||"",r.ch?dmy(r.ch):"",r.stt||"",mFull(r.mode),"GERI "+r.c,r.c+"."+r.r,dd,r.p||"",r.p2||"",r.end?"Hoàn thành":"Đang nuôi"]})};
 const xlData={
 pt:xlPts,
 wc:()=>xlRows().filter(x=>HANDLE(x.a)||x.a==="Đã thêm nước").map(x=>[fmtDT(x.t),actOf(x.a),"GERI "+x.c,x.r?x.c+"."+x.r:"",x.p||"",x.p2||""]),
 op:()=>xlRows().filter(x=>!String(x.a).startsWith("Đặt trạng thái")).map(x=>[fmtDT(x.t),x.r?(x.c==="BT37"?"BT37-"+x.r:"Buồng "+x.c+"."+x.r):"Tủ "+x.c,actOf(x.a),x.p||"",x.p2||"",noteOf(x)])};
 const xOpen=new Set();
-const xlGet=sh=>{S.ui=S.ui||{};const o=S.ui.xl||(S.ui.xl={});return o[sh.id]||(o[sh.id]={on:true,cols:sh.cols.map((_,i)=>i)})};
+const xlGet=sh=>{S.ui=S.ui||{};const o=S.ui.xl||(S.ui.xl={});const st=o[sh.id]||(o[sh.id]={on:true,cols:sh.cols.map((_,i)=>i),v:3});if(sh.id==="pt"&&st.v!==3){if(st.v!==2)st.cols=[...new Set(st.cols.filter(i=>i!==9).map(i=>i>9?i-1:i).concat(14))];const m={6:7,7:6,12:9,13:10,14:11};st.cols=[...new Set(st.cols.filter(i=>i<=8||i>=12).map(i=>m[i]!==undefined?m[i]:i).concat(11))];st.v=3}return st};
 const xlIdx=sh=>{const st=xlGet(sh);if(!st.on)return[];return sh.pick?st.cols.filter(i=>i<sh.cols.length).sort((a,b)=>a-b):sh.cols.map((_,i)=>i)};
 function xlRender(){$("#xSecs").innerHTML=XSH.map(sh=>{const st=xlGet(sh),op=xOpen.has(sh.id);
 return`<div class="xsec${st.on?"":" off"}${op?" open":""}" data-s="${sh.id}"><div class="xh"><label class="xm"><input type="checkbox" data-m="${sh.id}"${st.on?" checked":""}><b>${sh.n}</b></label><span class="xn" id="xn_${sh.id}"></span>${sh.pick?`<span class="xa"><span class="sel"><button type="button" class="lnk" data-all="${sh.id}">Chọn tất cả</button><button type="button" class="lnk" data-none="${sh.id}">Bỏ chọn</button></span><button type="button" class="lnk" data-tg="${sh.id}">${op?"Thu gọn ▴":"Chọn trường ▾"}</button></span>`:""}</div>${sh.pick?`<div class="xc">${sh.cols.map((c,i)=>`<label class="xchip"><input type="checkbox" data-s="${sh.id}" data-i="${i}"${st.cols.includes(i)?" checked":""}><span>${c}</span></label>`).join("")}</div>`:""}</div>`}).join("")}
@@ -1715,7 +1716,7 @@ const L=(.2126*c[0]+.7152*c[1]+.0722*c[2])/255;md.style.setProperty("background"
 new MutationObserver(ms=>{ms.forEach(m=>{const o=m.target;if(!o.classList||!o.classList.contains("ov")||o.classList.contains("dlgov")||!o.classList.contains("show"))return;
 if((m.oldValue||"").split(/\s+/).includes("show"))return;const md=o.querySelector(".modal");if(!md)return;
 pbgApply(md,LTRG&&Date.now()-LTRG.t<4000?LTRG.c:null)})}).observe(document.body,{subtree:true,attributes:true,attributeFilter:["class"],attributeOldValue:true});
-/* ===== Danh sách chung GERI + BT37: Sửa / Xóa BN BT37, bấm +/- cột buồng, xuất Excel ===== */
+/* ===== Danh sách chung GERI + BT37: Sửa / Xóa BN BT37, bấm +/- cột buồng ===== */
 $("#ptBody").addEventListener("click",e=>{const b=e.target.closest(".bx");if(!b)return;ptExp=!ptExp;drawPt()});
 $("#ptBody").addEventListener("click",e=>{const b=e.target.closest("button[data-e]");if(!b)return;const r=S.bt.pts.find(z=>z.id===b.dataset.e);if(!r||r.end)return;close($("#ovPt"));btOpen(r.room,r.id)});
 $("#ptBody").addEventListener("click",async e=>{const b=e.target.closest("button[data-d]");if(!b)return;const r=S.bt.pts.find(z=>z.id===b.dataset.d);if(!r||r.end)return;
@@ -1723,15 +1724,6 @@ if(!await askConfirm({title:"Xác nhận xóa bệnh nhân",danger:true,ok:"Xóa
 if(!gateWho())return;
 const x=S.bt.rooms[r.room];if(x){x.pl=(x.pl||[]).filter(z=>z.id!==r.id);if(!x.pl.length&&x.st==="using")x.st="empty"}
 S.bt.pts.splice(S.bt.pts.indexOf(r),1);btLog(r.room,"Xóa bệnh nhân: "+btTxt(r),"BT37-"+r.room+r.side);save();render();drawPt()});
-$("#ptXl").onclick=async()=>{const gs=ptGroups();if(!gs.length)return;if(typeof XLSX==="undefined"){askAlert({title:"Chưa xuất được Excel",html:"<div>Chưa tải được thư viện Excel. Hãy kiểm tra kết nối mạng rồi thử lại.</div>"});return}
-const nd=l=>{const p=l.pl[0];return p.ch&&!p.imp?Math.round((Date.parse(p.end?ymd(new Date(p.end)):todayStr())-Date.parse(p.ch))/864e5):""};
-const aoa=[["Mã hồ sơ","Tên","Ngày sinh","Loại","PP","Ngày CH","STT chọc hút","Buồng 1","Buồng 2","Buồng 3","Buồng 4","Ra","Ngày phôi","Người thực hiện 1","Người thực hiện 2"]],mg=[];
-gs.forEach(g=>{const n=g.ln.length,r0=aoa.length;g.ln.forEach((l,i)=>{const p=l.pl[0],bu=l.pl.map(ptBuL);
-aoa.push([i?"":g.hs,i?"":g.ten,i?"":g.ns,l.t,l.pp,i?"":(g.ch?dmy(g.ch):""),i?"":g.stt,bu[0]||"",bu[1]||"",bu[2]||"",bu.slice(3).join(", "),p.end?(p.imp?"Updated":fmtDT(p.end)):"Đang nuôi",nd(l),p.p||"",p.p2||""])});
-if(n>1)[0,1,2,5,6].forEach(c=>mg.push({s:{r:r0,c},e:{r:r0+n-1,c}}))});
-const ws=XLSX.utils.aoa_to_sheet(aoa);ws["!merges"]=mg;ws["!cols"]=[{wch:14},{wch:24},{wch:12},{wch:8},{wch:8},{wch:12},{wch:12},{wch:9},{wch:9},{wch:9},{wch:9},{wch:20},{wch:11},{wch:20},{wch:20}];
-const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Bệnh nhân");
-await saveFile(`benh_nhan_${todayStr().replace(/-/g,"")}.xlsx`,XLSX.write(wb,{type:"array",bookType:"xlsx"}))};
 $("#ptQ").oninput=drawPt;$("#bPt").onclick=()=>{if(!gateWho())return;drawPt();open("#ovPt")};
 {const sel=$("#peRoom");let h="";for(let c=1;c<=CABS;c++)for(let r=1;r<=ROOMS;r++)h+=`<option value="${c}-${r}">${c}.${r}</option>`;sel.innerHTML=h}
 let peId=null;const fillPe=r=>{$("#peHs").value=r.hs||"";$("#peStt").value=r.stt||"";$("#peTen").value=r.ten||"";$("#peNs").value=r.ns||"";$("#peCh").value=r.ch||"";$("#peMode").value=r.mode||"TL";$("#peRoom").value=r.c+"-"+r.r;$("#peErr").textContent=""};
@@ -2020,9 +2012,9 @@ if(!m||+m[1]<1||+m[1]>BTN){w.err="Tủ BT37 không hợp lệ (ví dụ 1T = BT3
 w.bt={r:+m[1],s:m[2].toUpperCase()};w.np.mode="BT";const nsv=nsNorm(ns);w.np.ns=nsv||"";const d=parseDate(ch);w.np.ch=d||"";
 if(!hs&&!ten)w.err="Thiếu tên / MHS";else if(nsv===null)w.err="Ngày sinh sai định dạng (dd/mm/yyyy)";else if(d===""||d===null)w.err=d===null?"Ngày CH sai định dạng":"Thiếu ngày CH";else if(d>todayStr())w.err="Ngày CH lớn hơn hôm nay";
 return w}
-function btPtsRows(){const a=$("#xFrom").value,b=$("#xTo").value,f=$("#xCab").value,td=todayStr(),cur=a<=td&&td<=b;if(f&&f!=="BT37")return[];
-return S.bt.pts.filter(r=>{const d=ymd(new Date(r.start));return(d>=a&&d<=b)||(!r.end&&cur)}).map(r=>{const dd=r.ch&&!r.imp?Math.round((Date.parse(r.end?ymd(new Date(r.end)):td)-Date.parse(r.ch))/864e5):"";
-return[r.hs||"",r.ten||"",r.ns||"",r.ch?dmy(r.ch):"",r.stt||"","BT37",r.room+(r.side==="T"?"T":"P"),"BT37",dd,r.end?"Hoàn thành":"Đang nuôi",!r.end&&dd!==""&&dd>=5&&dd<=7?"Cảnh báo N5-7":"",fmtDT(r.start),r.end?(r.imp?"Updated":fmtDT(r.end)):"",r.p||"",r.p2||""]})}
+function btPtsRows(){const f=$("#xCab").value,td=todayStr();if(f&&f!=="BT37")return[];
+return S.bt.pts.map(r=>{const dd=r.ch&&!r.imp?Math.round((Date.parse(r.end?ymd(new Date(r.end)):td)-Date.parse(r.ch))/864e5):"";
+return[r.hs||"",r.ten||"",r.ns||"",r.ch?dmy(r.ch):"",r.stt||"","BT37","BT37 - "+r.room,r.side==="T"?"Trái":"Phải",dd,r.p||"",r.p2||"",r.end?"Hoàn thành":"Đang nuôi"]})}
 function btNowRows(rows){const stN={using:"Đang nuôi cấy",empty:"Trống",bad:"Sửa chữa"};for(let i=1;i<=BTN;i++){const x=S.bt.rooms[i];
 if(!x.pl.length){rows.push(["BT37","BT37-"+i,stN[x.st]||"","","","","","","","",""]);continue}
 x.pl.forEach(q=>{const dd=btDays(q);rows.push(["BT37","BT37-"+i+(q.side==="T"?"T":"P"),stN[x.st],"BT37 · "+btSd(q.side),q.hs||"",q.stt||"",q.ten||"",q.ns||"",q.ch?dmy(q.ch):"",dd===null?"":dd,dd!==null&&dd>=5&&dd<=7?"Cảnh báo N5-7":""])})}}
