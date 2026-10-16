@@ -1136,6 +1136,27 @@ animation:rmIn .45s cubic-bezier(.2,.9,.3,1.2) both}
 .tile:has(.nv:hover),.tile:has(.nv:active),.tile:has(.nv:focus-visible){transform:none!important;transition:none!important}
 .tile .nv:hover,.tile .nv:active{transform:none!important}
 .tile .nv::before{content:"";position:absolute;inset:-6px}
+/* Quản lý link điều hướng GERI */
+#ovNvM .modal{width:min(760px,100%);padding:0;overflow:hidden;display:flex;flex-direction:column;max-height:88vh}
+#ovNvM .mh{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--bd)}
+#ovNvM .mh b{font-size:18px;flex:1}
+#ovNvM .mx{background:transparent;color:var(--mu);border:1px solid var(--bd);padding:4px 10px}
+#ovNvM .tabs{display:flex;gap:6px;padding:10px 18px 0;flex-wrap:wrap}
+#ovNvM .tabs button{background:color-mix(in srgb,var(--h) 14%,var(--card));color:color-mix(in srgb,var(--h) 60%,var(--tx));border:2px solid transparent;font-weight:700;padding:7px 14px}
+#ovNvM .tabs button.on{background:var(--h);color:#fff;border-color:color-mix(in srgb,var(--h) 70%,#000)}
+#ovNvM .list{padding:12px 18px 16px;overflow:auto;display:flex;flex-direction:column;gap:8px}
+#ovNvM .nr{display:flex;align-items:center;gap:8px;padding:8px;border:1px solid color-mix(in srgb,var(--h) 35%,var(--bd));border-radius:10px;background:color-mix(in srgb,var(--h) 8%,var(--card));flex-wrap:wrap}
+#ovNvM .nr .lb{font:800 14px/1 inherit;color:#fff;background:var(--h);border-radius:8px;padding:8px 10px;min-width:48px;text-align:center}
+#ovNvM .nr input{flex:1;min-width:160px}
+#ovNvM .nr input[readonly]{background:transparent;border-style:dashed;color:var(--mu);cursor:default}
+#ovNvM .nr input[readonly]:focus{outline:none}
+#ovNvM .nr .ic{width:34px;height:34px;padding:0;display:flex;align-items:center;justify-content:center;background:var(--card);color:var(--tx);border:1px solid var(--bd)}
+#ovNvM .nr .ic.del{color:var(--r)}
+#ovNvM .nr .ic:disabled,#ovNvM .nr .up:disabled{opacity:.4;pointer-events:none}
+#ovNvM .nr .up{height:34px;padding:0 12px;font-weight:600}
+#ovNvM .nr .st{flex-basis:100%;font-size:12px;color:var(--r);min-height:0}
+#ovNvM .nr .st.ok{color:var(--g)}
+#ovNvM .nr.edit{outline:2px solid var(--pri)}
 #ovNv .modal{width:min(520px,100%);padding:0;overflow:hidden}
 #ovNv .nvHead{display:flex;align-items:center;gap:12px;padding:16px 20px;background:linear-gradient(135deg,color-mix(in srgb,var(--h) 85%,#000),var(--h));color:#fff}
 #ovNv .nvHead .g1{font:700 13px/1 var(--ff,inherit);letter-spacing:.6px;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.45);border-radius:8px;padding:6px 10px;white-space:nowrap}
@@ -2257,7 +2278,7 @@ const FB_CFG={
     if(!user)return;
     if(MN){const same=MN._el===el;closeMenu();if(same)return}
     const m=document.createElement("div");m.className="acm";m.setAttribute("role","menu");m._el=el;
-    const AI=[["src","📝","Nhận bệnh"],["ch","📈","Biểu đồ"],["xl","📊","Xuất Excel"],["ui","🎨","Giao diện"],["hist","🕘","Lịch sử thao tác"],["pt","👥","Danh sách bệnh nhân"],["pw","🔑","Đổi mật khẩu"]];if(isAdmin())AI.push(["empty","🗑","EMPTY"]);
+    const AI=[["src","📝","Nhận bệnh"],["ch","📈","Biểu đồ"],["xl","📊","Xuất Excel"],["ui","🎨","Giao diện"],["hist","🕘","Lịch sử thao tác"],["pt","👥","Danh sách bệnh nhân"],["nav","🧭","Điều hướng GERI"],["pw","🔑","Đổi mật khẩu"]];if(isAdmin())AI.push(["empty","🗑","EMPTY"]);
     m.classList.add("wide");
     m.innerHTML='<div class="who"><small>Đang đăng nhập</small><b title="'+esc(lab(user))+'">'+esc(lab(user))+'</b></div>'
       +'<div class="acr">'+AI.map(i=>'<button type="button" role="menuitem" data-m="'+i[0]+'"><span class="ai">'+i[1]+'</span><span>'+i[2]+'</span></button>').join("")+'</div>'
@@ -2269,7 +2290,7 @@ const FB_CFG={
     if(up){m.style.bottom=(innerHeight-r.top+8)+"px";m.style.setProperty("--o","bottom right")}
     else{m.style.top=(r.bottom+8)+"px";m.style.setProperty("--o","top right")}
     const items=[...m.querySelectorAll("button")];
-    m.onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;closeMenu();const k=b.dataset.m;if(k==="pw")openPw();else if(k==="empty")wipeAll();else if(k==="out")doLogout();else{const T={src:"#bSrc",ch:"#bCh",xl:"#bXl",ui:"#bUi",hist:"#bHist",pt:"#bPt"}[k],x=T&&document.querySelector(T);if(x)x.click()}};
+    m.onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;closeMenu();const k=b.dataset.m;if(k==="pw")openPw();else if(k==="nav"){if(window.nvManage)window.nvManage()}else if(k==="empty")wipeAll();else if(k==="out")doLogout();else{const T={src:"#bSrc",ch:"#bCh",xl:"#bXl",ui:"#bUi",hist:"#bHist",pt:"#bPt"}[k],x=T&&document.querySelector(T);if(x)x.click()}};
     m._o=e=>{if(!m.contains(e.target)&&!el.contains(e.target))closeMenu()};
     m._k=e=>{
       if(e.key==="Escape"){e.preventDefault();closeMenu(true)}
@@ -2344,6 +2365,7 @@ const FB_CFG={
     syncLock()});
 })();
 </script>
+<div class="ov" id="ovNvM"><div class="modal"><div class="mh"><b>🧭 Điều hướng GERI</b><button type="button" class="mx" id="nvmX" aria-label="Đóng">✕</button></div><div class="tabs" id="nvmTabs"></div><div class="list" id="nvmList"></div></div></div>
 <div class="ov" id="ovNv"><div class="modal">
 <div class="nvHead" id="nvTitle"></div>
 <div class="nvBody">
@@ -2386,6 +2408,28 @@ q("#nvDel").onclick=()=>{apply("");closeEdit()};
 inp.addEventListener("keydown",e=>{if(e.key==="Enter")q("#nvSave").click();if(e.key==="Escape")closeEdit()});
 ov.addEventListener("click",e=>{if(e.target===ov)closeEdit()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&ov.classList.contains("show"))closeEdit()});
+/* ===== Bảng quản lý link (mở từ nút tài khoản) ===== */
+const ovM=q("#ovNvM"),tabsM=q("#nvmTabs"),listM=q("#nvmList");let tabM=1;
+const IC_E='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>';
+const IC_D='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>';
+const drawM=()=>{tabsM.innerHTML=Array.from({length:CABS},(_,i)=>`<button type="button" data-c="${i+1}" style="--h:var(--h${i+1})" class="${tabM===i+1?"on":""}">GERI ${i+1}</button>`).join("");
+listM.style.setProperty("--h",`var(--h${tabM})`);
+listM.innerHTML=Array.from({length:ROOMS},(_,i)=>{const k=tabM+"-"+(i+1),u=nvGet(k);return `<div class="nr" data-k="${k}"><span class="lb">${tabM}.${i+1}</span><input type="text" readonly value="${esc(u)}" placeholder="Chưa có link" autocomplete="off" spellcheck="false" aria-label="Link buồng ${tabM}.${i+1}"><button type="button" class="ic ed" title="Chỉnh sửa" aria-label="Chỉnh sửa">${IC_E}</button><button type="button" class="ic del" title="Xóa link" aria-label="Xóa link"${u?"":" disabled"}>${IC_D}</button><button type="button" class="up" disabled>Cập nhật</button><div class="st"></div></div>`}).join("")};
+const openMgr=()=>{drawM();ovM.classList.add("show")};
+window.nvManage=openMgr;
+const rowMsg=(row,t,ok)=>{const st=row.querySelector(".st");st.textContent=t;st.classList.toggle("ok",!!ok);if(t)setTimeout(()=>{if(st.textContent===t)st.textContent=""},2500)};
+const commit=(k,v)=>{const d=nvData();if(v)d[k]=v;else delete d[k];nvBackup();save();window._lh="";render()};
+tabsM.addEventListener("click",e=>{const b=e.target.closest("[data-c]");if(!b)return;tabM=+b.dataset.c;drawM()});
+listM.addEventListener("click",e=>{const row=e.target.closest(".nr");if(!row)return;const k=row.dataset.k,inp=row.querySelector("input"),up=row.querySelector(".up"),del=row.querySelector(".del");
+if(e.target.closest(".ed")){inp.readOnly=false;row.classList.add("edit");up.disabled=false;inp.focus();inp.select();return}
+if(e.target.closest(".del")){commit(k,"");inp.value="";inp.readOnly=true;row.classList.remove("edit");up.disabled=true;del.disabled=true;rowMsg(row,"Đã xóa link — buồng "+k.replace("-","."),true);return}
+if(e.target.closest(".up")){const v=norm(inp.value);if(v===null){rowMsg(row,"Link không hợp lệ (chỉ hỗ trợ http/https).",false);return}
+commit(k,v);inp.value=v;inp.readOnly=true;row.classList.remove("edit");up.disabled=true;del.disabled=!v;rowMsg(row,v?"Đã cập nhật cho buồng "+k.replace("-","."):"Đã xóa link",true)}});
+listM.addEventListener("input",e=>{const row=e.target.closest(".nr");if(row)row.querySelector(".up").disabled=false});
+listM.addEventListener("keydown",e=>{const row=e.target.closest(".nr");if(!row||e.target.tagName!=="INPUT")return;if(e.key==="Enter"){e.preventDefault();row.querySelector(".up").click()}});
+q("#nvmX").onclick=()=>ovM.classList.remove("show");
+ovM.addEventListener("click",e=>{if(e.target===ovM)ovM.classList.remove("show")});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&ovM.classList.contains("show"))ovM.classList.remove("show")});
 render();
 })();
 </script>
