@@ -1093,20 +1093,20 @@ main{overflow:hidden}
 @media(prefers-reduced-motion:reduce){.cab h2,.btc .btn{animation:none}}
 
 /* ===== v7: tiêu đề popup từng buồng (GERI & BT37) đồng bộ kiểu tên buồng ===== */
-#eTitle,#btT{position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:10px 14px;border-radius:12px;font-size:20px;font-weight:800;letter-spacing:.8px;line-height:1.2;
+#eTitle,#nvTitle,#btT{position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:10px 14px;border-radius:12px;font-size:20px;font-weight:800;letter-spacing:.8px;line-height:1.2;
 color:color-mix(in srgb,var(--h,var(--pri)) 82%,var(--tx));
 background:linear-gradient(135deg,color-mix(in srgb,var(--h,var(--pri)) 36%,var(--card)),color-mix(in srgb,var(--h,var(--pri)) 12%,var(--card)));
 box-shadow:inset 5px 0 0 var(--h,var(--pri)),inset 0 -2px 0 color-mix(in srgb,var(--h,var(--pri)) 55%,transparent),0 6px 18px color-mix(in srgb,var(--h,var(--pri)) 22%,transparent);
 animation:rmIn .45s cubic-bezier(.2,.9,.3,1.2) both}
-#eTitle .rmC,#btT .rmC{background:linear-gradient(135deg,var(--h,var(--pri)),color-mix(in srgb,var(--h,var(--pri)) 55%,#000));color:#fff;border-radius:9px;padding:4px 11px;font-size:15px;letter-spacing:.6px;text-shadow:0 1px 2px rgba(0,0,0,.3);box-shadow:0 3px 10px color-mix(in srgb,var(--h,var(--pri)) 50%,transparent)}
-#eTitle .rmB,#btT .rmB{text-shadow:0 0 10px color-mix(in srgb,var(--h,var(--pri)) 50%,transparent);animation:nmGlow 3.2s ease-in-out infinite}
-#eTitle::after,#btT::after{content:"";position:absolute;top:0;bottom:0;left:-90px;width:70px;background:linear-gradient(100deg,transparent,rgba(255,255,255,.3),transparent);animation:nmSweep 4s ease-in-out infinite}
+#eTitle .rmC,#nvTitle .rmC,#btT .rmC{background:linear-gradient(135deg,var(--h,var(--pri)),color-mix(in srgb,var(--h,var(--pri)) 55%,#000));color:#fff;border-radius:9px;padding:4px 11px;font-size:15px;letter-spacing:.6px;text-shadow:0 1px 2px rgba(0,0,0,.3);box-shadow:0 3px 10px color-mix(in srgb,var(--h,var(--pri)) 50%,transparent)}
+#eTitle .rmB,#nvTitle .rmB,#btT .rmB{text-shadow:0 0 10px color-mix(in srgb,var(--h,var(--pri)) 50%,transparent);animation:nmGlow 3.2s ease-in-out infinite}
+#eTitle::after,#nvTitle::after,#btT::after{content:"";position:absolute;top:0;bottom:0;left:-90px;width:70px;background:linear-gradient(100deg,transparent,rgba(255,255,255,.3),transparent);animation:nmSweep 4s ease-in-out infinite}
 @keyframes rmIn{from{opacity:0;transform:translateY(-10px) scale(.96)}}
 @keyframes nmSweep{0%{transform:translateX(0)}45%,100%{transform:translateX(900px)}}
-@media(prefers-reduced-motion:reduce){#eTitle,#btT,#eTitle .rmB,#btT .rmB,#eTitle::after,#btT::after{animation:none}}
+@media(prefers-reduced-motion:reduce){#eTitle,#nvTitle,#btT,#eTitle .rmB,#nvTitle .rmB,#btT .rmB,#eTitle::after,#nvTitle::after,#btT::after{animation:none}}
 
 /* ===== v8: khung popup theo màu tủ; thông tin bệnh nhân BT37 ===== */
-#ovEdit .modal,#btM{border:2px solid var(--h,var(--pri));box-shadow:0 20px 60px rgba(0,0,0,.35),0 0 0 5px color-mix(in srgb,var(--h,var(--pri)) 20%,transparent),0 0 46px color-mix(in srgb,var(--h,var(--pri)) 32%,transparent)}
+#ovEdit .modal,#ovNv .modal,#btM{border:2px solid var(--h,var(--pri));box-shadow:0 20px 60px rgba(0,0,0,.35),0 0 0 5px color-mix(in srgb,var(--h,var(--pri)) 20%,transparent),0 0 46px color-mix(in srgb,var(--h,var(--pri)) 32%,transparent)}
 #btT .rmD{opacity:.6;font-weight:600}
 .btpih{display:flex;align-items:center;gap:10px;margin:10px 0}.btpih .pis{font-size:14px;letter-spacing:.5px}
 #btPi{border-left:4px solid var(--sl);padding-left:12px;margin:10px 0}#btPi[data-s=P]{border-left-color:var(--sr)}
@@ -1157,14 +1157,15 @@ animation:rmIn .45s cubic-bezier(.2,.9,.3,1.2) both}
 #ovNvM .nr .st{flex-basis:100%;font-size:12px;color:var(--r);min-height:0}
 #ovNvM .nr .st.ok{color:var(--g)}
 #ovNvM .nr.edit{outline:2px solid var(--pri)}
-#ovNv .modal{width:min(520px,100%);padding:0;overflow:hidden}
-#ovNv .nvHead{display:flex;align-items:center;gap:12px;padding:16px 20px;background:linear-gradient(135deg,color-mix(in srgb,var(--h) 85%,#000),var(--h));color:#fff}
-#ovNv .nvHead .g1{font:700 13px/1 var(--ff,inherit);letter-spacing:.6px;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.45);border-radius:8px;padding:6px 10px;white-space:nowrap}
-#ovNv .nvHead .g2{font:800 24px/1.1 var(--ff,inherit);letter-spacing:.4px;text-shadow:0 1px 2px rgba(0,0,0,.25)}
-#ovNv .nvBody{padding:16px 20px 18px}
-#ovNv input[type=url],#ovNv input[type=text]{width:100%}
-#ovNv .nvHint{font-size:12px;color:var(--mu);margin:6px 0 0}
-#ovNv .nvErr{color:var(--r);font-size:12.5px;min-height:16px;margin-top:6px}
+#ovNv .modal{width:min(520px,100%)}
+#ovNv .nvErr{color:var(--r);font-size:12.5px;min-height:16px;margin:2px 0 6px}
+/* ===== Đóng popup: thu dần từ dưới lên trên (không thu về giữa) ===== */
+.ov{transition:opacity .1s ease .26s,background-color .36s ease,backdrop-filter .36s ease,visibility 0s linear .36s}
+.ov.show{transition:opacity .28s ease,background-color .28s ease,backdrop-filter .28s ease,visibility 0s}
+.ov .modal{transform:none;clip-path:inset(0 -100px 100% -100px);transition:clip-path .32s cubic-bezier(.4,0,.2,1),opacity .32s ease-in}
+.ov.show .modal{clip-path:inset(-100px);transition:none;animation:ovModalIn .36s cubic-bezier(.2,.8,.2,1) backwards}
+@keyframes ovModalIn{from{opacity:0;transform:translateY(14px) scale(.97)}}
+@media(prefers-reduced-motion:reduce){.ov .modal,.ov.show .modal{transition:none;animation:none}}
 </style></head><body>
 <header>
 <div class="hrow">
@@ -1715,7 +1716,7 @@ const pbgApply=(md,c)=>{if(!c){md.style.removeProperty("background");md.classLis
 const L=(.2126*c[0]+.7152*c[1]+.0722*c[2])/255;md.style.setProperty("background","rgb("+c.join(",")+")","important");md.classList.toggle("pdk",L<.5);md.classList.toggle("plt",L>=.5)};
 new MutationObserver(ms=>{ms.forEach(m=>{const o=m.target;if(!o.classList||!o.classList.contains("ov")||o.classList.contains("dlgov")||!o.classList.contains("show"))return;
 if((m.oldValue||"").split(/\s+/).includes("show"))return;const md=o.querySelector(".modal");if(!md)return;
-pbgApply(md,LTRG&&Date.now()-LTRG.t<4000?LTRG.c:null)})}).observe(document.body,{subtree:true,attributes:true,attributeFilter:["class"],attributeOldValue:true});
+pbgApply(md,o.id==="ovNv"?null:LTRG&&Date.now()-LTRG.t<4000?LTRG.c:null)})}).observe(document.body,{subtree:true,attributes:true,attributeFilter:["class"],attributeOldValue:true});
 /* ===== Danh sách chung GERI + BT37: Sửa / Xóa BN BT37, bấm +/- cột buồng ===== */
 $("#ptBody").addEventListener("click",e=>{const b=e.target.closest(".bx");if(!b)return;ptExp=!ptExp;drawPt()});
 $("#ptBody").addEventListener("click",e=>{const b=e.target.closest("button[data-e]");if(!b)return;const r=S.bt.pts.find(z=>z.id===b.dataset.e);if(!r||r.end)return;close($("#ovPt"));btOpen(r.room,r.id)});
@@ -2464,21 +2465,17 @@ const FB_CFG={
 </script>
 <div class="ov" id="ovNvM"><div class="modal"><div class="mh"><b>🧭 Điều hướng GERI</b><button type="button" class="mx del" id="nvmDelAll" title="Xóa toàn bộ link" aria-label="Xóa toàn bộ link"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button><button type="button" class="mx" id="nvmX" aria-label="Đóng">✕</button></div><div class="tabs" id="nvmTabs"></div><div class="list" id="nvmList"></div></div></div>
 <div class="ov" id="ovNv"><div class="modal">
-<div class="nvHead" id="nvTitle"></div>
-<div class="nvBody">
-<label for="nvUrl" style="font-size:13px;color:var(--mu)">Đường link của buồng này (mở bằng tab mới khi bấm nút ↗)</label>
-<div class="row" style="margin:6px 0 0"><input id="nvUrl" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://..."></div>
+<h3 id="nvTitle"></h3>
+<div class="row"><label class="fl" style="flex:1"><span>Đường link của buồng này (mở bằng tab mới khi bấm nút ↗)</span><input id="nvUrl" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://..."></label></div>
 <div class="nvErr" id="nvErr"></div>
-<div class="row" style="justify-content:flex-end;margin-top:12px">
-<button type="button" class="ghost" id="nvDel">Xóa link</button>
-<button type="button" id="nvSave">Lưu</button>
-</div></div></div></div>
+<div class="row" style="justify-content:flex-end"><button type="button" class="ghost dng" id="nvDel">Xóa link</button><button type="button" class="ghost" id="nvCancel">Hủy</button><button type="button" id="nvSave">Lưu</button></div>
+</div></div>
 <script>
 (function(){
 const q=s=>document.querySelector(s),main=q("#main"),ov=q("#ovNv"),inp=q("#nvUrl"),err=q("#nvErr");
 let cur=null;
 const norm=v=>{v=(v||"").trim();if(!v)return"";if(!/^[a-z][a-z0-9+.-]*:/i.test(v))v="http://"+v;try{const u=new URL(v);if(u.protocol!=="http:"&&u.protocol!=="https:")return null;return u.href}catch(e){return null}};
-const openEdit=k=>{cur=k;const[c,r]=k.split("-");const t=q("#nvTitle");t.innerHTML=`<span class="g1">GERI ${c}</span><span class="g2">BUỒNG ${c}.${r}</span>`;q("#ovNv .modal").style.setProperty("--h",`var(--h${c})`);inp.value=nvGet(k);err.textContent="";ov.classList.add("show");setTimeout(()=>{inp.focus();inp.select()},60)};
+const openEdit=k=>{cur=k;const[c,r]=k.split("-");const t=q("#nvTitle");t.style.setProperty("--h",`var(--h${c})`);t.innerHTML=`<span class="rmC">GERI ${c}</span><span class="rmB">BUỒNG ${c}.${r}</span>`;q("#ovNv .modal").style.setProperty("--h",`var(--h${c})`);inp.value=nvGet(k);err.textContent="";ov.classList.add("show");setTimeout(()=>{inp.focus();inp.select()},60)};
 const closeEdit=()=>ov.classList.remove("show");
 const hit=e=>e.target.closest&&e.target.closest(".nv");
 /* Chuột trái: nếu đã có link -> để trình duyệt mở tab mới (thẻ <a target=_blank>); chưa có link -> mở ô nhập */
@@ -2501,7 +2498,7 @@ main.addEventListener("touchstart",e=>{const b=hit(e);if(!b)return;clearTimeout(
 main.addEventListener("mousedown",e=>{if(hit(e))e.stopPropagation()},true);
 const apply=v=>{const d=nvData();if(v)d[cur]=v;else delete d[cur];nvBackup();save();window._lh="";render()};
 q("#nvSave").onclick=()=>{const v=norm(inp.value);if(v===null){err.textContent="Link không hợp lệ (chỉ hỗ trợ http/https).";return}apply(v);closeEdit()};
-q("#nvDel").onclick=()=>{apply("");closeEdit()};
+q("#nvDel").onclick=()=>{apply("");closeEdit()};q("#nvCancel").onclick=closeEdit;
 inp.addEventListener("keydown",e=>{if(e.key==="Enter")q("#nvSave").click();if(e.key==="Escape")closeEdit()});
 ov.addEventListener("click",e=>{if(e.target===ov)closeEdit()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&ov.classList.contains("show"))closeEdit()});
@@ -2532,6 +2529,38 @@ q("#nvmX").onclick=()=>ovM.classList.remove("show");
 ovM.addEventListener("click",e=>{if(e.target===ovM)ovM.classList.remove("show")});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&ovM.classList.contains("show"))ovM.classList.remove("show")});
 render();
+})();
+</script>
+<script>
+/* ===== Popup: khi nội dung làm đổi kích thước thì mép trên giữ nguyên, mép dưới co/giãn mượt (thu dần từ dưới lên) ===== */
+(function(){
+const RM=matchMedia("(prefers-reduced-motion:reduce)"),wired=new WeakSet();
+function wire(ov){
+  if(wired.has(ov)||ov.classList.contains("dlgov"))return;
+  const md=ov.querySelector(":scope>.modal");if(!md)return;wired.add(ov);
+  let last=md.offsetHeight,anim=null;
+  const pin=()=>{
+    if(anim){anim.cancel();anim=null}
+    ov.style.alignItems="";md.style.marginTop="";md.style.maxHeight="";md.style.overflow="";
+    const cs=getComputedStyle(ov);if(cs.alignItems!=="center"){last=md.offsetHeight;return}
+    const pt=parseFloat(cs.paddingTop)||0,pb=parseFloat(cs.paddingBottom)||0,top=md.offsetTop,mh=parseFloat(getComputedStyle(md).maxHeight),avail=innerHeight-top-pb;
+    ov.style.alignItems="flex-start";md.style.marginTop=Math.max(0,top-pt)+"px";
+    md.style.maxHeight=(isFinite(mh)?Math.min(mh,avail):avail)+"px";
+    last=md.offsetHeight};
+  new MutationObserver(ms=>ms.forEach(m=>{if(ov.classList.contains("show")&&!(m.oldValue||"").split(/\s+/).includes("show"))pin()}))
+    .observe(ov,{attributes:true,attributeFilter:["class"],attributeOldValue:true});
+  new ResizeObserver(()=>{
+    if(anim)return;
+    const h=md.offsetHeight;
+    if(!ov.classList.contains("show")||RM.matches||Math.abs(h-last)<2){last=h;return}
+    const from=last;last=h;md.style.overflow="hidden";
+    anim=md.animate([{height:from+"px"},{height:h+"px"}],{duration:300,easing:"cubic-bezier(.4,0,.2,1)"});
+    const done=()=>{anim=null;md.style.overflow="";last=md.offsetHeight};
+    anim.onfinish=done;anim.oncancel=done}).observe(md);
+}
+const all=()=>document.querySelectorAll(".ov").forEach(wire);
+all();
+new MutationObserver(all).observe(document.body,{childList:true});
 })();
 </script>
 </body></html>
