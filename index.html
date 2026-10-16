@@ -1125,6 +1125,25 @@ animation:rmIn .45s cubic-bezier(.2,.9,.3,1.2) both}
 #ttlCab[data-v=geri],#ttlCab:not([data-v]){background:linear-gradient(135deg,#f97316,#e11d48);box-shadow:0 4px 18px rgba(225,29,72,.45)}
 #ttlCab[data-v=bt]{background:linear-gradient(135deg,#06b6d4,#10b981);box-shadow:0 4px 18px rgba(6,182,212,.5)}
 .acm [data-m=empty]{color:#dc2626;font-weight:800;letter-spacing:.6px}.acm [data-m=empty] .ai{filter:none}
+
+/* Nút điều hướng góc phải trên mỗi buồng */
+.tile .nv{-webkit-user-drag:none;user-select:none;text-decoration:none;cursor:pointer;position:absolute;top:4px;right:4px;z-index:5;width:22px;height:22px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:7px;background:var(--card);color:var(--pri);border:1px solid var(--bd);box-shadow:0 1px 3px rgba(20,40,70,.18);opacity:.82;transition:opacity .15s,transform .15s,background-color .15s,color .15s}
+.tile .nv:hover{opacity:1;transform:scale(1.12);filter:none;background:var(--pri);color:#fff}
+.tile .nv:active{transform:scale(.92)}
+.tile .nv:not(.set){color:var(--mu);border-style:dashed}
+.tile .nv:focus-visible{outline:2px solid var(--pri);outline-offset:1px}
+.tile .no+.hf{padding-right:32px}
+.tile:has(.nv:hover),.tile:has(.nv:active),.tile:has(.nv:focus-visible){transform:none!important;transition:none!important}
+.tile .nv:hover,.tile .nv:active{transform:none!important}
+.tile .nv::before{content:"";position:absolute;inset:-6px}
+#ovNv .modal{width:min(520px,100%);padding:0;overflow:hidden}
+#ovNv .nvHead{display:flex;align-items:center;gap:12px;padding:16px 20px;background:linear-gradient(135deg,color-mix(in srgb,var(--h) 85%,#000),var(--h));color:#fff}
+#ovNv .nvHead .g1{font:700 13px/1 var(--ff,inherit);letter-spacing:.6px;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.45);border-radius:8px;padding:6px 10px;white-space:nowrap}
+#ovNv .nvHead .g2{font:800 24px/1.1 var(--ff,inherit);letter-spacing:.4px;text-shadow:0 1px 2px rgba(0,0,0,.25)}
+#ovNv .nvBody{padding:16px 20px 18px}
+#ovNv input[type=url],#ovNv input[type=text]{width:100%}
+#ovNv .nvHint{font-size:12px;color:var(--mu);margin:6px 0 0}
+#ovNv .nvErr{color:var(--r);font-size:12.5px;min-height:16px;margin-top:6px}
 </style></head><body>
 <header>
 <div class="hrow">
@@ -1297,12 +1316,18 @@ const mn={TL:"GERI-TL",PI:"GERI P.I",BT:"BT37",ALL:"Tất cả"}[m],dl=i>=0?(i==
 $("#dayT").textContent="Ngày phôi "+dl+" · "+mn;$("#dayS").textContent=out.length+" bệnh nhân";
 $("#dayB").innerHTML=out.length?`<table class="hl"><tr><th>Buồng</th><th>Tủ</th><th>PP</th><th>Tên</th><th>Mã hồ sơ</th><th>STT</th><th>Ngày CH</th><th>Ngày phôi</th></tr>${out.map(({k,q,d,bt})=>{const[c,r]=k.split("-");return`<tr><td><b>${bt?k:c+"."+r}</b></td><td>${bt?"BT37":"GERI "+c}</td><td>${bt?"BT37":q.mode==="PI"?"P.I":"TL"}</td><td>${esc(q.ten||"")}</td><td>${esc(q.hs||"")}</td><td>${esc(q.stt||"")}</td><td>${q.ch?dmy(q.ch):""}</td><td>N${d}</td></tr>`}).join("")}</table>`:'<div class="empty-msg">Không có bệnh nhân.</div>';
 open("#ovDay")});
+/* ===== Nút điều hướng ở góc phải trên mỗi buồng: chuột trái = mở tab link cài sẵn; chuột phải / giữ lâu = chỉnh sửa link ===== */
+const nvData=()=>{S.ui=S.ui||{};return S.ui.nv||(S.ui.nv={})};
+const NVK="geri_nv_links";
+const nvGet=k=>{let v=nvData()[k];if(typeof v!=="string"||!v){try{const o=JSON.parse(localStorage.getItem(NVK)||"{}");v=typeof o[k]==="string"?o[k]:""}catch(e){v=""}if(v)nvData()[k]=v}return v||""};
+const nvBackup=()=>{try{localStorage.setItem(NVK,JSON.stringify(nvData()))}catch(e){}};
+const nvBtn=k=>{const u=nvGet(k);return `<a class="nv${u?" set":""}" data-nv="${k}" draggable="false" tabindex="0" role="link"${u?` href="${esc(u)}" target="_blank" rel="noopener noreferrer"`:""} title="${u?"Bấm: mở link trong tab mới · Chuột phải / giữ lâu: chỉnh sửa link":"Chưa có link — bấm để nhập link"}" aria-label="Điều hướng buồng ${k.replace("-",".")}"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>`};
 function render(){
 if(window.LOCKED){$("#main").innerHTML="";window._lh="";window._revDone=false;window._revWant=false;$("#dTab").innerHTML="";_dh="";_dp=[];["nOk","nEm","nBad"].forEach(i=>{const e=$("#"+i);e.textContent="0";delete e.dataset.s});$("#nDue").textContent="0/0";$("#cnt").style.display="none";$("#noteBar").style.display="none";if(window.btRender)btRender();return}
 const m=$("#main"),td=todayStr();let out="",ok=0,em=0,bad=0,due=0;const notes=[];
 for(let c=1;c<=CABS;c++){
 let rh="",far=null,farCh="",cDue=0,dots="",cOk=0;
-for(let r=1;r<=ROOMS;r++){const k=c+"-"+r,x=S.rooms[k],no=`<div class="no">${c}.${r}</div>`;
+for(let r=1;r<=ROOMS;r++){const k=c+"-"+r,x=S.rooms[k],no=`<div class="no">${c}.${r}</div>${nvBtn(k)}`;
 if(x.st==="bad"){bad++;dots+='<i class="bad"></i>';rh+=`<div class="tile bad" data-k="${k}">${no}<div class="bd">Sửa chữa / chưa dùng</div></div>`;continue}
 const pl=roomPts(x),act=dueList(x);
 const half=mo=>{const q=pl.find(z=>z.mode===mo),cl=mo==="PI"?"pi":"tl",lab=mo==="PI"?"P.I":"TL";
@@ -1989,10 +2014,10 @@ const FB_CFG={
 
   /* ---------- dữ liệu ---------- */
   const clean=o=>JSON.parse(JSON.stringify(o));
-  const payload=()=>clean({rooms:S.rooms,log:S.log,pts:S.pts,srcRows:(S.srcRows||[]).map(r=>JSON.stringify(r)),bt:S.bt,t:Date.now()});
+  const payload=()=>clean({rooms:S.rooms,log:S.log,pts:S.pts,srcRows:(S.srcRows||[]).map(r=>JSON.stringify(r)),bt:S.bt,nv:(S.ui&&S.ui.nv)||{},t:Date.now()});
   const fillRooms=()=>{for(let c=1;c<=CABS;c++)for(let r=1;r<=ROOMS;r++){const k=c+"-"+r;if(!S.rooms[k])S.rooms[k]={st:"empty",pl:[]};if(!S.rooms[k].pl)S.rooms[k].pl=[]}};
   const applyRemote=d=>{
-    S.rooms=d.rooms||S.rooms;S.log=d.log||[];S.pts=d.pts||[];if(d.bt)S.bt=d.bt;btFix();S.srcRows=(d.srcRows||[]).map(r=>{if(typeof r!=="string")return r;try{return JSON.parse(r)}catch(e){return[]}});
+    S.rooms=d.rooms||S.rooms;S.log=d.log||[];S.pts=d.pts||[];if(d.bt)S.bt=d.bt;if(d.nv&&typeof d.nv==="object"){S.ui=S.ui||{};S.ui.nv=Object.assign({},S.ui.nv||{},d.nv);try{localStorage.setItem("geri_nv_links",JSON.stringify(S.ui.nv))}catch(e){}}btFix();S.srcRows=(d.srcRows||[]).map(r=>{if(typeof r!=="string")return r;try{return JSON.parse(r)}catch(e){return[]}});
     fillRooms();
     G=Array.isArray(S.srcRows)?S.srcRows.map(r=>SG.map((_,j)=>String(r[j]||""))):[];ensureRows(10);
     try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
@@ -2318,4 +2343,50 @@ const FB_CFG={
     if(!u&&was)wipeLocal();                                  // đăng xuất / hết phiên → xóa dữ liệu khỏi máy
     syncLock()});
 })();
-</script></body></html>
+</script>
+<div class="ov" id="ovNv"><div class="modal">
+<div class="nvHead" id="nvTitle"></div>
+<div class="nvBody">
+<label for="nvUrl" style="font-size:13px;color:var(--mu)">Đường link của buồng này (mở bằng tab mới khi bấm nút ↗)</label>
+<div class="row" style="margin:6px 0 0"><input id="nvUrl" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://..."></div>
+<div class="nvErr" id="nvErr"></div>
+<div class="row" style="justify-content:flex-end;margin-top:12px">
+<button type="button" class="ghost" id="nvDel">Xóa link</button>
+<button type="button" id="nvSave">Lưu</button>
+</div></div></div></div>
+<script>
+(function(){
+const q=s=>document.querySelector(s),main=q("#main"),ov=q("#ovNv"),inp=q("#nvUrl"),err=q("#nvErr");
+let cur=null;
+const norm=v=>{v=(v||"").trim();if(!v)return"";if(!/^[a-z][a-z0-9+.-]*:/i.test(v))v="http://"+v;try{const u=new URL(v);if(u.protocol!=="http:"&&u.protocol!=="https:")return null;return u.href}catch(e){return null}};
+const openEdit=k=>{cur=k;const[c,r]=k.split("-");const t=q("#nvTitle");t.innerHTML=`<span class="g1">GERI ${c}</span><span class="g2">BUỒNG ${c}.${r}</span>`;q("#ovNv .modal").style.setProperty("--h",`var(--h${c})`);inp.value=nvGet(k);err.textContent="";ov.classList.add("show");setTimeout(()=>{inp.focus();inp.select()},60)};
+const closeEdit=()=>ov.classList.remove("show");
+const hit=e=>e.target.closest&&e.target.closest(".nv");
+/* Chuột trái: nếu đã có link -> để trình duyệt mở tab mới (thẻ <a target=_blank>); chưa có link -> mở ô nhập */
+let dn=null,dt=0;
+main.addEventListener("pointerdown",e=>{const b=hit(e);dn=b?b.dataset.nv:null;dt=Date.now()},true);
+main.addEventListener("click",e=>{let b=hit(e),k=b&&b.dataset.nv,fb=false;
+if(!b){if(dn&&Date.now()-dt<2000&&e.target.closest&&(e.target.closest(".tile")||e.target===main)){k=dn;fb=true}else{dn=null;return}}
+dn=null;e.stopPropagation();
+if(b&&b._lp){b._lp=false;e.preventDefault();return}
+const u=nvGet(k);
+if(fb){e.preventDefault();if(u)window.open(u,"_blank","noopener");else openEdit(k);return}
+if(!u){e.preventDefault();openEdit(k)}},true);
+main.addEventListener("keydown",e=>{const b=hit(e);if(b&&(e.key==="Enter"||e.key===" ")){e.preventDefault();b.click()}},true);
+/* Chuột phải: chỉnh sửa link */
+main.addEventListener("contextmenu",e=>{const b=hit(e);if(!b)return;e.preventDefault();e.stopPropagation();openEdit(b.dataset.nv)},true);
+/* Giữ lâu trên cảm ứng: chỉnh sửa link */
+let t=null;
+main.addEventListener("touchstart",e=>{const b=hit(e);if(!b)return;clearTimeout(t);t=setTimeout(()=>{b._lp=true;openEdit(b.dataset.nv)},550)},{passive:true,capture:true});
+["touchend","touchmove","touchcancel"].forEach(n=>main.addEventListener(n,()=>clearTimeout(t),{passive:true,capture:true}));
+main.addEventListener("mousedown",e=>{if(hit(e))e.stopPropagation()},true);
+const apply=v=>{const d=nvData();if(v)d[cur]=v;else delete d[cur];nvBackup();save();window._lh="";render()};
+q("#nvSave").onclick=()=>{const v=norm(inp.value);if(v===null){err.textContent="Link không hợp lệ (chỉ hỗ trợ http/https).";return}apply(v);closeEdit()};
+q("#nvDel").onclick=()=>{apply("");closeEdit()};
+inp.addEventListener("keydown",e=>{if(e.key==="Enter")q("#nvSave").click();if(e.key==="Escape")closeEdit()});
+ov.addEventListener("click",e=>{if(e.target===ov)closeEdit()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&ov.classList.contains("show"))closeEdit()});
+render();
+})();
+</script>
+</body></html>
