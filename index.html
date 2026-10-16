@@ -1225,14 +1225,11 @@ animation:rmIn .45s cubic-bezier(.2,.9,.3,1.2) both}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>.modal.pdk{--tx:#f1f5f9;--mu:#cbd5e1;--bd:rgba(255,255,255,.3);--card:rgba(255,255,255,.14);color:#f1f5f9}.modal.plt{--tx:#1b2733;--mu:#475569;--bd:rgba(0,0,0,.18);--card:#fff;color:#1b2733}</style>
-<div class="ov" id="ovPt"><div class="modal" style="width:min(900px,100%)">
+<div class="ov" id="ovPt"><div class="modal" style="width:min(1100px,100%)">
 <h3>Danh sách bệnh nhân</h3>
 <div class="row"><input id="ptQ" placeholder="Tìm theo tên, mã hồ sơ, STT, ngày sinh" style="flex:1"><input type="file" id="ptImpFile" accept=".xls,.xlsx,.csv" hidden><button class="ghost" id="ptXl">Xuất Excel</button></div>
-<style>.ptpart{display:flex;align-items:center;gap:8px;margin:14px 0 6px;padding:7px 12px;border-radius:10px;font-weight:800;letter-spacing:.4px}.ptpart.g{background:color-mix(in srgb,var(--o) 16%,var(--card));color:var(--o)}.ptpart.b{background:rgba(0,166,200,.15);color:#00a6c8}.ptpart .pcnt{margin-left:auto;font-weight:700}</style>
-<div class="ptpart g">GERI<span class="pcnt" id="ptCntG">0</span></div>
+<style>#ptBody tr.pcb{--h:#00a6c8}#ptBody tr.pcn{--h:#94a3b8}#ptBody td.pti{vertical-align:middle}.ptn{font-size:11px;color:var(--mu);font-weight:600;margin-left:6px;white-space:nowrap}.bx{padding:0 7px;margin-left:6px;font-size:14px;line-height:20px;font-weight:800}.pa{display:flex;align-items:center;gap:4px;white-space:nowrap}.pa+.pa{margin-top:3px}</style>
 <div class="tblw" id="ptBody"></div>
-<div class="ptpart b">BT37<span class="pcnt" id="ptCntB">0</span></div>
-<div class="tblw" id="btPtBody"></div>
 <div class="row" style="justify-content:flex-end"><button class="ghost" data-close>Đóng</button></div>
 </div></div>
 <div class="ov" id="ovPtE"><div class="modal" style="width:min(560px,100%)">
@@ -1609,29 +1606,48 @@ if(m>=0){used.add(m);const q=old[m],r=S.pts.find(z=>z.id===q.pid);if(q.ch!==np.c
 res.push(startPt(k,np,p))});
 old.forEach((q,i)=>{if(!used.has(i))endPt(k,q,"Kết thúc nuôi bệnh nhân",p)});
 x.pl=res};
-let ptSort={k:"start",d:-1};
-const PTC=[["hs","Mã hồ sơ"],["ten","Tên"],["ns","Ngày sinh"],["mode","PP"],["ch","Ngày CH"],["stt","STT"],["room","Buồng"],["start","Vào"],["end","Ra"]];
-const ptVal=(r,k)=>k==="room"?r.c*10+r.r:k==="end"?(r.end||"9999"):k==="start"?r.start:String(r[k]||"");
-function getPt(){const q=$("#ptQ").value.trim().toLowerCase(),{k,d}=ptSort;
-return S.pts.filter(r=>!q||[r.hs,r.ten,r.stt,r.ns].join(" ").toLowerCase().includes(q)).sort((a,b)=>{const x=ptVal(a,k),y=ptVal(b,k);return d*(typeof x==="number"?x-y:String(x).localeCompare(String(y),"vi",{numeric:true}))})}
-const ptOpen=new Set(),PTA=PTC.filter(([k])=>k!=="end");
-const ptRow=(r,done)=>`<tr class="pc${((r.c-1)%5)+1}"><td>${esc(r.hs)}</td><td>${esc(r.ten)}</td><td>${esc(r.ns)}</td><td>${mShort(r.mode)}</td><td>${dsd(r.ch)}</td><td>${esc(r.stt)}</td><td>${r.c?r.c+"."+r.r:"—"}</td><td>${dspan(r.start)}</td>${done?`<td>${r.imp?"Updated":dspan(r.end)}</td>`:`<td style="white-space:nowrap"><button class="ghost" data-e="${r.id}" title="Sửa" style="padding:3px 9px;font-size:12px">Sửa</button> <button class="ghost dng" data-d="${r.id}" title="Xóa" style="padding:3px 9px;font-size:12px">Xóa</button></td>`}</tr>`;
-const ptTbl=(l,done)=>`<table><tr>${(done?PTC:PTA).map(([k,n])=>`<th data-s="${k}">${n}${ptSort.k===k?(ptSort.d>0?" ▲":" ▼"):""}</th>`).join("")}${done?"":"<th></th>"}</tr>${l.map(r=>ptRow(r,done)).join("")}</table>`;
-function drawPt(){const l=getPt(),q=$("#ptQ").value.trim(),act=l.filter(r=>!r.end),fin=l.filter(r=>r.end),gm={};
-if(!S.pts.length){$("#ptBody").innerHTML='<div class="empty-msg">Chưa có dữ liệu bệnh nhân.</div>';drawBtPt();return}
-fin.forEach(r=>{const g=ymd(new Date(r.end)).slice(0,7);(gm[g]=gm[g]||[]).push(r)});
+let ptSort={k:"ch",d:-1},ptExp=false;const ptOpen=new Set();
+/* Gộp theo BN: 1 BN = 1 nhóm; trong nhóm, mỗi (Loại, PP) 1 dòng; các buồng cùng (Loại, PP) nằm chung 1 dòng (Buồng 1..4) */
+const ptNk=v=>norm(String(v==null?"":v));
+const ptBuN=p=>p.t==="BT37"?1000+p.room*10+(p.side==="T"?0:1):(p.c||0)*10+(p.rm||0);
+const ptBuL=p=>p.t==="BT37"?p.room+p.side:(p.c?p.c+"."+p.rm:"—");
+const ptBuT=p=>p.t==="BT37"?"BT37-"+p.room+" "+btSd(p.side):(p.c?"GERI "+p.c+" - buồng "+p.c+"."+p.rm:"Chưa rõ buồng");
+const ptPpo={"TL":0,"P.I":1,"Check":2,"—":3};
+const ptPlates=()=>[...S.pts.map(r=>({id:r.id,t:"GERI",hs:r.hs||"",ten:r.ten||"",ns:r.ns||"",ch:r.ch||"",stt:r.stt||"",pp:mShort(r.mode),c:r.c,rm:r.r,end:r.end,imp:r.imp,p:r.p,p2:r.p2})),...S.bt.pts.map(r=>({id:r.id,t:"BT37",hs:r.hs||"",ten:r.ten||"",ns:r.ns||"",ch:r.ch||"",stt:r.stt||"",pp:"—",room:r.room,side:r.side,end:r.end,imp:r.imp,p:r.p,p2:r.p2}))];
+const ptGv=(g,k)=>k==="loai"?g.ln[0].t:k==="mode"?g.ln[0].pp:k==="bu"?ptBuN(g.pl[0]):k==="end"?(g.end||"9999"):String(g[k]||"");
+function ptGroups(){const q=$("#ptQ").value.trim().toLowerCase(),m=new Map();
+ptPlates().forEach(p=>{if(q&&![p.hs,p.ten,p.stt,p.ns].join(" ").toLowerCase().includes(q))return;
+const k=((p.hs||p.ten)?[p.hs,p.ten,p.ns,p.ch,p.stt].map(ptNk).join("|"):"id:"+p.id)+"|"+(p.end?"F":"A");
+let g=m.get(k);if(!g){g={hs:p.hs,ten:p.ten,ns:p.ns,ch:p.ch,stt:p.stt,fin:!!p.end,pl:[]};m.set(k,g)}g.pl.push(p)});
+const {k,d}=ptSort;
+return [...m.values()].map(g=>{g.pl.sort((a,b)=>ptBuN(a)-ptBuN(b));
+const ln=new Map();g.pl.forEach(p=>{const kk=p.t+"|"+p.pp;if(!ln.has(kk))ln.set(kk,{t:p.t,pp:p.pp,pl:[]});ln.get(kk).pl.push(p)});
+g.ln=[...ln.values()].sort((a,b)=>ptBuN(a.pl[0])-ptBuN(b.pl[0])||(ptPpo[a.pp]||0)-(ptPpo[b.pp]||0));
+g.nb=new Set(g.pl.map(p=>p.t+ptBuL(p))).size;g.end=g.fin?g.pl.map(p=>p.end).sort().pop():"";return g})
+.sort((a,b)=>{const x=ptGv(a,k),y=ptGv(b,k),c=typeof x==="number"?x-y:String(x).localeCompare(String(y),"vi",{numeric:true});
+return d*c||((parseInt(a.stt)||0)-(parseInt(b.stt)||0))||(ptBuN(a.pl[0])-ptBuN(b.pl[0]))})}
+const ptSth=([k,n])=>`<th data-s="${k}">${n}${ptSort.k===k?(ptSort.d>0?" ▲":" ▼"):""}</th>`;
+const ptActs=l=>l.pl.map(p=>`<div class="pa">${l.pl.length>1?`<span class="ptn">${ptBuL(p)}</span>`:""}<button class="ghost" data-e="${p.id}" title="Sửa" style="padding:3px 9px;font-size:12px">Sửa</button><button class="ghost dng" data-d="${p.id}" title="Xóa" style="padding:3px 9px;font-size:12px">Xóa</button></div>`).join("");
+const ptTbl=(gs,done)=>{
+const H=[["hs","Mã hồ sơ"],["ten","Tên"],["ns","Ngày sinh"],["loai","Loại"],["mode","PP"],["ch","Ngày CH"],["stt","STT"]].map(ptSth).join("")
++`<th data-s="bu">Buồng${ptExp?" 1":""}${ptSort.k==="bu"?(ptSort.d>0?" ▲":" ▼"):""}<button type="button" class="bx ghost" title="${ptExp?"Thu gọn các cột buồng":"Hiện thêm cột Buồng 2 - 4"}">${ptExp?"−":"+"}</button></th>`
++(ptExp?"<th>Buồng 2</th><th>Buồng 3</th><th>Buồng 4</th>":"")+(done?ptSth(["end","Ra"]):"<th></th>");
+const B=gs.map(g=>{const n=g.ln.length;return g.ln.map((l,i)=>{const p0=l.pl[0],cls=p0.t==="BT37"?"pcb":p0.c?"pc"+((p0.c-1)%5+1):"pcn";
+const pa=i?"":`<td rowspan="${n}" class="pti">${esc(g.hs)}</td><td rowspan="${n}" class="pti">${esc(g.ten)}${!ptExp&&g.nb>1?`<span class="ptn">${g.nb} buồng</span>`:""}</td><td rowspan="${n}" class="pti">${esc(g.ns)}</td>`;
+const pb=i?"":`<td rowspan="${n}" class="pti">${dsd(g.ch)}</td><td rowspan="${n}" class="pti">${esc(g.stt)}</td>`;
+const bc=l.pl.map(p=>`<td title="${esc(ptBuT(p))}">${ptBuL(p)}</td>`);let cells;
+if(ptExp){cells=[0,1,2].map(j=>bc[j]||"<td></td>");cells.push(l.pl.length>4?`<td>${l.pl.slice(3).map(ptBuL).join(", ")}</td>`:bc[3]||"<td></td>");cells=cells.join("")}else cells=bc[0]||"<td></td>";
+return `<tr class="${cls}">${pa}<td>${l.t}</td><td>${l.pp}</td>${pb}${cells}${done?`<td>${p0.imp?"Updated":dspan(p0.end)}</td>`:`<td>${ptActs(l)}</td>`}</tr>`}).join("")}).join("");
+return `<table><tr>${H}</tr>${B}</table>`};
+function drawPt(){const gs=ptGroups(),q=$("#ptQ").value.trim(),act=gs.filter(g=>!g.fin),fin=gs.filter(g=>g.fin),gm={};
+if(!S.pts.length&&!S.bt.pts.length){$("#ptBody").innerHTML='<div class="empty-msg">Chưa có dữ liệu bệnh nhân.</div>';return}
+fin.forEach(g=>{const m=ymd(new Date(g.end)).slice(0,7);(gm[m]=gm[m]||[]).push(g)});
 const gk=Object.keys(gm).sort().reverse(),sec=(c,t,n,b)=>`<section class="psec ${c}"><div class="psh"><span class="psd"></span><b>${t}</b><span class="pcnt">${n}</span></div>${b}</section>`;
 const A=sec("act","Đang nuôi",act.length,act.length?`<div class="tblw">${ptTbl(act,false)}</div>`:`<div class="empty-msg">${q?"Không có bệnh nhân phù hợp.":"Chưa có bệnh nhân đang nuôi."}</div>`);
-const F=sec("fin","Hoàn thành",fin.length,gk.length?gk.map(g=>{const[y,m]=g.split("-"),o=ptOpen.has(g)||!!q;return`<div class="pg${o?" open":""}" data-g="${g}"><button type="button" class="pgh" aria-expanded="${o}"><span class="pgt">Tháng ${m}/${y}</span><span class="pgc">${gm[g].length} bệnh nhân</span><svg class="pgv" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><div class="pgb"><div class="pgi"><div class="tblw">${ptTbl(gm[g],true)}</div></div></div></div>`}).join(""):`<div class="empty-msg">${q?"Không có bệnh nhân phù hợp.":"Chưa có bệnh nhân hoàn thành."}</div>`);
-$("#ptBody").innerHTML=A+F;drawBtPt()}
+const F=sec("fin","Hoàn thành",fin.length,gk.length?gk.map(m=>{const[y,mo]=m.split("-"),o=ptOpen.has(m)||!!q;return`<div class="pg${o?" open":""}" data-g="${m}"><button type="button" class="pgh" aria-expanded="${o}"><span class="pgt">Tháng ${mo}/${y}</span><span class="pgc">${gm[m].length} bệnh nhân</span><svg class="pgv" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><div class="pgb"><div class="pgi"><div class="tblw">${ptTbl(gm[m],true)}</div></div></div></div>`}).join(""):`<div class="empty-msg">${q?"Không có bệnh nhân phù hợp.":"Chưa có bệnh nhân hoàn thành."}</div>`);
+$("#ptBody").innerHTML=A+F}
 $("#ptBody").addEventListener("click",e=>{const h=e.target.closest(".pgh");if(!h)return;const g=h.parentElement,o=!g.classList.contains("open");g.classList.toggle("open",o);h.setAttribute("aria-expanded",String(o));if(o)ptOpen.add(g.dataset.g);else ptOpen.delete(g.dataset.g)});
-$("#ptBody").addEventListener("click",e=>{const th=e.target.closest("th[data-s]");if(!th)return;const k=th.dataset.s;ptSort=ptSort.k===k?{k,d:-ptSort.d}:{k,d:1};drawPt()});
-$("#ptXl").onclick=async()=>{const l=getPt();if(!l.length)return;if(typeof XLSX==="undefined"){askAlert({title:"Chưa xuất được Excel",html:"<div>Chưa tải được thư viện Excel. Hãy kiểm tra kết nối mạng rồi thử lại.</div>"});return}
-const nd=r=>r.ch?Math.round((Date.parse(r.end?ymd(new Date(r.end)):todayStr())-Date.parse(r.ch))/864e5):"";
-const ws=XLSX.utils.aoa_to_sheet([["Mã hồ sơ","Tên","Ngày sinh","Ngày CH","STT chọc hút","Phương pháp","Buồng","Vào","Ra","Ngày phôi","Người thực hiện 1","Người thực hiện 2"],...l.map(r=>[r.hs,r.ten,r.ns,r.ch?dmy(r.ch):"",r.stt,mFull(r.mode),r.c+"."+r.r,fmtDT(r.start),r.end?(r.imp?"Updated":fmtDT(r.end)):"Đang nuôi",r.imp?"":nd(r),r.p||"",r.p2||""])]);
-ws["!cols"]=[{wch:14},{wch:24},{wch:12},{wch:12},{wch:12},{wch:12},{wch:8},{wch:20},{wch:20},{wch:11},{wch:20},{wch:20}];
-const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Bệnh nhân");
-await saveFile(`benh_nhan_${todayStr().replace(/-/g,"")}.xlsx`,XLSX.write(wb,{type:"array",bookType:"xlsx"}))};
+$("#ptBody").addEventListener("click",e=>{if(e.target.closest(".bx"))return;const th=e.target.closest("th[data-s]");if(!th)return;const k=th.dataset.s;ptSort=ptSort.k===k?{k,d:-ptSort.d}:{k,d:1};drawPt()});
 /* ===== Nhập Excel: BN đã xong chu kỳ (coi như đã từng nhập). Cột "vị trí": TL1.1 - TL | TL1.1 - PI | BT1 - ET2 ; nhiều đĩa cách nhau dấu phẩy ===== */
 const PIH={hs:["mhs","ma ho so","ma hs"],ten:["ten","vo","ho ten","ho va ten","ten vo","ten benh nhan"],ns:["ngay sinh","ns","nam sinh","ns vo","ngay sinh vo"],ch:["ch","ngay ch","ngay choc hut","ngay choc"],stt:["stt","stt choc hut","stt ch","stt choc"],loc:["vi tri"],mode:["phuong phap","loai nuoi cay","pp"],room:["buong"],p:["nguoi thuc hien 1"],p2:["nguoi thuc hien 2"]};
 const piField=c=>{const n=norm(c).replace(/\s+/g," ");for(const k in PIH)if(PIH[k].includes(n))return k;return null};
@@ -1681,7 +1697,7 @@ if(any)pts++});
 if(!addG.length&&!addB.length){askAlert({title:"Không có bệnh nhân để nhập",tone:"info",html:`<div>Đọc được ${rows.length} dòng nhưng không có dòng mới hợp lệ.</div><div style="margin-top:6px;color:var(--mu)">Trùng với dữ liệu đã có: ${dup}</div>${bad.length?`<div style="margin-top:6px;color:var(--r);font-size:13px">${bad.slice(0,5).map(esc).join("<br>")}</div>`:""}`});return}
 if(!await askConfirm({title:"Nhập bệnh nhân đã xong chu kỳ",ok:"Nhập "+(addG.length+addB.length)+" dòng",tone:"info",html:`<div>Sẽ thêm <b>${pts}</b> bệnh nhân vào mục <b>Hoàn thành</b> (cột Ra ghi “Updated”):</div><div style="margin-top:6px">• GERI (TL/PI): <b>${addG.length}</b> đĩa<br>• BT37: <b>${addB.length}</b> đĩa</div><div style="margin-top:6px;color:var(--mu);font-size:13px">Bỏ qua do trùng dữ liệu đã có: ${dup}</div>${bad.length?`<div style="margin-top:6px;color:var(--r);font-size:13px">${bad.slice(0,6).map(esc).join("<br>")}${bad.length>6?"<br>…":""}</div>`:""}`}))return;
 addG.forEach(r=>S.pts.push(r));addB.forEach(r=>S.bt.pts.push(r));
-save();drawPt();drawBtPt();
+save();drawPt();
 askAlert({title:"Đã nhập xong",tone:"info",html:`<div>Đã thêm <b>${addG.length}</b> đĩa GERI và <b>${addB.length}</b> đĩa BT37 vào danh sách Hoàn thành.</div>`})};
 
 /* ===== Nền popup = nền của nút bấm mở popup ===== */
@@ -1699,37 +1715,22 @@ const L=(.2126*c[0]+.7152*c[1]+.0722*c[2])/255;md.style.setProperty("background"
 new MutationObserver(ms=>{ms.forEach(m=>{const o=m.target;if(!o.classList||!o.classList.contains("ov")||o.classList.contains("dlgov")||!o.classList.contains("show"))return;
 if((m.oldValue||"").split(/\s+/).includes("show"))return;const md=o.querySelector(".modal");if(!md)return;
 pbgApply(md,LTRG&&Date.now()-LTRG.t<4000?LTRG.c:null)})}).observe(document.body,{subtree:true,attributes:true,attributeFilter:["class"],attributeOldValue:true});
-/* ===== Danh sách bệnh nhân BT37: Đang nuôi / Hoàn thành ===== */
-let btSort={k:"start",d:-1};const btOpenG=new Set();
-const BTC=[["hs","Mã hồ sơ"],["ten","Tên"],["ns","Ngày sinh"],["ch","Ngày CH"],["stt","STT"],["tu","Tủ"],["start","Vào"],["end","Ra"]],BTA=BTC.filter(([k])=>k!=="end");
-const btVal=(r,k)=>k==="tu"?r.room*10+(r.side==="T"?0:1):k==="end"?(r.end||"9999"):k==="start"?r.start:String(r[k]||"");
-const btTu=r=>"BT37-"+r.room+" "+btSd(r.side);
-function getBtPt(){const q=$("#ptQ").value.trim().toLowerCase(),{k,d}=btSort;
-return S.bt.pts.filter(r=>!q||[r.hs,r.ten,r.stt,r.ns].join(" ").toLowerCase().includes(q)).sort((a,b)=>{const x=btVal(a,k),y=btVal(b,k);return d*(typeof x==="number"?x-y:String(x).localeCompare(String(y),"vi",{numeric:true}))})}
-const btPtRow=(r,done)=>`<tr class="pc${((r.room-1)%5)+1}"><td>${esc(r.hs||"")}</td><td>${esc(r.ten||"")}</td><td>${esc(r.ns||"")}</td><td>${dsd(r.ch)}</td><td>${esc(r.stt||"")}</td><td>${btTu(r)}</td><td>${dspan(r.start)}</td>${done?`<td>${r.imp?"Updated":dspan(r.end)}</td>`:`<td style="white-space:nowrap"><button class="ghost" data-e="${r.id}" title="Sửa" style="padding:3px 9px;font-size:12px">Sửa</button> <button class="ghost dng" data-d="${r.id}" title="Xóa" style="padding:3px 9px;font-size:12px">Xóa</button></td>`}</tr>`;
-const btPtTbl=(l,done)=>`<table><tr>${(done?BTC:BTA).map(([k,n])=>`<th data-s="${k}">${n}${btSort.k===k?(btSort.d>0?" ▲":" ▼"):""}</th>`).join("")}${done?"":"<th></th>"}</tr>${l.map(r=>btPtRow(r,done)).join("")}</table>`;
-function drawBtPt(){$("#ptCntG").textContent=S.pts.length;$("#ptCntB").textContent=S.bt.pts.length;const l=getBtPt(),q=$("#ptQ").value.trim(),act=l.filter(r=>!r.end),fin=l.filter(r=>r.end),gm={};
-if(!S.bt.pts.length){$("#btPtBody").innerHTML='<div class="empty-msg">Chưa có dữ liệu bệnh nhân BT37.</div>';return}
-fin.forEach(r=>{const g=ymd(new Date(r.end)).slice(0,7);(gm[g]=gm[g]||[]).push(r)});
-const gk=Object.keys(gm).sort().reverse(),sec=(c,t,n,b)=>`<section class="psec ${c}"><div class="psh"><span class="psd"></span><b>${t}</b><span class="pcnt">${n}</span></div>${b}</section>`;
-const A=sec("act","Đang nuôi",act.length,act.length?`<div class="tblw">${btPtTbl(act,false)}</div>`:`<div class="empty-msg">${q?"Không có bệnh nhân phù hợp.":"Chưa có bệnh nhân đang nuôi."}</div>`);
-const F=sec("fin","Hoàn thành",fin.length,gk.length?gk.map(g=>{const[y,m]=g.split("-"),o=btOpenG.has(g)||!!q;return`<div class="pg${o?" open":""}" data-g="${g}"><button type="button" class="pgh" aria-expanded="${o}"><span class="pgt">Tháng ${m}/${y}</span><span class="pgc">${gm[g].length} bệnh nhân</span><svg class="pgv" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><div class="pgb"><div class="pgi"><div class="tblw">${btPtTbl(gm[g],true)}</div></div></div></div>`}).join(""):`<div class="empty-msg">${q?"Không có bệnh nhân phù hợp.":"Chưa có bệnh nhân hoàn thành."}</div>`);
-$("#btPtBody").innerHTML=A+F}
-$("#btPtBody").addEventListener("click",e=>{const h=e.target.closest(".pgh");if(!h)return;const g=h.parentElement,o=!g.classList.contains("open");g.classList.toggle("open",o);h.setAttribute("aria-expanded",String(o));if(o)btOpenG.add(g.dataset.g);else btOpenG.delete(g.dataset.g)});
-$("#btPtBody").addEventListener("click",e=>{const th=e.target.closest("th[data-s]");if(!th)return;const k=th.dataset.s;btSort=btSort.k===k?{k,d:-btSort.d}:{k,d:1};drawBtPt()});
-$("#btPtBody").addEventListener("click",e=>{const b=e.target.closest("button[data-e]");if(!b)return;const r=S.bt.pts.find(z=>z.id===b.dataset.e);if(!r||r.end)return;close($("#ovPt"));btOpen(r.room,r.id)});
-$("#btPtBody").addEventListener("click",async e=>{const b=e.target.closest("button[data-d]");if(!b)return;const r=S.bt.pts.find(z=>z.id===b.dataset.d);if(!r||r.end)return;
-if(!await askConfirm({title:"Xác nhận xóa bệnh nhân",danger:true,ok:"Xóa",html:`<div>Xóa bệnh nhân <b>${esc(btTxt(r))}</b> (${btTu(r)}, đang nuôi)?</div><div style="margin-top:8px">Bệnh nhân sẽ được gỡ khỏi tủ đang nuôi.</div><div style="margin-top:8px;color:var(--r)">Thao tác này không thể hoàn tác.</div>`}))return;
+/* ===== Danh sách chung GERI + BT37: Sửa / Xóa BN BT37, bấm +/- cột buồng, xuất Excel ===== */
+$("#ptBody").addEventListener("click",e=>{const b=e.target.closest(".bx");if(!b)return;ptExp=!ptExp;drawPt()});
+$("#ptBody").addEventListener("click",e=>{const b=e.target.closest("button[data-e]");if(!b)return;const r=S.bt.pts.find(z=>z.id===b.dataset.e);if(!r||r.end)return;close($("#ovPt"));btOpen(r.room,r.id)});
+$("#ptBody").addEventListener("click",async e=>{const b=e.target.closest("button[data-d]");if(!b)return;const r=S.bt.pts.find(z=>z.id===b.dataset.d);if(!r||r.end)return;
+if(!await askConfirm({title:"Xác nhận xóa bệnh nhân",danger:true,ok:"Xóa",html:`<div>Xóa bệnh nhân <b>${esc(btTxt(r))}</b> (BT37-${r.room} ${btSd(r.side)}, đang nuôi)?</div><div style="margin-top:8px">Bệnh nhân sẽ được gỡ khỏi tủ đang nuôi.</div><div style="margin-top:8px;color:var(--r)">Thao tác này không thể hoàn tác.</div>`}))return;
 if(!gateWho())return;
 const x=S.bt.rooms[r.room];if(x){x.pl=(x.pl||[]).filter(z=>z.id!==r.id);if(!x.pl.length&&x.st==="using")x.st="empty"}
-S.bt.pts.splice(S.bt.pts.indexOf(r),1);btLog(r.room,"Xóa bệnh nhân: "+btTxt(r),"BT37-"+r.room+r.side);save();render();drawBtPt()});
-$("#ptXl").onclick=async()=>{const l=getPt(),lb=getBtPt();if(!l.length&&!lb.length)return;if(typeof XLSX==="undefined"){askAlert({title:"Chưa xuất được Excel",html:"<div>Chưa tải được thư viện Excel. Hãy kiểm tra kết nối mạng rồi thử lại.</div>"});return}
-const nd=r=>r.ch&&!r.imp?Math.round((Date.parse(r.end?ymd(new Date(r.end)):todayStr())-Date.parse(r.ch))/864e5):"";
-const wb=XLSX.utils.book_new();
-if(l.length){const ws=XLSX.utils.aoa_to_sheet([["Mã hồ sơ","Tên","Ngày sinh","Ngày CH","STT chọc hút","Phương pháp","Buồng","Vào","Ra","Ngày phôi","Người thực hiện 1","Người thực hiện 2"],...l.map(r=>[r.hs,r.ten,r.ns,r.ch?dmy(r.ch):"",r.stt,mFull(r.mode),r.c?r.c+"."+r.r:"",fmtDT(r.start),r.end?(r.imp?"Updated":fmtDT(r.end)):"Đang nuôi",nd(r),r.p||"",r.p2||""])]);
-ws["!cols"]=[{wch:14},{wch:24},{wch:12},{wch:12},{wch:12},{wch:12},{wch:8},{wch:20},{wch:20},{wch:11},{wch:20},{wch:20}];XLSX.utils.book_append_sheet(wb,ws,"GERI")}
-if(lb.length){const ws=XLSX.utils.aoa_to_sheet([["Mã hồ sơ","Tên","Ngày sinh","Ngày CH","STT chọc hút","Tủ BT37","Bên","Vào","Ra","Ngày phôi","Người thực hiện 1","Người thực hiện 2"],...lb.map(r=>[r.hs,r.ten,r.ns,r.ch?dmy(r.ch):"",r.stt,"BT37-"+r.room,btSd(r.side),fmtDT(r.start),r.end?(r.imp?"Updated":fmtDT(r.end)):"Đang nuôi",nd(r),r.p||"",r.p2||""])]);
-ws["!cols"]=[{wch:14},{wch:24},{wch:12},{wch:12},{wch:12},{wch:10},{wch:8},{wch:20},{wch:20},{wch:11},{wch:20},{wch:20}];XLSX.utils.book_append_sheet(wb,ws,"BT37")}
+S.bt.pts.splice(S.bt.pts.indexOf(r),1);btLog(r.room,"Xóa bệnh nhân: "+btTxt(r),"BT37-"+r.room+r.side);save();render();drawPt()});
+$("#ptXl").onclick=async()=>{const gs=ptGroups();if(!gs.length)return;if(typeof XLSX==="undefined"){askAlert({title:"Chưa xuất được Excel",html:"<div>Chưa tải được thư viện Excel. Hãy kiểm tra kết nối mạng rồi thử lại.</div>"});return}
+const nd=l=>{const p=l.pl[0];return p.ch&&!p.imp?Math.round((Date.parse(p.end?ymd(new Date(p.end)):todayStr())-Date.parse(p.ch))/864e5):""};
+const aoa=[["Mã hồ sơ","Tên","Ngày sinh","Loại","PP","Ngày CH","STT chọc hút","Buồng 1","Buồng 2","Buồng 3","Buồng 4","Ra","Ngày phôi","Người thực hiện 1","Người thực hiện 2"]],mg=[];
+gs.forEach(g=>{const n=g.ln.length,r0=aoa.length;g.ln.forEach((l,i)=>{const p=l.pl[0],bu=l.pl.map(ptBuL);
+aoa.push([i?"":g.hs,i?"":g.ten,i?"":g.ns,l.t,l.pp,i?"":(g.ch?dmy(g.ch):""),i?"":g.stt,bu[0]||"",bu[1]||"",bu[2]||"",bu.slice(3).join(", "),p.end?(p.imp?"Updated":fmtDT(p.end)):"Đang nuôi",nd(l),p.p||"",p.p2||""])});
+if(n>1)[0,1,2,5,6].forEach(c=>mg.push({s:{r:r0,c},e:{r:r0+n-1,c}}))});
+const ws=XLSX.utils.aoa_to_sheet(aoa);ws["!merges"]=mg;ws["!cols"]=[{wch:14},{wch:24},{wch:12},{wch:8},{wch:8},{wch:12},{wch:12},{wch:9},{wch:9},{wch:9},{wch:9},{wch:20},{wch:11},{wch:20},{wch:20}];
+const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Bệnh nhân");
 await saveFile(`benh_nhan_${todayStr().replace(/-/g,"")}.xlsx`,XLSX.write(wb,{type:"array",bookType:"xlsx"}))};
 $("#ptQ").oninput=drawPt;$("#bPt").onclick=()=>{if(!gateWho())return;drawPt();open("#ovPt")};
 {const sel=$("#peRoom");let h="";for(let c=1;c<=CABS;c++)for(let r=1;r<=ROOMS;r++)h+=`<option value="${c}-${r}">${c}.${r}</option>`;sel.innerHTML=h}
