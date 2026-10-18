@@ -1712,8 +1712,13 @@ const bi=cs.backgroundImage||"";if(/gradient/.test(bi)){for(const g of bi.matchA
 return null};
 let LTRG=null;
 document.addEventListener("click",e=>{if(!e.isTrusted)return;const t=e.target.closest&&e.target.closest(".tile,.pill,.btc,.cab,.badge,button,a,[role=menuitem],[role=button]");if(!t||t.closest("#hidActs"))return;LTRG={c:pbgRes(t),t:Date.now()}},true);
-const pbgApply=(md,c)=>{if(!c){md.style.removeProperty("background");md.classList.remove("pdk","plt");return}
-const L=(.2126*c[0]+.7152*c[1]+.0722*c[2])/255;md.style.setProperty("background","rgb("+c.join(",")+")","important");md.classList.toggle("pdk",L<.5);md.classList.toggle("plt",L>=.5)};
+const pbgApply=(md,c)=>{md.style.removeProperty("background");md.classList.remove("pdk","plt");
+if(c&&Math.max(c[0],c[1],c[2])-Math.min(c[0],c[1],c[2])<28)c=null;/* nút màu xám/trắng: không tô viền */
+if(!c){md.style.removeProperty("--pb");md.removeAttribute("data-pb");return}
+{/* nút màu quá nhạt: giữ nguyên tông màu nhưng đậm lên để viền nhìn thấy được */
+const r=c[0]/255,g=c[1]/255,b=c[2]/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;
+if(l>.66&&d>0){const sat=d/(1-Math.abs(2*l-1)),h=mx===r?((g-b)/d+(g<b?6:0)):mx===g?(b-r)/d+2:(r-g)/d+4,S=Math.max(Math.min(sat,1),.6),L=.55,A=S*Math.min(L,1-L),f=n=>{const k=(n+h)%6;return Math.round((L-A*Math.max(-1,Math.min(k-3,9-k,1)))*255)};c=[f(0),f(8),f(4)]}}
+md.style.setProperty("--pb","rgb("+c.join(",")+")");md.setAttribute("data-pb","1")};
 new MutationObserver(ms=>{ms.forEach(m=>{const o=m.target;if(!o.classList||!o.classList.contains("ov")||o.classList.contains("dlgov")||!o.classList.contains("show"))return;
 if((m.oldValue||"").split(/\s+/).includes("show"))return;const md=o.querySelector(".modal");if(!md)return;
 pbgApply(md,o.id==="ovNv"?null:LTRG&&Date.now()-LTRG.t<4000?LTRG.c:null)})}).observe(document.body,{subtree:true,attributes:true,attributeFilter:["class"],attributeOldValue:true});
@@ -2562,4 +2567,23 @@ all();
 new MutationObserver(all).observe(document.body,{childList:true});
 })();
 </script>
+<style id="cabColor">
+/* ===== Popup: viền theo màu nút bấm, nền giữ màu dịu của giao diện ===== */
+.ov:not(#ovEdit):not(#ovNv) .modal[data-pb]:not(#btM){border:2px solid var(--pb);box-shadow:0 20px 60px rgba(0,0,0,.30),0 0 0 5px color-mix(in srgb,var(--pb) 18%,transparent),0 0 40px color-mix(in srgb,var(--pb) 26%,transparent)}
+.dsec{color:color-mix(in srgb,var(--o) 62%,var(--tx))}
+.dsec.bt{color:color-mix(in srgb,#00a6c8 58%,var(--tx))}
+/* ===== Cột buồng nuôi cấy: tô màu đậm để nổi bật các buồng ===== */
+.cab[class*=" c"]{background:linear-gradient(180deg,color-mix(in srgb,var(--h) 32%,var(--card)),color-mix(in srgb,var(--h) 17%,var(--card)));border:2px solid color-mix(in srgb,var(--h) 60%,var(--bd));box-shadow:0 8px 22px color-mix(in srgb,var(--h) 26%,transparent),inset 0 1px 0 rgba(255,255,255,.4)}
+.cab[class*=" c"]:hover{box-shadow:0 12px 28px color-mix(in srgb,var(--h) 38%,transparent),inset 0 1px 0 rgba(255,255,255,.4);border-color:color-mix(in srgb,var(--h) 80%,var(--bd))}
+.cab[class*=" c"] h2{background:linear-gradient(135deg,color-mix(in srgb,var(--h) 70%,#0f172a),color-mix(in srgb,var(--h) 90%,#0f172a));color:#fff;box-shadow:0 3px 10px color-mix(in srgb,var(--h) 40%,transparent)}
+.cab[class*=" c"] h2,.cab[class*=" c"] h2 b,.cab[class*=" c"] h2 b.nm{color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.3)}
+.cab[class*=" c"] h2 span{color:rgba(255,255,255,.85)}
+.cab[class*=" c"] h2 span.btw{color:#ffd9b8}
+.cab[class*=" c"] .cdots i{background:rgba(255,255,255,.45)}
+.cab[class*=" c"] .cdots i.ok{background:#4ade80}.cab[class*=" c"] .cdots i.bad{background:#f87171}.cab[class*=" c"] .cdots i.due{background:#fb923c}
+.cab .tile{box-shadow:0 1px 3px rgba(20,40,70,.12)}
+.cab .tile:not(.ok):not(.bad):not(.due){border-color:color-mix(in srgb,var(--h) 55%,#cbd5e1)}
+.cab .tile .no{background:color-mix(in srgb,var(--h) 20%,var(--card));border-color:color-mix(in srgb,var(--h) 70%,var(--bd));color:color-mix(in srgb,var(--h) 55%,var(--tx))}
+.cab .tile:hover{box-shadow:0 8px 18px color-mix(in srgb,var(--h) 35%,transparent)}
+</style>
 </body></html>
