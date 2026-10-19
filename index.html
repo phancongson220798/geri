@@ -1281,6 +1281,8 @@ animation:rmIn .45s cubic-bezier(.2,.9,.3,1.2) both}
 </div></div>
 <script>
 const CABS=5,ROOMS=6,KEY="geri_humid_v1";const DAY=5;
+/* Tên tủ BT37 kèm tên phụ (đồng bộ với hệ thống IVF Monitoring) */
+const BTSUB={1:"ET1/ET2",2:"OR1/OR2",3:"ET3/ET4",4:"C1/C2",5:""},btSub=r=>BTSUB[r]?" ("+BTSUB[r]+")":"",btNm=r=>"BT37 "+r+btSub(r);
 const $=s=>document.querySelector(s);
 const pad=n=>String(n).padStart(2,"0");
 const ymd=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
@@ -1335,7 +1337,7 @@ $("#dTab").addEventListener("click",e=>{const td=e.target.closest("td[data-i]");
 const i=+td.dataset.i,m=td.dataset.m,N=7,out=[];
 Object.entries(S.rooms).forEach(([k,x])=>roomPts(x).forEach(q=>{if(m==="BT"||!q.ch||q.mode==="CK")return;const d=days(q.ch);if(d<0)return;const dd=Math.min(d,N-1);
 if(i>=0&&dd!==i)return;const pi=q.mode==="PI";if(m==="TL"&&pi||m==="PI"&&!pi)return;out.push({k,q,d})}));
-if(m==="BT"||m==="ALL")Object.entries(S.bt.rooms).forEach(([r,x])=>{if(x.st==="bad")return;x.pl.forEach(q=>{if(!q.ch)return;const d=days(q.ch);if(d<0)return;if(i>=0&&Math.min(d,N-1)!==i)return;out.push({k:"BT37-"+r+q.side,q,d,bt:1})})});
+if(m==="BT"||m==="ALL")Object.entries(S.bt.rooms).forEach(([r,x])=>{if(x.st==="bad")return;x.pl.forEach(q=>{if(!q.ch)return;const d=days(q.ch);if(d<0)return;if(i>=0&&Math.min(d,N-1)!==i)return;out.push({k:btNm(r)+" · "+btSd(q.side),q,d,bt:1})})});
 const ko=x=>x.bt?1000+ +x.k[5]*2+(x.k[6]==="P"?1:0):+x.k.split("-")[0]*10+ +x.k.split("-")[1];out.sort((a,b)=>b.d-a.d||ko(a)-ko(b));
 const mn={TL:"GERI-TL",PI:"GERI P.I",BT:"BT37",ALL:"Tất cả"}[m],dl=i>=0?(i===N-1?"N6+":"N"+i):"Tất cả các ngày";
 $("#dayT").textContent="Ngày phôi "+dl+" · "+mn;$("#dayS").textContent=out.length+" bệnh nhân";
@@ -1428,7 +1430,7 @@ return{pend,done:[...done].sort(),total:pend.length+done.size}}
 function dueExtra(){const nO=x=>x.c==="BT37"?[String(x.a).split(": ").slice(1).join(": "),x.n].filter(Boolean).join(" · "):noteOf(x),st=alertStat(),bs=btAlertStat(),T=st.total+bs.total,D=st.done.length+bs.done,keys=new Set([...st.pend,...st.done]);
 $("#dueSum").innerHTML=`<div class="dsum${T&&D===T?" ok":""}">Đã xử lý <b>${D}/${T}</b> cảnh báo hôm nay (GERI + BT37)${st.pend.length+bs.pend?` · còn ${st.pend.length+bs.pend} chờ xử lý`:""}</div>`;
 const all=S.log.filter(x=>x.c==="BT37"?String(x.a).startsWith("Cảnh báo – "):x.r>0&&HANDLE(x.a)&&keys.has(x.c+"-"+x.r)),l=all.slice(0,dueN);
-$("#dueHist").innerHTML=l.length?`<table class="hl"><tr><th>Ngày</th><th>Vị trí</th><th>Hành động</th><th>NTH 1</th><th>NTH 2</th><th>Ghi chú</th></tr>${l.map(x=>`<tr><td>${dspan(x.t)}</td><td>${x.c==="BT37"?"BT37-"+x.r:x.c+"."+x.r}</td><td>${esc(x.c==="BT37"?String(x.a).replace("Cảnh báo – ","").split(":")[0]:actOf(x.a))}</td><td>${esc(x.p)}</td><td>${esc(x.p2||"")}</td><td class="nc" title="${esc(nO(x))}">${esc(nO(x))}</td></tr>`).join("")}</table>`+moreBtn("dueMore",all.length-l.length):'<div class="empty-msg">Chưa có lịch sử xử lý.</div>'}
+$("#dueHist").innerHTML=l.length?`<table class="hl"><tr><th>Ngày</th><th>Vị trí</th><th>Hành động</th><th>NTH 1</th><th>NTH 2</th><th>Ghi chú</th></tr>${l.map(x=>`<tr><td>${dspan(x.t)}</td><td>${x.c==="BT37"?btNm(x.r):x.c+"."+x.r}</td><td>${esc(x.c==="BT37"?String(x.a).replace("Cảnh báo – ","").split(":")[0]:actOf(x.a))}</td><td>${esc(x.p)}</td><td>${esc(x.p2||"")}</td><td class="nc" title="${esc(nO(x))}">${esc(nO(x))}</td></tr>`).join("")}</table>`+moreBtn("dueMore",all.length-l.length):'<div class="empty-msg">Chưa có lịch sử xử lý.</div>'}
 function dueRooms(){return Object.keys(S.rooms).filter(k=>dueList(S.rooms[k]).length>0).sort()}
 function showDue(){dueN=7;const l=dueRooms(),box=$("#dueList"),sec=`<div class="dsec">GERI · ${l.length} buồng chờ xử lý</div>`;
 if(!l.length){box.innerHTML=sec+'<div class="empty-msg">Không còn buồng GERI nào chờ xử lý.</div>'}
@@ -1463,7 +1465,7 @@ return main+(q.ch?" · CH "+dmy(q.ch):"")};
 const noteOf=x=>[patNote(x)||splitA(x.a)[1],x.n||""].filter(Boolean).join(" · ");
 const moreBtn=(id,left)=>left>0?`<div class="row" style="justify-content:center"><button class="ghost" id="${id}">Xem thêm (${left} dòng nữa)</button></div>`:"";
 function hist(){const f=$("#hCab").value,all=S.log.filter(x=>!String(x.a).startsWith("Đặt trạng thái")&&(!f||x.c==f)),l=all.slice(0,histN);
-$("#hBody").innerHTML=l.length?`<table class="hl"><tr><th>Ngày</th><th>Vị trí</th><th>Hành động</th><th>NTH 1</th><th>NTH 2</th><th>Ghi chú</th></tr>${l.map(x=>`<tr><td>${dspan(x.t)}</td><td>${x.r?(x.c==="BT37"?"BT37-"+x.r:"Buồng "+x.c+"."+x.r):"Tủ "+x.c}</td><td>${esc(actOf(x.a))}</td><td>${esc(x.p)}</td><td>${esc(x.p2||"")}</td><td class="nc" title="${esc(noteOf(x))}">${esc(noteOf(x))}</td></tr>`).join("")}</table>`+moreBtn("hMore",all.length-l.length):'<div class="empty-msg">Chưa có lịch sử.</div>'}
+$("#hBody").innerHTML=l.length?`<table class="hl"><tr><th>Ngày</th><th>Vị trí</th><th>Hành động</th><th>NTH 1</th><th>NTH 2</th><th>Ghi chú</th></tr>${l.map(x=>`<tr><td>${dspan(x.t)}</td><td>${x.r?(x.c==="BT37"?btNm(x.r):"Buồng "+x.c+"."+x.r):"Tủ "+x.c}</td><td>${esc(actOf(x.a))}</td><td>${esc(x.p)}</td><td>${esc(x.p2||"")}</td><td class="nc" title="${esc(noteOf(x))}">${esc(noteOf(x))}</td></tr>`).join("")}</table>`+moreBtn("hMore",all.length-l.length):'<div class="empty-msg">Chưa có lịch sử.</div>'}
 $("#hBody").addEventListener("click",e=>{if(e.target.id==="hMore"){histN+=20;hist()}});
 $("#dueHist").addEventListener("click",e=>{if(e.target.id==="dueMore"){dueN+=20;dueExtra()}});
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -1486,7 +1488,7 @@ return[r.hs||"",r.ten||"",r.ns||"",r.ch?dmy(r.ch):"",r.stt||"",mFull(r.mode),"GE
 const xlData={
 pt:xlPts,
 wc:()=>xlRows().filter(x=>HANDLE(x.a)||x.a==="Đã thêm nước").map(x=>[fmtDT(x.t),actOf(x.a),"GERI "+x.c,x.r?x.c+"."+x.r:"",x.p||"",x.p2||""]),
-op:()=>xlRows().filter(x=>!String(x.a).startsWith("Đặt trạng thái")).map(x=>[fmtDT(x.t),x.r?(x.c==="BT37"?"BT37-"+x.r:"Buồng "+x.c+"."+x.r):"Tủ "+x.c,actOf(x.a),x.p||"",x.p2||"",noteOf(x)])};
+op:()=>xlRows().filter(x=>!String(x.a).startsWith("Đặt trạng thái")).map(x=>[fmtDT(x.t),x.r?(x.c==="BT37"?btNm(x.r):"Buồng "+x.c+"."+x.r):"Tủ "+x.c,actOf(x.a),x.p||"",x.p2||"",noteOf(x)])};
 const xOpen=new Set();
 const xlGet=sh=>{S.ui=S.ui||{};const o=S.ui.xl||(S.ui.xl={});const st=o[sh.id]||(o[sh.id]={on:true,cols:sh.cols.map((_,i)=>i),v:3});if(sh.id==="pt"&&st.v!==3){if(st.v!==2)st.cols=[...new Set(st.cols.filter(i=>i!==9).map(i=>i>9?i-1:i).concat(14))];const m={6:7,7:6,12:9,13:10,14:11};st.cols=[...new Set(st.cols.filter(i=>i<=8||i>=12).map(i=>m[i]!==undefined?m[i]:i).concat(11))];st.v=3}return st};
 const xlIdx=sh=>{const st=xlGet(sh);if(!st.on)return[];return sh.pick?st.cols.filter(i=>i<sh.cols.length).sort((a,b)=>a-b):sh.cols.map((_,i)=>i)};
@@ -1515,7 +1517,7 @@ const CSER=[{id:"tl",n:"Bệnh nhân GERI-TL",c:"#5b8fb9"},{id:"pi",n:"Bệnh nh
 const RCOL=["#6b9ac4","#9a8fc9","#c98fa5","#c9a874","#6fb5a8","#8aa05a"];
 const addD=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
 for(let c=1;c<=CABS;c++)$("#cCab").insertAdjacentHTML("beforeend",`<option value="${c}">Tủ GERI ${c}</option>`);
-for(let r=1;r<=5;r++)$("#cCab").insertAdjacentHTML("beforeend",`<option value="BT${r}">BT37-${r}</option>`);
+for(let r=1;r<=5;r++)$("#cCab").insertAdjacentHTML("beforeend",`<option value="BT${r}">${btNm(r)}</option>`);
 CSER.forEach(q=>$("#cAct").insertAdjacentHTML("beforeend",`<label class="ck"><input type="checkbox" value="${q.id}" checked><i style="background:${q.c}"></i>${q.n}</label>`));
 function buckets(){const m=$("#cMode").value,now=new Date(),b=[];
 if(m==="day"){for(let i=29;i>=0;i--){const d=addD(now,-i);b.push({k:ymd(d),l:pad(d.getDate())+"/"+pad(d.getMonth()+1)})}return{b,g:10}}
@@ -1536,9 +1538,9 @@ S.bt.pts.forEach(r=>{const i=idx[String(r.ch||ymd(new Date(r.start))).slice(0,g)
 const mx=Math.max(1,...act.map((v,i)=>v+fin[i])),top=Math.max(4,Math.ceil(mx/4)*4),W=Math.max(Math.round(el.clientWidth)||1000,420),H=chBig()?Math.round(340*chK):230,L=chBig()?54:36,R=10,T=14,B=chBig()?38:30,pw=W-L-R,ph=H-T-B,bw=pw/NC,w=Math.min(bw*.5,96);
 let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">`;
 for(let i=0;i<=4;i++){const y=T+ph-ph*i/4;s+=`<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}"/><text x="${L-6}" y="${y+4}" text-anchor="end">${top*i/4}</text>`}
-for(let c=0;c<NC;c++){const nm=c<CABS?"GERI "+(c+1):"BT37-"+(c-CABS+1),x=L+bw*c+(bw-w)/2,hf=ph*fin[c]/top,ha=ph*act[c]/top;
-if(fin[c])s+=`<rect class="b" style="fill:#6b7f99" x="${x}" y="${T+ph-hf}" width="${w}" height="${hf}" rx="2"><title>${nm} · Hoàn thành: ${fin[c]}</title></rect>`;
-if(act[c])s+=`<rect class="b" style="fill:#3fae6a" x="${x}" y="${T+ph-hf-ha}" width="${w}" height="${ha}" rx="2"><title>${nm} · Đang nuôi: ${act[c]}</title></rect>`;
+for(let c=0;c<NC;c++){const nm=c<CABS?"GERI "+(c+1):"BT37 "+(c-CABS+1),x=L+bw*c+(bw-w)/2,hf=ph*fin[c]/top,ha=ph*act[c]/top;
+if(fin[c])s+=`<rect class="b" style="fill:#6b7f99" x="${x}" y="${T+ph-hf}" width="${w}" height="${hf}" rx="2"><title>${c<CABS?nm:btNm(c-CABS+1)} · Hoàn thành: ${fin[c]}</title></rect>`;
+if(act[c])s+=`<rect class="b" style="fill:#3fae6a" x="${x}" y="${T+ph-hf-ha}" width="${w}" height="${ha}" rx="2"><title>${c<CABS?nm:btNm(c-CABS+1)} · Đang nuôi: ${act[c]}</title></rect>`;
 s+=`<text x="${x+w/2}" y="${H-10}" text-anchor="middle">${nm}</text>`}
 el.innerHTML=s+"</svg>"}
 function drawCh(){drawCh0();if(!chBig()||_fit)return;_fit=true;const m=$("#ovCh .modal");
@@ -1613,7 +1615,7 @@ let ptSort={k:"ch",d:-1},ptExp=false;const ptOpen=new Set();
 const ptNk=v=>norm(String(v==null?"":v));
 const ptBuN=p=>p.t==="BT37"?1000+p.room*10+(p.side==="T"?0:1):(p.c||0)*10+(p.rm||0);
 const ptBuL=p=>p.t==="BT37"?p.room+p.side:(p.c?p.c+"."+p.rm:"—");
-const ptBuT=p=>p.t==="BT37"?"BT37-"+p.room+" "+btSd(p.side):(p.c?"GERI "+p.c+" - buồng "+p.c+"."+p.rm:"Chưa rõ buồng");
+const ptBuT=p=>p.t==="BT37"?btNm(p.room)+" "+btSd(p.side):(p.c?"GERI "+p.c+" - buồng "+p.c+"."+p.rm:"Chưa rõ buồng");
 const ptPpo={"TL":0,"P.I":1,"Check":2,"—":3};
 const ptPlates=()=>[...S.pts.map(r=>({id:r.id,t:"GERI",hs:r.hs||"",ten:r.ten||"",ns:r.ns||"",ch:r.ch||"",stt:r.stt||"",pp:mShort(r.mode),c:r.c,rm:r.r,end:r.end,imp:r.imp,p:r.p,p2:r.p2})),...S.bt.pts.map(r=>({id:r.id,t:"BT37",hs:r.hs||"",ten:r.ten||"",ns:r.ns||"",ch:r.ch||"",stt:r.stt||"",pp:"—",room:r.room,side:r.side,end:r.end,imp:r.imp,p:r.p,p2:r.p2}))];
 const ptGv=(g,k)=>k==="loai"?g.ln[0].t:k==="mode"?g.ln[0].pp:k==="bu"?ptBuN(g.pl[0]):k==="end"?(g.end||"9999"):String(g[k]||"");
@@ -1726,10 +1728,10 @@ pbgApply(md,o.id==="ovNv"?null:LTRG&&Date.now()-LTRG.t<4000?LTRG.c:null)})}).obs
 $("#ptBody").addEventListener("click",e=>{const b=e.target.closest(".bx");if(!b)return;ptExp=!ptExp;drawPt()});
 $("#ptBody").addEventListener("click",e=>{const b=e.target.closest("button[data-e]");if(!b)return;const r=S.bt.pts.find(z=>z.id===b.dataset.e);if(!r||r.end)return;close($("#ovPt"));btOpen(r.room,r.id)});
 $("#ptBody").addEventListener("click",async e=>{const b=e.target.closest("button[data-d]");if(!b)return;const r=S.bt.pts.find(z=>z.id===b.dataset.d);if(!r||r.end)return;
-if(!await askConfirm({title:"Xác nhận xóa bệnh nhân",danger:true,ok:"Xóa",html:`<div>Xóa bệnh nhân <b>${esc(btTxt(r))}</b> (BT37-${r.room} ${btSd(r.side)}, đang nuôi)?</div><div style="margin-top:8px">Bệnh nhân sẽ được gỡ khỏi tủ đang nuôi.</div><div style="margin-top:8px;color:var(--r)">Thao tác này không thể hoàn tác.</div>`}))return;
+if(!await askConfirm({title:"Xác nhận xóa bệnh nhân",danger:true,ok:"Xóa",html:`<div>Xóa bệnh nhân <b>${esc(btTxt(r))}</b> (${btNm(r.room)} ${btSd(r.side)}, đang nuôi)?</div><div style="margin-top:8px">Bệnh nhân sẽ được gỡ khỏi tủ đang nuôi.</div><div style="margin-top:8px;color:var(--r)">Thao tác này không thể hoàn tác.</div>`}))return;
 if(!gateWho())return;
 const x=S.bt.rooms[r.room];if(x){x.pl=(x.pl||[]).filter(z=>z.id!==r.id);if(!x.pl.length&&x.st==="using")x.st="empty"}
-S.bt.pts.splice(S.bt.pts.indexOf(r),1);btLog(r.room,"Xóa bệnh nhân: "+btTxt(r),"BT37-"+r.room+r.side);save();render();drawPt()});
+S.bt.pts.splice(S.bt.pts.indexOf(r),1);btLog(r.room,"Xóa bệnh nhân: "+btTxt(r),btNm(r.room)+" "+r.side);save();render();drawPt()});
 $("#ptQ").oninput=drawPt;$("#bPt").onclick=()=>{if(!gateWho())return;drawPt();open("#ovPt")};
 {const sel=$("#peRoom");let h="";for(let c=1;c<=CABS;c++)for(let r=1;r<=ROOMS;r++)h+=`<option value="${c}-${r}">${c}.${r}</option>`;sel.innerHTML=h}
 let peId=null;const fillPe=r=>{$("#peHs").value=r.hs||"";$("#peStt").value=r.stt||"";$("#peTen").value=r.ten||"";$("#peNs").value=r.ns||"";$("#peCh").value=r.ch||"";$("#peMode").value=r.mode||"TL";$("#peRoom").value=r.c+"-"+r.r;$("#peErr").textContent=""};
@@ -1963,10 +1965,10 @@ const btSd=s=>s==="T"?"Trái":"Phải";
 const btTx=q=>`<div class="tx"><div class="r1"><b>${esc(q.ten||q.hs||"—")}</b>${btChip(q)}</div>${q.ten&&q.hs?`<small>${esc(q.hs)}</small>`:""}<small>${esc([q.ns,q.ch?"CH "+dmy(q.ch).slice(0,5):"",q.stt?"#"+q.stt:""].filter(Boolean).join(" · "))}</small></div>`;
 let _bc={},_bready=false,_bseen=new Set();
 function btCard(i){const x=S.bt.rooms[i];
-if(x.st==="bad")return`<div class="btc c${i} bad" data-r="${i}" style="--n:${i}"><div class="bth"><b class="btn">BT37-${i}</b><span class="btm">Sửa chữa</span></div><div class="btx">Sửa chữa / chưa dùng</div></div>`;
+if(x.st==="bad")return`<div class="btc c${i} bad" data-r="${i}" style="--n:${i}"><div class="bth"><b class="btn">BT37 ${i}</b>${BTSUB[i]?`<small class="btsub">(${BTSUB[i]})</small>`:""}<span class="btm">Sửa chữa</span></div><div class="btx">Sửa chữa / chưa dùng</div></div>`;
 const col=(s,lab)=>{const L=x.pl.filter(q=>q.side===s);let r="";for(let k=0;k<BTCAP;k++){const q=L[k];if(q){const nw=_bready&&!_bseen.has(q.id);_bseen.add(q.id);r+=`<div class="bts on${btHotQ(q)?" bhot":""}${nw?" nw":""}" data-id="${q.id}" title="${esc(btFull(q))}"><b>${k+1}</b>${btTx(q)}</div>`}else r+=`<div class="bts"><b>${k+1}</b><span>trống</span></div>`}
 return`<div class="btcol" data-s="${s}"><div class="btl"><span>${lab}</span><span>${L.length}/${BTCAP}</span></div><div class="btg">${r}</div></div>`};
-return`<div class="btc c${i}${x.pl.length?" ok":""}" data-r="${i}" style="--n:${i}"><div class="bth"><b class="btn">BT37-${i}</b><span class="btm">${x.pl.length}/${2*BTCAP}</span></div><div class="btb">${col("T","TRÁI")}<i class="btv"></i>${col("P","PHẢI")}</div></div>`}
+return`<div class="btc c${i}${x.pl.length?" ok":""}" data-r="${i}" style="--n:${i}"><div class="bth"><b class="btn">BT37 ${i}</b>${BTSUB[i]?`<small class="btsub">(${BTSUB[i]})</small>`:""}<span class="btm">${x.pl.length}/${2*BTCAP}</span></div><div class="btb">${col("T","TRÁI")}<i class="btv"></i>${col("P","PHẢI")}</div></div>`}
 let _bh="",_bt="";
 function btTabs(){const t=$("#tabs");if(!t)return;const cur=S.ui&&S.ui.tab==="bt"?"bt":"geri",lk=window.LOCKED,g=lk?0:dueRooms().length,b=lk?0:btHot();
 const h=`<button type="button" class="tbtn${cur==="geri"?" on":""}${cur==="bt"&&g?" blink":""}" data-t="geri">GERI${g?` <i>${g}</i>`:""}</button><button type="button" class="tbtn${cur==="bt"?" on":""}${cur==="geri"&&b?" blink":""}" data-t="bt">BT37${b?` <i>${b}</i>`:""}</button>`;
@@ -1981,12 +1983,12 @@ if(pd.dataset.bt){delete pd.dataset.bt;pd.title="Bấm để xem các cảnh bá
 if(!bd.dataset.bt){bd.dataset.bt=1;bd.innerHTML='Danh sách bệnh nhân <span class="cnt" id="cnt">0</span>'}{const c=$("#cnt");c.textContent=bp;c.style.display=bp?"inline-block":"none"}
 let ok=0,em=0,bad=0;for(let i=1;i<=BTN;i++){const x=S.bt.rooms[i];if(x.st==="bad"){bad+=2*BTCAP;continue}ok+=x.pl.length;em+=2*BTCAP-x.pl.length}
 setNum("nOk",ok);setNum("nEm",em);setNum("nBad",bad);setNum("nDue",bp);pd.classList.toggle("pend",bp>0);pd.dataset.bt=1;pd.title="Ca BT37 có ngày phôi N5–N7 — bấm để xem danh sách và xử lý"}
-function dueBt(){const L=btPend();$("#dueBt").innerHTML=`<div class="dsec bt">BT37 · ${L.length} ca cảnh báo (ngày phôi N5–N7)</div>`+(L.length?L.map(({r,q},i)=>`<div class="due-item" style="animation-delay:${i*50}ms"><div class="t">BT37 - TỦ ${r} · bên ${btSd(q.side)} <small>— ${esc(btTxt(q))}${q.stt?" · #"+esc(q.stt):""} (ngày ${btDays(q)})</small></div><div class="btns"><button class="b2" data-r="${r}" data-id="${q.id}" data-a="keep">Nuôi tiếp</button><button class="b4" data-r="${r}" data-id="${q.id}" data-a="end">Kết thúc nuôi cấy</button></div></div>`).join(""):'<div class="empty-msg">Không còn ca BT37 nào cảnh báo.</div>')}
+function dueBt(){const L=btPend();$("#dueBt").innerHTML=`<div class="dsec bt">BT37 · ${L.length} ca cảnh báo (ngày phôi N5–N7)</div>`+(L.length?L.map(({r,q},i)=>`<div class="due-item" style="animation-delay:${i*50}ms"><div class="t">${btNm(r)} · bên ${btSd(q.side)} <small>— ${esc(btTxt(q))}${q.stt?" · #"+esc(q.stt):""} (ngày ${btDays(q)})</small></div><div class="btns"><button class="b2" data-r="${r}" data-id="${q.id}" data-a="keep">Nuôi tiếp</button><button class="b4" data-r="${r}" data-id="${q.id}" data-a="end">Kết thúc nuôi cấy</button></div></div>`).join(""):'<div class="empty-msg">Không còn ca BT37 nào cảnh báo.</div>')}
 $("#dueBt").addEventListener("click",async e=>{const b=e.target.closest("button[data-a]");if(!b)return;const r=+b.dataset.r,x=S.bt.rooms[r],q=x&&x.pl.find(z=>z.id===b.dataset.id);if(!q||!gateWho())return;
-if(b.dataset.a==="keep"){q.snooze=todayStr();const h=S.bt.pts.find(z=>z.id===q.id);if(h)h.snooze=q.snooze;btLog(r,"Cảnh báo – Nuôi tiếp: "+btTxt(q),"BT37-"+r+(q.side==="T"?"T":"P"))}
-else{if(!await askConfirm({title:"Kết thúc nuôi cấy?",tone:"warn",ok:"Kết thúc",html:`<div>Kết thúc nuôi cấy <b>${esc(btTxt(q))}</b> (BT37 - TỦ ${r} bên ${btSd(q.side)}, ngày ${btDays(q)})?</div>`}))return;btEnd(r,[q],"Cảnh báo – Kết thúc nuôi cấy")}
+if(b.dataset.a==="keep"){q.snooze=todayStr();const h=S.bt.pts.find(z=>z.id===q.id);if(h)h.snooze=q.snooze;btLog(r,"Cảnh báo – Nuôi tiếp: "+btTxt(q),btNm(r)+" "+(q.side==="T"?"T":"P"))}
+else{if(!await askConfirm({title:"Kết thúc nuôi cấy?",tone:"warn",ok:"Kết thúc",html:`<div>Kết thúc nuôi cấy <b>${esc(btTxt(q))}</b> (${btNm(r)} bên ${btSd(q.side)}, ngày ${btDays(q)})?</div>`}))return;btEnd(r,[q],"Cảnh báo – Kết thúc nuôi cấy")}
 save();render();const it=b.closest(".due-item");if(it){it.style.transition=".3s";it.style.opacity=0;it.style.transform="translateX(30px)"}setTimeout(showDue,300)});
-function btShowHot(){const out=[];Object.entries(S.bt.rooms).forEach(([r,x])=>{if(x.st==="bad")return;x.pl.filter(btHotQ).forEach(q=>out.push({k:"BT37-"+r+q.side,q,d:btDays(q)}))});out.sort((a,b)=>b.d-a.d||a.k.localeCompare(b.k));
+function btShowHot(){const out=[];Object.entries(S.bt.rooms).forEach(([r,x])=>{if(x.st==="bad")return;x.pl.filter(btHotQ).forEach(q=>out.push({k:btNm(r)+" · "+btSd(q.side),q,d:btDays(q)}))});out.sort((a,b)=>b.d-a.d||a.k.localeCompare(b.k));
 $("#dayT").textContent="Cảnh báo BT37 · ngày phôi N5–N7";$("#dayS").textContent=out.length+" ca";
 $("#dayB").innerHTML=out.length?`<table class="hl"><tr><th>Ô</th><th>Tên</th><th>Mã hồ sơ</th><th>STT</th><th>Ngày CH</th><th>Ngày phôi</th></tr>${out.map(({k,q,d})=>`<tr><td><b>${k}</b></td><td>${esc(q.ten||"")}</td><td>${esc(q.hs||"")}</td><td>${esc(q.stt||"")}</td><td>${q.ch?dmy(q.ch):""}</td><td>N${d}</td></tr>`).join("")}</table>`:'<div class="empty-msg">Không có ca cảnh báo.</div>';open("#ovDay")}
 window.btRender=function(){const m=$("#mainBt");if(!m)return;const bt=!!(S.ui&&S.ui.tab==="bt")&&!window.LOCKED,was=!m.hidden;$("#main").hidden=bt;m.hidden=!bt;
@@ -2005,25 +2007,25 @@ const btLog=(r,a,note)=>{S.log.unshift({t:new Date().toISOString(),c:"BT37",r,a,
 const btTxt=q=>[q.ten,q.hs].filter(Boolean).join(" · ")||"—";
 function btStart(r,s,np,p){const x=S.bt.rooms[r],id="b"+Date.now()+Math.random().toString(36).slice(2,6);
 S.bt.pts.push({id,room:r,side:s,...np,start:new Date().toISOString(),end:"",p,p2:p2of()});
-x.pl.push({...np,id,side:s});x.st="using";btLog(r,"Nhập bệnh nhân: "+btTxt(np),"BT37-"+r+(s==="T"?"T":"P"))}
-function btEnd(r,list,why){const x=S.bt.rooms[r];list.forEach(q=>{const h=S.bt.pts.find(z=>z.id===q.id);if(h&&!h.end)h.end=new Date().toISOString();btLog(r,(why||"Kết thúc nuôi bệnh nhân")+": "+btTxt(q),"BT37-"+r+(q.side==="T"?"T":"P"))});
+x.pl.push({...np,id,side:s});x.st="using";btLog(r,"Nhập bệnh nhân: "+btTxt(np),btNm(r)+" "+(s==="T"?"T":"P"))}
+function btEnd(r,list,why){const x=S.bt.rooms[r];list.forEach(q=>{const h=S.bt.pts.find(z=>z.id===q.id);if(h&&!h.end)h.end=new Date().toISOString();btLog(r,(why||"Kết thúc nuôi bệnh nhân")+": "+btTxt(q),btNm(r)+" "+(q.side==="T"?"T":"P"))});
 x.pl=x.pl.filter(z=>!list.includes(z));if(!x.pl.length&&x.st==="using")x.st="empty"}
 function btApplyRow(w,p){const x=S.bt.rooms[w.bt.r];if(!x)return{err:"Tủ BT37 không hợp lệ"};if(x.st==="bad")return{err:"Tủ đang sửa chữa"};
 const np=w.np,L=x.pl.filter(q=>q.side===w.bt.s);
 if(L.find(q=>q.hs===np.hs&&q.ten===np.ten&&q.ch===np.ch&&q.stt===np.stt))return{res:"Không đổi"};
-if(L.length>=BTCAP)return{err:"BT37-"+w.bt.r+" bên "+btSd(w.bt.s)+" đã đủ "+BTCAP+" bệnh nhân"};
-btStart(w.bt.r,w.bt.s,{hs:np.hs,stt:np.stt,ten:np.ten,ns:np.ns,ch:np.ch},p);return{res:"Thêm mới BT37-"+w.bt.r+w.bt.s}}
+if(L.length>=BTCAP)return{err:btNm(w.bt.r)+" bên "+btSd(w.bt.s)+" đã đủ "+BTCAP+" bệnh nhân"};
+btStart(w.bt.r,w.bt.s,{hs:np.hs,stt:np.stt,ten:np.ten,ns:np.ns,ch:np.ch},p);return{res:"Thêm mới "+btNm(w.bt.r)+" "+w.bt.s}}
 function btGridRow(w,room,ns,ch,hs,ten){const m=String(room).toLowerCase().match(/(\d)\s*([tp])/);
-if(!m||+m[1]<1||+m[1]>BTN){w.err="Tủ BT37 không hợp lệ (ví dụ 1T = BT37-1 bên trái, 3P = bên phải)";return w}
+if(!m||+m[1]<1||+m[1]>BTN){w.err="Tủ BT37 không hợp lệ (ví dụ 1T = BT37 1 bên trái, 3P = bên phải)";return w}
 w.bt={r:+m[1],s:m[2].toUpperCase()};w.np.mode="BT";const nsv=nsNorm(ns);w.np.ns=nsv||"";const d=parseDate(ch);w.np.ch=d||"";
 if(!hs&&!ten)w.err="Thiếu tên / MHS";else if(nsv===null)w.err="Ngày sinh sai định dạng (dd/mm/yyyy)";else if(d===""||d===null)w.err=d===null?"Ngày CH sai định dạng":"Thiếu ngày CH";else if(d>todayStr())w.err="Ngày CH lớn hơn hôm nay";
 return w}
 function btPtsRows(){const f=$("#xCab").value,td=todayStr();if(f&&f!=="BT37")return[];
 return S.bt.pts.map(r=>{const dd=r.ch&&!r.imp?Math.round((Date.parse(r.end?ymd(new Date(r.end)):td)-Date.parse(r.ch))/864e5):"";
-return[r.hs||"",r.ten||"",r.ns||"",r.ch?dmy(r.ch):"",r.stt||"","BT37","BT37 - "+r.room,r.side==="T"?"Trái":"Phải",dd,r.p||"",r.p2||"",r.end?"Hoàn thành":"Đang nuôi"]})}
+return[r.hs||"",r.ten||"",r.ns||"",r.ch?dmy(r.ch):"",r.stt||"","BT37",btNm(r.room),r.side==="T"?"Trái":"Phải",dd,r.p||"",r.p2||"",r.end?"Hoàn thành":"Đang nuôi"]})}
 function btNowRows(rows){const stN={using:"Đang nuôi cấy",empty:"Trống",bad:"Sửa chữa"};for(let i=1;i<=BTN;i++){const x=S.bt.rooms[i];
-if(!x.pl.length){rows.push(["BT37","BT37-"+i,stN[x.st]||"","","","","","","","",""]);continue}
-x.pl.forEach(q=>{const dd=btDays(q);rows.push(["BT37","BT37-"+i+(q.side==="T"?"T":"P"),stN[x.st],"BT37 · "+btSd(q.side),q.hs||"",q.stt||"",q.ten||"",q.ns||"",q.ch?dmy(q.ch):"",dd===null?"":dd,dd!==null&&dd>=5&&dd<=7?"Cảnh báo N5-7":""])})}}
+if(!x.pl.length){rows.push(["BT37",btNm(i),stN[x.st]||"","","","","","","","",""]);continue}
+x.pl.forEach(q=>{const dd=btDays(q);rows.push(["BT37",btNm(i)+" "+(q.side==="T"?"T":"P"),stN[x.st],"BT37 · "+btSd(q.side),q.hs||"",q.stt||"",q.ten||"",q.ns||"",q.ch?dmy(q.ch):"",dd===null?"":dd,dd!==null&&dd>=5&&dd<=7?"Cảnh báo N5-7":""])})}}
 
 /* --- popup tủ --- */
 const ovBt=document.createElement("div");ovBt.className="ov";ovBt.id="ovBt";ovBt.innerHTML='<div class="modal" id="btM" style="width:min(780px,100%)"></div>';document.body.appendChild(ovBt);
@@ -2050,7 +2052,7 @@ $("#btM").innerHTML=`<h3 id="btT"></h3>${seg("st",[["ok","Sử dụng"],["bad","
 <div id="btPe" hidden><div class="btlist" id="btLE"></div></div></div>
 <div id="btMsg" role="status" style="font-size:13px;min-height:18px;margin:8px 0 0;color:var(--r)"></div><div class="row" style="justify-content:flex-end;margin:6px 0 0"><button type="button" class="ghost" data-a="x">Hủy</button><button type="button" id="btSave" data-a="save" hidden>Lưu thay đổi</button><button type="button" id="btEnd" data-a="endsel" hidden disabled>Kết thúc</button><button type="button" id="btAdd" data-a="add">Lưu</button></div>`}
 function btFill(){["btHs","btTen","btNs","btStt"].forEach(id=>{$("#"+id).value=btF[id]||""});$("#btCh").value=btF.btCh||todayStr()}
-function btRefresh(){const x=S.bt.rooms[btR],bad=x.st==="bad";$("#btT").innerHTML=`<span class="rmC">BT37</span><span class="rmD">–</span><span class="rmB">TỦ ${btR}</span>`;$("#btT").style.setProperty("--h",`var(--h${btR})`);$("#btM").style.setProperty("--h",`var(--h${btR})`);
+function btRefresh(){const x=S.bt.rooms[btR],bad=x.st==="bad";$("#btT").innerHTML=`<span class="rmC">BT37</span><span class="rmB">${btR}${btSub(btR)}</span>`;$("#btT").style.setProperty("--h",`var(--h${btR})`);$("#btM").style.setProperty("--h",`var(--h${btR})`);
 const ck=(n,v)=>{const e=document.querySelector(`#btM input[name="${n}"][value="${v}"]`);if(e&&!e.checked)e.checked=true};ck("st",bad?"bad":"ok");ck("btp",btP);ck("bts",btS);
 const sh=(id,on)=>{const e=$("#"+id),w=!e.hidden;e.hidden=!on;if(on&&!w){e.classList.remove("tabIn");void e.offsetWidth;e.classList.add("tabIn")}};
 const eq=btEd?x.pl.find(z=>z.id===btEd):null;if(btEd&&!eq)btEd=null;const pe=!bad&&!!btEd;
@@ -2071,22 +2073,22 @@ if(a==="back"){btEd=null;btRefresh();return}
 if(a==="endone"){if(!btEd)return;await btAct("endpt",null,btEd);return}
 if(a==="save"){const q=x.pl.find(z=>z.id===btEd);if(!q)return;if(!gateWho())return;const hs=(btF.btEHs||"").trim(),ten=(btF.btETen||"").trim(),stt=(btF.btEStt||"").trim(),ch=btF.btECh||"",ns=nsNorm(btF.btENs||"");
 if(!hs&&!ten)btMsg="Thiếu tên / mã hồ sơ.";else if(ns===null)btMsg="Ngày sinh sai định dạng (dd/mm/yyyy).";else if(!ch)btMsg="Thiếu ngày CH.";else if(ch>todayStr())btMsg="Ngày CH lớn hơn hôm nay.";
-else{const np={hs,ten,stt,ns:ns||"",ch},old=btTxt(q);Object.assign(q,np);const h=S.bt.pts.find(z=>z.id===q.id);if(h)Object.assign(h,np);btLog(btR,"Sửa thông tin bệnh nhân: "+old+(old!==btTxt(q)?" → "+btTxt(q):""),"BT37-"+btR+(q.side==="T"?"T":"P"));btUp();nthToast("✅ Đã lưu thông tin bệnh nhân");return}
+else{const np={hs,ten,stt,ns:ns||"",ch},old=btTxt(q);Object.assign(q,np);const h=S.bt.pts.find(z=>z.id===q.id);if(h)Object.assign(h,np);btLog(btR,"Sửa thông tin bệnh nhân: "+old+(old!==btTxt(q)?" → "+btTxt(q):""),btNm(btR)+" "+(q.side==="T"?"T":"P"));btUp();nthToast("✅ Đã lưu thông tin bệnh nhân");return}
 btRefresh();return}
 if(a==="tab"){btP=v;btRefresh();return}
 if(a==="side"){btS=v;btRefresh();return}
-if(a==="st"){if(v==="bad"){if(x.st==="bad")return;if(x.pl.length&&!await askConfirm({title:"Chuyển sang Sửa chữa?",tone:"warn",ok:"Xác nhận",html:"<div>Tủ BT37-"+btR+" còn <b>"+x.pl.length+"</b> bệnh nhân đang nuôi. Chuyển sang Sửa chữa sẽ kết thúc nuôi cấy tất cả.</div>"}))return;
-btEnd(btR,[...x.pl]);x.st="bad";btLog(btR,"Đặt trạng thái Sửa chữa","BT37-"+btR)}else{if(x.st!=="bad")return;x.st="empty";btLog(btR,"Đặt trạng thái Sử dụng","BT37-"+btR)}btUp();return}
+if(a==="st"){if(v==="bad"){if(x.st==="bad")return;if(x.pl.length&&!await askConfirm({title:"Chuyển sang Sửa chữa?",tone:"warn",ok:"Xác nhận",html:"<div>Tủ "+btNm(btR)+" còn <b>"+x.pl.length+"</b> bệnh nhân đang nuôi. Chuyển sang Sửa chữa sẽ kết thúc nuôi cấy tất cả.</div>"}))return;
+btEnd(btR,[...x.pl]);x.st="bad";btLog(btR,"Đặt trạng thái Sửa chữa",btNm(btR))}else{if(x.st!=="bad")return;x.st="empty";btLog(btR,"Đặt trạng thái Sử dụng",btNm(btR))}btUp();return}
 if(a==="add"){if(!gateWho())return;const hs=(btF.btHs||"").trim(),ten=(btF.btTen||"").trim(),stt=(btF.btStt||"").trim(),ch=btF.btCh||todayStr(),ns=nsNorm(btF.btNs||"");
 if(!hs&&!ten)btMsg="Thiếu tên / mã hồ sơ.";else if(ns===null)btMsg="Ngày sinh sai định dạng (dd/mm/yyyy).";else if(!ch)btMsg="Thiếu ngày CH.";else if(ch>todayStr())btMsg="Ngày CH lớn hơn hôm nay.";
 else if(x.pl.filter(q=>q.side===btS).length>=BTCAP)btMsg="Bên "+btSd(btS)+" đã đủ "+BTCAP+" bệnh nhân.";
 else{btStart(btR,btS,{hs,ten,stt,ns:ns||"",ch},btWho());btF={btCh:ch};btFill();btUp();setTimeout(()=>{const e=$("#btHs");if(e)e.focus()},30);return}
 btRefresh();return}
 if(a==="endsel"){const L=x.pl.filter(q=>btSel.has(q.id));if(!L.length)return;if(!gateWho())return;
-if(!await askConfirm({title:"Kết thúc nuôi cấy?",tone:"warn",ok:"Kết thúc",html:"<div>Kết thúc nuôi cấy <b>"+L.length+"</b> ca đã chọn tại BT37-"+btR+"?</div>"}))return;btSel.clear();btEnd(btR,L);btUp();return}
-if(a==="endpt"){const q=x.pl.find(z=>z.id===id);if(!q||!gateWho())return;if(!await askConfirm({title:"Kết thúc nuôi cấy?",tone:"warn",ok:"Kết thúc",html:"<div>Kết thúc nuôi cấy bệnh nhân <b>"+esc(btTxt(q))+"</b> (BT37-"+btR+" bên "+btSd(q.side)+")?</div>"}))return;btEnd(btR,[q]);btUp();return}
+if(!await askConfirm({title:"Kết thúc nuôi cấy?",tone:"warn",ok:"Kết thúc",html:"<div>Kết thúc nuôi cấy <b>"+L.length+"</b> ca đã chọn tại "+btNm(btR)+"?</div>"}))return;btSel.clear();btEnd(btR,L);btUp();return}
+if(a==="endpt"){const q=x.pl.find(z=>z.id===id);if(!q||!gateWho())return;if(!await askConfirm({title:"Kết thúc nuôi cấy?",tone:"warn",ok:"Kết thúc",html:"<div>Kết thúc nuôi cấy bệnh nhân <b>"+esc(btTxt(q))+"</b> ("+btNm(btR)+" bên "+btSd(q.side)+")?</div>"}))return;btEnd(btR,[q]);btUp();return}
 if(a==="endside"){const L=v==="A"?[...x.pl]:x.pl.filter(q=>q.side===v);if(!L.length){btMsg="Không có bệnh nhân để kết thúc.";btRefresh();return}if(!gateWho())return;
-if(!await askConfirm({title:"Kết thúc nuôi cấy?",tone:"warn",ok:"Kết thúc",html:"<div>Kết thúc nuôi cấy <b>"+L.length+"</b> bệnh nhân"+(v==="A"?" của cả tủ":" bên "+btSd(v))+" BT37-"+btR+"?</div>"}))return;btEnd(btR,L);btUp();return}}
+if(!await askConfirm({title:"Kết thúc nuôi cấy?",tone:"warn",ok:"Kết thúc",html:"<div>Kết thúc nuôi cấy <b>"+L.length+"</b> bệnh nhân"+(v==="A"?" của cả tủ":" bên "+btSd(v))+" "+btNm(btR)+"?</div>"}))return;btEnd(btR,L);btUp();return}}
 btRender();
 
 /* --- ESC đóng popup (như nút Đóng) --- */
@@ -2585,5 +2587,10 @@ new MutationObserver(all).observe(document.body,{childList:true});
 .cab .tile:not(.ok):not(.bad):not(.due){border-color:color-mix(in srgb,var(--h) 55%,#cbd5e1)}
 .cab .tile .no{background:color-mix(in srgb,var(--h) 20%,var(--card));border-color:color-mix(in srgb,var(--h) 70%,var(--bd));color:color-mix(in srgb,var(--h) 55%,var(--tx))}
 .cab .tile:hover{box-shadow:0 8px 18px color-mix(in srgb,var(--h) 35%,transparent)}
+</style>
+<style id="btNames">
+/* Tên tủ BT37: dòng chính + tên phụ trong ngoặc */
+.btc .bth{flex-direction:column;gap:1px;min-height:54px}
+.btc .btsub{font-size:12.5px;font-weight:700;letter-spacing:.4px;line-height:1.2;color:color-mix(in srgb,var(--h,var(--pri)) 62%,var(--tx))}
 </style>
 </body></html>
