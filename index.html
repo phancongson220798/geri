@@ -1470,7 +1470,7 @@ $("#hBody").addEventListener("click",e=>{if(e.target.id==="hMore"){histN+=20;his
 $("#dueHist").addEventListener("click",e=>{if(e.target.id==="dueMore"){dueN+=20;dueExtra()}});
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 for(let c=1;c<=CABS;c++)$("#hCab").insertAdjacentHTML("beforeend",`<option value="${c}">Tủ GERI ${c}</option>`);$("#hCab").insertAdjacentHTML("beforeend",'<option value="BT37">Tủ BT37</option>');
-$("#hCab").onchange=()=>{histN=7;hist()};$("#bHist").onclick=()=>{histN=7;hist();open("#ovHist")};
+$("#hCab").onchange=()=>{histN=7;hist()};$("#bHist").onclick=()=>{if(!(window.__isAdmin&&window.__isAdmin()))return;histN=7;hist();open("#ovHist")};
 
 const dlBlob=(name,data)=>{const b=data instanceof Blob?data:new Blob([data],{type:/\.xlsx$/i.test(name)?"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":"text/csv;charset=utf-8"});const u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3000)};
 const saveFile=async(name,data)=>{let d=null;try{if(typeof claude!=="undefined")d=await claude.use("downloads")}catch(e){d=null}
@@ -1505,8 +1505,8 @@ save();xlCount()});
 $("#xSecs").addEventListener("click",e=>{const g=e.target.closest("[data-tg]");if(g){const id=g.dataset.tg,sec=g.closest(".xsec"),op=!xOpen.has(id);op?xOpen.add(id):xOpen.delete(id);sec.classList.toggle("open",op);g.textContent=op?"Thu gọn ▴":"Chọn trường ▾";return}
 const t=e.target.closest("[data-all],[data-none]");if(!t)return;const all=t.dataset.all!==undefined,sh=XSH.find(x=>x.id===(t.dataset.all||t.dataset.none)),st=xlGet(sh),sec=t.closest(".xsec");
 st.cols=all?sh.cols.map((_,i)=>i):[];st.on=all?true:st.on;sec.classList.toggle("off",!st.on);sec.querySelector("[data-m]").checked=st.on;sec.querySelectorAll(".xchip input").forEach(c=>c.checked=all);save();xlCount()});
-$("#bXl").onclick=()=>{const t=new Date();$("#xTo").value=ymd(t);$("#xFrom").value=ymd(new Date(t.getFullYear(),t.getMonth(),1));xlRender();xlCount();open("#ovXl")};
-$("#xGo").onclick=async()=>{if(typeof XLSX==="undefined"){askAlert({title:"Chưa xuất được Excel",html:"<div>Chưa tải được thư viện Excel. Hãy kiểm tra kết nối mạng rồi thử lại.</div>"});return}
+$("#bXl").onclick=()=>{if(!(window.__isAdmin&&window.__isAdmin()))return;const t=new Date();$("#xTo").value=ymd(t);$("#xFrom").value=ymd(new Date(t.getFullYear(),t.getMonth(),1));xlRender();xlCount();open("#ovXl")};
+$("#xGo").onclick=async()=>{if(!(window.__isAdmin&&window.__isAdmin()))return;if(typeof XLSX==="undefined"){askAlert({title:"Chưa xuất được Excel",html:"<div>Chưa tải được thư viện Excel. Hãy kiểm tra kết nối mạng rồi thử lại.</div>"});return}
 const p=todayStr().split("-"),stamp=p[2]+p[1]+p[0].slice(2);let first=true;
 for(const sh of XSH){const ix=xlIdx(sh);if(!ix.length)continue;const rows=xlData[sh.id]();if(!rows.length)continue;
 const ws=XLSX.utils.aoa_to_sheet([ix.map(i=>sh.cols[i]),...rows.map(r=>ix.map(i=>r[i]))]);ws["!cols"]=ix.map(i=>({wch:sh.w[i]}));
@@ -2382,7 +2382,7 @@ const FB_CFG={
     if(!user)return;
     if(MN){const same=MN._el===el;closeMenu();if(same)return}
     const m=document.createElement("div");m.className="acm";m.setAttribute("role","menu");m._el=el;
-    const AI=[["src","📝","Nhận bệnh"],["ch","📈","Biểu đồ"],["xl","📊","Xuất Excel"],["ui","🎨","Giao diện"],["hist","🕘","Lịch sử thao tác"],["pt","👥","Danh sách bệnh nhân"],["nav","🧭","Điều hướng GERI"],["pw","🔑","Đổi mật khẩu"]];if(isAdmin())AI.push(["imp","📥","IMPORT"],["empty","🗑","EMPTY"]);
+    const AI=[["src","📝","Nhận bệnh"],["ch","📈","Biểu đồ"],...(isAdmin()?[["xl","📊","Xuất Excel"]]:[]),["ui","🎨","Giao diện"],...(isAdmin()?[["hist","🕘","Lịch sử thao tác"]]:[]),["pt","👥","Danh sách bệnh nhân"],["nav","🧭","Điều hướng GERI"],["pw","🔑","Đổi mật khẩu"]];if(isAdmin())AI.push(["imp","📥","IMPORT"],["empty","🗑","EMPTY"]);
     m.classList.add("wide");
     m.innerHTML='<div class="who"><small>Đang đăng nhập</small><b title="'+esc(lab(user))+'">'+esc(lab(user))+'</b></div>'
       +'<div class="acr">'+AI.map(i=>'<button type="button" role="menuitem" data-m="'+i[0]+'"><span class="ai">'+i[1]+'</span><span>'+i[2]+'</span></button>').join("")+'</div>'
@@ -2394,7 +2394,7 @@ const FB_CFG={
     if(up){m.style.bottom=(innerHeight-r.top+8)+"px";m.style.setProperty("--o","bottom right")}
     else{m.style.top=(r.bottom+8)+"px";m.style.setProperty("--o","top right")}
     const items=[...m.querySelectorAll("button")];
-    m.onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;closeMenu();const k=b.dataset.m;if(k==="pw")openPw();else if(k==="nav"){if(window.nvManage)window.nvManage()}else if(k==="empty")wipeAll();else if(k==="out")doLogout();else{const T={src:"#bSrc",ch:"#bCh",xl:"#bXl",ui:"#bUi",hist:"#bHist",pt:"#bPt",imp:"#bImp"}[k],x=T&&document.querySelector(T);if(x)x.click()}};
+    m.onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;closeMenu();const k=b.dataset.m;if((k==="xl"||k==="hist")&&!isAdmin())return;if(k==="pw")openPw();else if(k==="nav"){if(window.nvManage)window.nvManage()}else if(k==="empty")wipeAll();else if(k==="out")doLogout();else{const T={src:"#bSrc",ch:"#bCh",xl:"#bXl",ui:"#bUi",hist:"#bHist",pt:"#bPt",imp:"#bImp"}[k],x=T&&document.querySelector(T);if(x)x.click()}};
     m._o=e=>{if(!m.contains(e.target)&&!el.contains(e.target))closeMenu()};
     m._k=e=>{
       if(e.key==="Escape"){e.preventDefault();closeMenu(true)}
