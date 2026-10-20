@@ -2593,4 +2593,195 @@ new MutationObserver(all).observe(document.body,{childList:true});
 .btc .bth{flex-direction:column;gap:1px;min-height:54px}
 .btc .btsub{font-size:12.5px;font-weight:700;letter-spacing:.4px;line-height:1.2;color:color-mix(in srgb,var(--h,var(--pri)) 62%,var(--tx))}
 </style>
+<style id="mobileUI">
+/* ===================================================================
+   GIAO DIỆN ĐIỆN THOẠI & TABLET
+   - Chỉ áp dụng khi màn hình <= 1180px. Máy tính (> 1180px) giữ nguyên.
+   - Tablet : 701px - 1180px   |   Điện thoại : <= 700px
+   =================================================================== */
+#mNav,#mDayBtn{display:none}
+
+/* ---------------------------- TABLET ---------------------------- */
+@media (min-width:701px) and (max-width:1180px){
+  body{padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+
+  /* Thanh đầu trang: nút & ô nhập đủ lớn để chạm */
+  .tools .bar.acts button{min-height:44px;padding:10px 18px;font-size:14px}
+  .tools .bar.acts .ib,header .tools .bar.acts .ib,header .tools .trow1 .ib{width:44px;height:44px}
+  .who input,header .tools .trow1 .who input{min-height:44px;font-size:16px;border-radius:12px}
+  .stats .pill{padding:8px 15px;font-size:14px}
+  #tabs .tbtn{min-height:44px;padding:10px 22px}
+
+  /* Lưới tủ: 3 cột (3 + 2) thay vì 5 cột chật */
+  main:not([hidden]),#mainBt:not([hidden]){grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;padding:8px 14px calc(72px + env(safe-area-inset-bottom,0px))}
+  #main>.cab,#mainBt>.btc{grid-column:span 2;min-width:0}
+  #main>.cab:nth-child(n+4),#mainBt>.btc:nth-child(n+4){grid-column:span 3}
+  #main>.cab:nth-child(n+4) .rooms{grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,minmax(84px,1fr))}
+
+  /* Popup: vừa màn hình, dễ chạm */
+  .ov{padding:20px}
+  .modal{max-height:calc(100dvh - 40px)}
+  .modal .row>button{min-height:44px;padding-left:18px;padding-right:18px}
+  .modal input:not([type=checkbox]):not([type=radio]),.modal select{min-height:44px;font-size:16px}
+  .modal textarea{font-size:16px}
+  .seg label{padding:12px 8px}
+  .modal th,.modal td{padding:9px 10px}
+}
+
+/* Tablet đứng (<= 900px): 2 cột, tủ cuối chiếm trọn hàng */
+@media (min-width:701px) and (max-width:900px){
+  main:not([hidden]),#mainBt:not([hidden]){grid-template-columns:repeat(2,minmax(0,1fr))}
+  #main>.cab,#mainBt>.btc,#main>.cab:nth-child(n+4),#mainBt>.btc:nth-child(n+4){grid-column:auto}
+  #main>.cab:nth-child(n+4) .rooms{grid-template-columns:none;grid-template-rows:none}
+  #main>.cab:nth-child(odd):last-child,#mainBt>.btc:nth-child(odd):last-child{grid-column:1/-1}
+  #main>.cab:nth-child(odd):last-child .rooms{grid-template-columns:1fr 1fr;grid-template-rows:none}
+}
+
+/* ------------------------- ĐIỆN THOẠI --------------------------- */
+@media (max-width:700px){
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  body{background-attachment:scroll;padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+
+  /* ----- Đầu trang gọn: tiêu đề → tab → thống kê → người thực hiện → nút ----- */
+  header{padding:6px 8px 0}
+  .hrow{grid-template-columns:minmax(0,1fr);gap:8px;padding:6px 2px}
+  .hrow>*{min-width:0}
+  .head{order:1}
+  .tools{order:2}
+  #mDayBtn{order:3}
+  .hrow .dtab{order:4}
+  .head h1,header .head h1{display:flex;flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
+  h1 .ttl,header .head h1 .ttl{font-size:16.5px;line-height:1.25;white-space:normal}
+  header .head h1 small{font-size:12px}
+  #tabs{width:100%;min-width:0;margin-top:6px}
+  #tabs .tbtn{min-height:46px;padding:10px 8px;font-size:15px;font-weight:700}
+
+  /* Thống kê: 4 ô đều nhau, số to ở trên */
+  .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;width:100%}
+  .stats .pill{position:relative;flex-direction:column;justify-content:center;gap:2px;padding:9px 4px 7px;border-radius:14px;font-size:11px;line-height:1.2;text-align:center;min-height:58px}
+  .stats .pill b{order:-1;font-size:20px;line-height:1}
+  .stats .pill i.dot{position:absolute;top:7px;left:8px;width:7px;height:7px;margin:0}
+
+  /* Người thực hiện + nút */
+  .tools{gap:8px}
+  .tools .trow1 .who,.who{width:100%}
+  .who input,header .tools .trow1 .who input,.tools .who input{min-height:46px;font-size:16px;border-radius:12px}
+  .tools .bar.acts{gap:8px;width:100%}
+  .tools .bar.acts button{min-height:46px;font-size:15px;border-radius:12px}
+  .tools .bar.acts #bDue{flex:1 1 auto}
+  .tools .bar.acts .ib,header .tools .bar.acts .ib,header .tools .trow1 .ib{flex:0 0 auto;width:46px;height:46px}
+
+  /* Bảng "ngày phôi": thu gọn, bấm để mở */
+  #mDayBtn{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:44px;padding:8px 14px;border-radius:12px;background:var(--card);color:var(--tx);border:1px solid var(--bd);box-shadow:none;font-size:13.5px;font-weight:600}
+  #mDayBtn:hover{transform:none;box-shadow:none}
+  #mDayBtn::after{content:"▾";font-size:15px;transition:transform .25s ease}
+  .hrow.dayOpen #mDayBtn::after{transform:rotate(180deg)}
+  .hrow .dtab{display:none;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .hrow.dayOpen .dtab{display:block}
+
+  /* ----- Thanh chọn tủ (dính trên cùng khi cuộn) ----- */
+  #mNav{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;padding:8px 10px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--bg) 90%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--bd);scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  #mNav::-webkit-scrollbar{display:none}
+  #mNav.empty{display:none}
+  #mNav button{flex:1 0 auto;min-width:62px;min-height:42px;padding:6px 14px;border-radius:999px;overflow:visible;background:var(--card);color:var(--tx);border:1px solid var(--bd);box-shadow:none;font-size:14px;font-weight:700;letter-spacing:0}
+  #mNav button:hover,#mNav button:active{transform:none;filter:none}
+  #mNav button.on{background:var(--h,var(--pri));color:#fff;border-color:transparent;box-shadow:0 3px 10px color-mix(in srgb,var(--h,var(--pri)) 40%,transparent)}
+  #mNav button .bd{position:absolute;top:-5px;right:-3px;min-width:19px;height:19px;padding:0 5px;border-radius:10px;background:var(--r);color:#fff;font-size:11px;font-weight:800;line-height:19px;text-align:center;box-shadow:0 0 0 2px var(--bg)}
+
+  /* ----- Danh sách tủ: vuốt ngang, mỗi lần một tủ ----- */
+  main:not([hidden]),#mainBt:not([hidden]){display:flex;flex-direction:row;align-items:stretch;gap:10px;flex:none;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding:0 10px;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:8px 10px calc(78px + env(safe-area-inset-bottom,0px))}
+  main::-webkit-scrollbar,#mainBt::-webkit-scrollbar{display:none}
+  #main>.cab,#mainBt>.btc{flex:0 0 calc(100vw - 46px);max-width:460px;min-width:0;scroll-snap-align:center;scroll-snap-stop:always;padding:10px}
+  .cab h2{font-size:15px}
+  .rooms{display:grid;grid-template-rows:none;grid-auto-rows:88px;gap:8px}
+  .tile .no{font-size:15px;padding:4px 7px}
+  .hf .tx b{font-size:14px}
+  .hf .tx small{font-size:11.5px}
+
+  /* ----- Popup: dạng bảng trượt từ dưới lên ----- */
+  .ov:not(.au){padding:0;align-items:flex-end;-webkit-backdrop-filter:none;backdrop-filter:none}
+  .ov:not(.au) .modal{width:100%!important;max-width:100%;max-height:92dvh!important;border-radius:20px 20px 0 0!important;border-width:3px 0 0 0!important;box-shadow:0 -12px 40px rgba(0,0,0,.28)!important;padding:12px 16px 0;opacity:1;clip-path:none;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);overscroll-behavior:contain}
+  .ov.show:not(.au) .modal{clip-path:none;transform:none;animation:none;transition:transform .38s cubic-bezier(.32,.72,0,1)}
+  .ov:not(.au):not(#ovNvM) .modal::before{content:"";display:block;width:42px;height:4px;margin:0 auto 12px;border-radius:3px;background:color-mix(in srgb,var(--mu) 45%,transparent)}
+  .ov:not(.au):not(#ovNvM) .modal::after{content:"";display:block;height:calc(16px + env(safe-area-inset-bottom,0px))}
+  .ov:not(.au) .modal:has(>.row:last-child>button)::after{display:none}
+  .ov:not(.au):not(#ovNvM) .modal>.row:last-child:has(>button){position:sticky;bottom:0;z-index:5;margin:12px -16px 0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--bd)}
+  .modal>.row:last-child>button{flex:1 1 0;min-height:48px;font-size:15px}
+  .modal .row>button{min-height:44px}
+  .modal h3{font-size:18px;margin-bottom:10px}
+  .modal input:not([type=checkbox]):not([type=radio]),.modal select{min-height:46px;font-size:16px;border-radius:10px}
+  .modal textarea{font-size:16px}
+  .seg label{padding:13px 8px;font-size:15px}
+  .modal th,.modal td{padding:9px 8px}
+  .modal .tblw{max-width:100%;-webkit-overflow-scrolling:touch}
+  #ptBody td,#ptBody th{white-space:nowrap}
+  #ptBody td.pti{white-space:normal;min-width:88px}
+
+  /* ----- Menu tài khoản: bảng dưới màn hình ----- */
+  .acm{left:8px!important;right:8px!important;top:auto!important;bottom:calc(8px + env(safe-area-inset-bottom,0px))!important;width:auto!important;max-width:none;border-radius:20px;padding:10px;transform-origin:bottom center;box-shadow:0 -10px 40px rgba(0,0,0,.3)}
+  .acm .acr{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .acm .acr button{min-height:78px;font-size:12px}
+  .acm .acr .ai{font-size:24px}
+  .acm>button.out{min-height:48px;font-size:15px}
+
+  .cloudSt{right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+}
+
+/* Điện thoại rất nhỏ */
+@media (max-width:359px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .acm .acr{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+</style>
+<script>
+/* ===== Giao diện điện thoại: thanh chọn tủ + nút mở/đóng bảng "ngày phôi" (chỉ hoạt động khi màn hình <= 700px) ===== */
+(()=>{
+  const mq=window.matchMedia("(max-width:700px)"),hd=document.querySelector("header"),hrow=document.querySelector(".hrow");
+  if(!hd||!hrow)return;
+  const nav=document.createElement("nav");nav.id="mNav";nav.className="empty";nav.setAttribute("aria-label","Chọn tủ");hd.after(nav);
+  const day=document.createElement("button");day.type="button";day.id="mDayBtn";day.setAttribute("aria-expanded","false");day.textContent="Bệnh nhân theo ngày phôi";
+  const dtab=hrow.querySelector(".dtab");hrow.insertBefore(day,dtab||null);
+  day.onclick=()=>{const o=hrow.classList.toggle("dayOpen");day.setAttribute("aria-expanded",String(o))};
+  let cards=[],raf=0,key="";
+  const cur=()=>{const b=document.getElementById("mainBt");return b&&!b.hidden?b:document.getElementById("main")};
+  const num=c=>{const n=c.querySelector("h2 .nm,.btn"),m=n&&n.textContent.match(/(\d+)\s*$/);return m?m[1]:""};
+  const due=c=>c.classList.contains("btc")?c.querySelectorAll(".bts.bhot").length:c.querySelectorAll(".tile.due").length;
+  const col=c=>(getComputedStyle(c).getPropertyValue("--h")||"").trim();
+  const track=()=>{
+    const m=cur();if(!m||!cards.length)return;
+    const mid=m.scrollLeft+m.clientWidth/2;let best=0,bd=Infinity;
+    cards.forEach((c,i)=>{const d=Math.abs(c.offsetLeft+c.offsetWidth/2-mid);if(d<bd){bd=d;best=i}});
+    [...nav.children].forEach((b,i)=>b.classList.toggle("on",i===best));
+    const b=nav.children[best];if(b&&nav.scrollWidth>nav.clientWidth)nav.scrollTo({left:b.offsetLeft-(nav.clientWidth-b.offsetWidth)/2,behavior:"smooth"});
+  };
+  const build=()=>{
+    raf=0;
+    if(!mq.matches){nav.innerHTML="";nav.className="empty";key="";return}
+    const m=cur();if(!m){return}
+    cards=[...m.children].filter(e=>e.matches(".cab,.btc"));
+    if(!cards.length){nav.innerHTML="";nav.className="empty";key="";return}
+    const k=m.id+"|"+cards.map(c=>num(c)+":"+due(c)+":"+col(c)).join(",");
+    nav.classList.remove("empty");
+    if(k!==key){
+      key=k;
+      nav.innerHTML=cards.map((c,i)=>`<button type="button" data-i="${i}" style="--h:${col(c)||"var(--pri)"}">Tủ ${num(c)||i+1}${due(c)?`<span class="bd">${due(c)}</span>`:""}</button>`).join("");
+    }
+    track();
+  };
+  const later=()=>{if(!raf)raf=requestAnimationFrame(build)};
+  nav.addEventListener("click",e=>{
+    const b=e.target.closest("button[data-i]");if(!b)return;
+    const m=cur(),c=cards[+b.dataset.i];if(!m||!c)return;
+    m.scrollTo({left:c.offsetLeft-(m.clientWidth-c.offsetWidth)/2,behavior:"smooth"});
+  });
+  ["main","mainBt"].forEach(id=>{
+    const m=document.getElementById(id);if(!m)return;
+    m.addEventListener("scroll",()=>{if(!raf)raf=requestAnimationFrame(()=>{raf=0;track()})},{passive:true});
+    new MutationObserver(later).observe(m,{childList:true,attributes:true,attributeFilter:["hidden"]});
+  });
+  (mq.addEventListener?mq.addEventListener("change",later):mq.addListener(later));
+  addEventListener("resize",later);
+  later();
+})();
+</script>
 </body></html>
