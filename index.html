@@ -1849,7 +1849,7 @@ $("#ptBody").addEventListener("click",e=>{const b=e.target.closest("button[data-
   const m=b.dataset.dm,gs=ptGroups().filter(g=>g.fin&&ymd(new Date(g.end)).slice(0,7)===m),pl=gs.flatMap(g=>g.pl);if(!pl.length)return;
   const[y,mo]=m.split("-"),q=$("#ptQ").value.trim();
   ptDelFin(pl,"Xóa tất cả ca tháng "+mo+"/"+y,`<div>Xóa <b>${gs.length}</b> bệnh nhân (${pl.length} đĩa) đã hoàn thành trong tháng <b>${mo}/${y}</b>${q?" theo bộ lọc tìm kiếm hiện tại":""}?</div>`,false)});
-/* ===== ĐĂNG KÝ TIMELAPSE (chỉ admin). Số đăng ký là DỰ TÍNH, lưu trong S.tl và ĐỒNG BỘ giữa các thiết bị cùng dữ liệu app ===== */
+/* ===== ĐĂNG KÝ TIMELAPSE (chỉ admin). Số đăng ký là DỰ TÍNH, lưu trong S.bt.tl (nằm trong trường "bt" đã đồng bộ sẵn, không thêm trường mới lên Firestore) ===== */
 const TLN=8,TLW=["CN","T2","T3","T4","T5","T6","T7"],TLK="geri_tl";
 let tlD=null;
 const tlAdm=()=>ptAdm();
@@ -1858,7 +1858,7 @@ const tlDate=o=>ymd(tlDO(o));
 const tlDM=o=>dmy(tlDate(o)).slice(0,5);
 const tlNum=v=>{const n=Math.round(+v);return isFinite(n)&&n>0?n:0};
 const tlRead=()=>{try{return JSON.parse(localStorage.getItem(TLK)||"null")||{}}catch(e){return{}}};
-const tlLoad=()=>{const x=S.tl&&typeof S.tl==="object"?S.tl:tlRead();return{reg:{...(x.reg||{})},ch:{...(x.ch||{})},L:tlNum(x.L)||5,cap:x.cap===undefined||x.cap===null||x.cap===""?8:tlNum(x.cap),rsv:tlNum(x.rsv)}};
+const tlLoad=()=>{const x=S.bt&&S.bt.tl&&typeof S.bt.tl==="object"?S.bt.tl:S.tl&&typeof S.tl==="object"?S.tl:tlRead();return{reg:{...(x.reg||{})},ch:{...(x.ch||{})},L:tlNum(x.L)||5,cap:x.cap===undefined||x.cap===null||x.cap===""?8:tlNum(x.cap),rsv:tlNum(x.rsv)}};
 /* Cap(u) = 30 - buồng sửa chữa - dự phòng ; Real(u) = đĩa TL đang nuôi (có thông tin BN) còn chiếm buồng ngày u ;
    Free(u) = Cap - Real - đăng ký còn chiếm ; Còn nhận(T) = min Free(u), u = T..T+L-1 (>=0, <= trần/ngày) */
 function tlCalc(d){
@@ -1931,7 +1931,7 @@ $("#tlSave").onclick=()=>{
   if(!tlAdm()||!tlD)return;
   const keep=tlDate(-1),pr=o=>{const x={};Object.keys(o).forEach(k=>{if(k>=keep&&o[k]!==""&&tlNum(o[k])>0)x[k]=tlNum(o[k])});return x};
   const v={reg:pr(tlD.reg),ch:pr(tlD.ch),L:Math.max(1,Math.min(10,tlNum(tlD.L)||5)),cap:tlNum(tlD.cap),rsv:tlNum(tlD.rsv)};
-  S.tl=v;save();
+  btFix();S.bt.tl=v;delete S.tl;save();
   close($("#ovTl"));
   askAlert({title:"Đã lưu đăng ký TL",tone:"info",html:"<div>Đã lưu và đồng bộ giữa các thiết bị. Chỉ tài khoản admin xem và sửa được số liệu này.</div>"})};
 matchMedia("(max-width:700px)").addEventListener("change",()=>{if($("#ovTl").classList.contains("show")&&tlD)drawTl()});
@@ -2341,17 +2341,17 @@ const FB_CFG={
 
   /* ---------- dữ liệu ---------- */
   const clean=o=>JSON.parse(JSON.stringify(o));
-  const payload=()=>clean({rooms:S.rooms,log:S.log,pts:S.pts,srcRows:(S.srcRows||[]).map(r=>JSON.stringify(r)),bt:S.bt,tl:S.tl||null,nv:(S.ui&&S.ui.nv)||{},t:Date.now()});
+  const payload=()=>clean({rooms:S.rooms,log:S.log,pts:S.pts,srcRows:(S.srcRows||[]).map(r=>JSON.stringify(r)),bt:S.bt,nv:(S.ui&&S.ui.nv)||{},t:Date.now()});
   const fillRooms=()=>{for(let c=1;c<=CABS;c++)for(let r=1;r<=ROOMS;r++){const k=c+"-"+r;if(!S.rooms[k])S.rooms[k]={st:"empty",pl:[]};if(!S.rooms[k].pl)S.rooms[k].pl=[]}};
   const applyRemote=d=>{
-    S.rooms=d.rooms||S.rooms;S.log=d.log||[];S.pts=d.pts||[];if(d.bt)S.bt=d.bt;if(d.tl&&typeof d.tl==="object")S.tl=d.tl;if(d.nv&&typeof d.nv==="object"){S.ui=S.ui||{};S.ui.nv=Object.assign({},S.ui.nv||{},d.nv);try{localStorage.setItem("geri_nv_links",JSON.stringify(S.ui.nv))}catch(e){}}btFix();S.srcRows=(d.srcRows||[]).map(r=>{if(typeof r!=="string")return r;try{return JSON.parse(r)}catch(e){return[]}});
+    S.rooms=d.rooms||S.rooms;S.log=d.log||[];S.pts=d.pts||[];if(d.bt)S.bt=d.bt;if(d.nv&&typeof d.nv==="object"){S.ui=S.ui||{};S.ui.nv=Object.assign({},S.ui.nv||{},d.nv);try{localStorage.setItem("geri_nv_links",JSON.stringify(S.ui.nv))}catch(e){}}btFix();S.srcRows=(d.srcRows||[]).map(r=>{if(typeof r!=="string")return r;try{return JSON.parse(r)}catch(e){return[]}});
     fillRooms();
     G=Array.isArray(S.srcRows)?S.srcRows.map(r=>SG.map((_,j)=>String(r[j]||""))):[];ensureRows(10);
     try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
     if(!window._revDone){window._revDone=true;window._revWant=true}
     render()};
   // Xóa dữ liệu bệnh nhân khỏi bộ nhớ trình duyệt (giữ lại tên người thực hiện + giao diện)
-  const wipeLocal=()=>{S.rooms={};S.log=[];S.pts=[];S.srcRows=[];S.bt=null;S.tl=null;btFix();fillRooms();G=[];ensureRows(10);
+  const wipeLocal=()=>{S.rooms={};S.log=[];S.pts=[];S.srcRows=[];S.bt=null;btFix();fillRooms();G=[];ensureRows(10);
     try{localStorage.setItem(KEY,JSON.stringify({rooms:S.rooms,log:[],pts:[],ui:S.ui,who:S.who,who2:S.who2}))}catch(e){}};
 
   /* ---------- Nút "Xóa toàn bộ dữ liệu": CHỈ tài khoản quản trị mới thấy ---------- */
