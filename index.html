@@ -3034,20 +3034,20 @@ button.ghost:hover{background:var(--card);border-color:var(--pri-s);color:var(--
 /* ô nhập */
 input,select,textarea{font-family:var(--ff);font-weight:300;border-radius:6px;border:1px solid var(--bd);background:var(--card);color:var(--tx)}
 input:focus,select:focus,textarea:focus{outline:none!important;border-color:var(--pri);box-shadow:0 0 0 3px rgba(83,58,253,.18)}
-/* thẻ tủ */
-.cab,.cab[class*=" c"]{background:var(--card)!important;border:1px solid var(--bd)!important;border-top:3px solid var(--h)!important;border-radius:12px;box-shadow:var(--sh)!important;transition:box-shadow .3s,transform .3s}
-.cab[class*=" c"]:hover{box-shadow:0 30px 60px -12px rgba(50,50,93,.22),0 18px 36px -18px rgba(0,0,0,.25)!important;border-color:var(--bd)!important}
-.cab h2,.cab[class*=" c"] h2{background:none!important;box-shadow:none!important;color:var(--tx)!important;text-shadow:none!important;font-weight:400;letter-spacing:-.2px}
-.cab[class*=" c"] h2 b,.cab[class*=" c"] h2 b.nm{color:var(--tx)!important;text-shadow:none!important;font-weight:400}
-.cab[class*=" c"] h2 span,.cab h2 span{color:var(--mu)!important;font-weight:300}
-.cab[class*=" c"] h2 span.btw,.cab h2 span.btw{color:var(--o)!important;font-weight:500}
-.cab[class*=" c"] .cdots i{background:var(--bd)}
-.cab[class*=" c"] .cdots i.ok{background:var(--g)}.cab[class*=" c"] .cdots i.bad{background:var(--r)}.cab[class*=" c"] .cdots i.due{background:var(--o)}
+/* thẻ tủ GERI: nổi bật theo màu --h của bảng màu đang chọn (Giao diện → Bảng màu nền các tủ) */
+.cab,.cab[class*=" c"]{background:color-mix(in srgb,var(--h) 12%,var(--card))!important;border:1px solid color-mix(in srgb,var(--h) 55%,var(--bd))!important;border-radius:14px;box-shadow:0 16px 32px -16px color-mix(in srgb,var(--h) 65%,transparent),0 2px 6px rgba(13,37,61,.07)!important;transition:box-shadow .3s,transform .3s,border-color .3s}
+.cab[class*=" c"]:hover{transform:translateY(-2px);border-color:var(--h)!important;box-shadow:0 26px 44px -18px color-mix(in srgb,var(--h) 75%,transparent),0 4px 10px rgba(13,37,61,.08)!important}
+.cab h2,.cab[class*=" c"] h2{background:linear-gradient(135deg,color-mix(in srgb,var(--h) 74%,#0d253d),var(--h))!important;color:#fff!important;border-radius:10px;font-weight:500;letter-spacing:-.1px;text-shadow:0 1px 2px rgba(0,0,0,.25)!important;box-shadow:0 8px 16px -8px color-mix(in srgb,var(--h) 80%,transparent)!important}
+.cab[class*=" c"] h2 b,.cab[class*=" c"] h2 b.nm{color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.25)!important;font-weight:600}
+.cab[class*=" c"] h2 span,.cab h2 span{color:rgba(255,255,255,.88)!important;font-weight:400}
+.cab[class*=" c"] h2 span.btw,.cab h2 span.btw{color:#ffe0c2!important;font-weight:600}
+.cab[class*=" c"] .cdots i{background:rgba(255,255,255,.35);box-shadow:0 0 0 1.5px rgba(255,255,255,.8)}
+.cab[class*=" c"] .cdots i.ok{background:#5ee29a}.cab[class*=" c"] .cdots i.bad{background:#ff7a9c}.cab[class*=" c"] .cdots i.due{background:#ffb27a}
 /* ô tile */
 .cab .tile{border-radius:8px;box-shadow:none}
-.cab .tile:not(.ok):not(.bad):not(.due){border-color:var(--bd);background:var(--bg)}
-.cab .tile .no{background:var(--card);border-color:var(--bd);color:var(--mu);font-weight:400}
-.cab .tile:hover{box-shadow:0 8px 18px -6px rgba(83,58,253,.28);border-color:var(--pri-s)}
+.cab .tile:not(.ok):not(.bad):not(.due){border-color:color-mix(in srgb,var(--h) 30%,var(--bd));background:var(--card)}
+.cab .tile .no{background:color-mix(in srgb,var(--h) 14%,var(--card));border-color:color-mix(in srgb,var(--h) 35%,var(--bd));color:color-mix(in srgb,var(--h) 70%,var(--tx));font-weight:500}
+.cab .tile:hover{box-shadow:0 8px 18px -6px color-mix(in srgb,var(--h) 55%,transparent);border-color:var(--h)}
 /* popup */
 .ov{background:rgba(13,37,61,.5);backdrop-filter:blur(4px)}
 .modal{border-radius:12px;box-shadow:var(--sh2);border:1px solid var(--bd)}
