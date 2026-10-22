@@ -1290,9 +1290,11 @@ button.tli{width:26px;height:26px;min-height:0!important;padding:0!important;bor
 <b>Cách đọc bảng</b>
 <ul>
 <li><b>CH dự kiến</b>: số ca chọc hút dự tính trong ngày, chỉ để tham khảo, không ảnh hưởng phép tính. Mọi ngày, kể cả chủ nhật, được tính như nhau.</li>
-<li><b>Đã đăng ký TL</b>: số đĩa TL dự tính cho ngày CH đó. Mỗi đĩa giữ 1 buồng TL trong nhiều ngày liên tiếp (số ngày đặt ở mục Thiết lập, mặc định 5). Đây là số dự tính, được lưu và đồng bộ giữa các thiết bị khi bấm Lưu.</li>
-<li><b>Đang nuôi</b>: số đĩa TL có thông tin bệnh nhân vẫn còn chiếm buồng vào ngày đó. Đĩa chưa đủ ngày thì chiếm hết số ngày quy định; đĩa quá hạn chỉ tính cho hôm nay; đĩa P.I và buồng KIỂM TRA BÌNH ẨM không tính.</li>
-<li><b>Trống sau ĐK</b> = số buồng TL dùng được − đang nuôi − các đăng ký còn chiếm buồng vào ngày đó.</li>
+<li><b>Mốc ngày</b>: <b>D0</b> là hôm nay (ngày chọc hút hiện tại). <b>D-1</b> là hôm qua, đã chốt xong số ca chọc và số ca nuôi TL (hiện ở dòng trên bảng, lấy từ ca đã nhập vào app). Bảng chỉ hiện <b>D0, D1, D2, D3</b>: D1 là ngày mai, D2 và D3 là hai ngày sau nữa, các số này là <b>dự kiến</b>.</li>
+<li><b>Ca chọc dự kiến</b>: số ca chọc dự tính, chỉ để tham khảo, không ảnh hưởng phép tính.</li>
+<li><b>Ca TL dự kiến</b>: số đĩa TL dự tính cho ngày đó. Mỗi đĩa giữ 1 buồng trong nhiều ngày liên tiếp (số ngày ở mục Thiết lập, mặc định 5). Ở D0, các ca đã nhập vào app trong ngày được trừ khỏi số dự kiến còn lại. Số được lưu và đồng bộ khi bấm Lưu; mỗi ngày bảng tự dịch một ngày.</li>
+<li><b>Đang nuôi</b>: số đĩa TL có thông tin bệnh nhân vẫn còn chiếm buồng vào ngày đó, chia theo ngày chọc hút của từng đĩa (D-3, D-2, D-1, D0…). Đĩa chưa đủ ngày thì chiếm hết số ngày quy định; đĩa quá hạn chỉ tính cho hôm nay; đĩa P.I và buồng KIỂM TRA BÌNH ẨM không tính.</li>
+<li><b>Trống sau ĐK</b> = số buồng TL dùng được − đang nuôi − số đăng ký còn giữ buồng vào ngày đó (dòng nhỏ "ĐK giữ").</li>
 <li><b>Còn nhận thêm</b>: số TL có thể đăng ký thêm cho ngày CH đó. Một ca nhận ngày T giữ buồng nhiều ngày liên tiếp (T, T+1, …), nên con số này là số buồng trống <b>ít nhất</b> trong khoảng đó, không vượt trần mỗi ngày. Vì vậy nó có thể nhỏ hơn "Trống sau ĐK" của chính ngày T, và các ngày liền nhau cho số khác nhau.
 <ul>
 <li>Dòng chữ nhỏ dưới ô cho biết lý do: <i>do dd/mm</i> là ngày đó chật nhất trong khoảng; <i>trần n/ngày</i> là còn buồng nhưng chạm giới hạn mỗi ngày; <i>quá tải</i> là đã đăng ký vượt số buồng.</li>
@@ -1305,7 +1307,7 @@ button.tli{width:26px;height:26px;min-height:0!important;padding:0!important;bor
 </div>
 <div class="tlsum" id="tlSum"></div>
 <div class="tlbn" id="tlBn"></div>
-<div id="tlBody"></div>
+<div class="tlprev" id="tlPrev"></div><div id="tlBody"></div>
 <div class="tlleg"><span><span class="tlp ok">5 trở lên</span></span><span><span class="tlp lo">1 đến 4</span></span><span><span class="tlp no">Hết chỗ / quá tải</span></span></div>
 <div class="tlbt"><div id="tlStat"></div><div class="tlst" id="tlSet"></div></div>
 <div class="row" style="justify-content:flex-end"><button class="ghost" data-close>Đóng</button><button id="tlSave">Lưu</button></div>
@@ -1849,8 +1851,8 @@ $("#ptBody").addEventListener("click",e=>{const b=e.target.closest("button[data-
   const m=b.dataset.dm,gs=ptGroups().filter(g=>g.fin&&ymd(new Date(g.end)).slice(0,7)===m),pl=gs.flatMap(g=>g.pl);if(!pl.length)return;
   const[y,mo]=m.split("-"),q=$("#ptQ").value.trim();
   ptDelFin(pl,"Xóa tất cả ca tháng "+mo+"/"+y,`<div>Xóa <b>${gs.length}</b> bệnh nhân (${pl.length} đĩa) đã hoàn thành trong tháng <b>${mo}/${y}</b>${q?" theo bộ lọc tìm kiếm hiện tại":""}?</div>`,false)});
-/* ===== ĐĂNG KÝ TIMELAPSE (chỉ admin). Số đăng ký là DỰ TÍNH, lưu trong S.bt.tl (nằm trong trường "bt" đã đồng bộ sẵn, không thêm trường mới lên Firestore) ===== */
-const TLN=8,TLW=["CN","T2","T3","T4","T5","T6","T7"],TLK="geri_tl";
+/* ===== ĐĂNG KÝ TIMELAPSE (chỉ admin). Số đăng ký là DỰ TÍNH, lưu trong S.tl và ĐỒNG BỘ giữa các thiết bị cùng dữ liệu app ===== */
+const TLN=4,TLW=["CN","T2","T3","T4","T5","T6","T7"],TLK="geri_tl";
 let tlD=null;
 const tlAdm=()=>ptAdm();
 const tlDO=o=>{const t=new Date();return new Date(t.getFullYear(),t.getMonth(),t.getDate()+o)};
@@ -1858,30 +1860,35 @@ const tlDate=o=>ymd(tlDO(o));
 const tlDM=o=>dmy(tlDate(o)).slice(0,5);
 const tlNum=v=>{const n=Math.round(+v);return isFinite(n)&&n>0?n:0};
 const tlRead=()=>{try{return JSON.parse(localStorage.getItem(TLK)||"null")||{}}catch(e){return{}}};
-const tlLoad=()=>{const x=S.bt&&S.bt.tl&&typeof S.bt.tl==="object"?S.bt.tl:S.tl&&typeof S.tl==="object"?S.tl:tlRead();return{reg:{...(x.reg||{})},ch:{...(x.ch||{})},L:tlNum(x.L)||5,cap:x.cap===undefined||x.cap===null||x.cap===""?8:tlNum(x.cap),rsv:tlNum(x.rsv)}};
+const tlLoad=()=>{const x=S.tl&&typeof S.tl==="object"?S.tl:tlRead();return{reg:{...(x.reg||{})},ch:{...(x.ch||{})},L:tlNum(x.L)||5,cap:x.cap===undefined||x.cap===null||x.cap===""?0:tlNum(x.cap),rsv:tlNum(x.rsv)}};
 /* Cap(u) = 30 - buồng sửa chữa - dự phòng ; Real(u) = đĩa TL đang nuôi (có thông tin BN) còn chiếm buồng ngày u ;
    Free(u) = Cap - Real - đăng ký còn chiếm ; Còn nhận(T) = min Free(u), u = T..T+L-1 (>=0, <= trần/ngày) */
 function tlCalc(d){
-  const L=Math.max(1,Math.min(10,tlNum(d.L)||5)),capDay=tlNum(d.cap),H=TLN+L;
+  const L=Math.max(1,Math.min(10,tlNum(d.L)||5)),capDay=tlNum(d.cap),N=TLN,H=N+L;
   let bad=0;Object.values(S.rooms).forEach(x=>{if(x&&x.st==="bad")bad++});
-  const total=CABS*ROOMS,cap0=Math.max(0,total-bad-tlNum(d.rsv)),td=todayStr(),real=Array(H).fill(0);let nowN=0,todayN=0;
+  const total=CABS*ROOMS,cap0=Math.max(0,total-bad-tlNum(d.rsv)),td=todayStr(),real=Array(H).fill(0),realAge=Array.from({length:H},()=>({}));let nowN=0,todayN=0;
   Object.values(S.rooms).forEach(x=>roomPts(x).forEach(q=>{
     if(q.mode!=="TL"||!(q.hs||q.ten))return;
     nowN++;let a=q.ch?days(q.ch):0;if(!(a>=0))a=0;if(q.ch===td)todayN++;
-    const R=a<L?L:a+1;for(let o=0;o<H;o++)if(a+o<R)real[o]++}));
-  const rg=o=>o<TLN?tlNum(d.reg[tlDate(o)]):0;
+    const R=a<L?L:a+1;for(let o=0;o<H;o++)if(a+o<R){real[o]++;realAge[o][a+o]=(realAge[o][a+o]||0)+1}}));
+  const rg=o=>o<N?tlNum(d.reg[tlDate(o)]):0;
   const reg=Array.from({length:H},(_,o)=>o===0?Math.max(0,rg(0)-todayN):rg(o));
-  const free=Array.from({length:H},(_,o)=>{let sm=0;for(let k=Math.max(0,o-L+1);k<=o;k++)sm+=reg[k];return cap0-real[o]-sm});
+  const hold=Array.from({length:H},(_,o)=>{let sm=0;for(let k=Math.max(0,o-L+1);k<=o;k++)sm+=reg[k];return sm}),free=hold.map((h,o)=>cap0-real[o]-h);
+  const yd=tlDate(-1),py=S.pts.filter(r=>r.ch===yd&&r.mode!=="CK"&&(r.hs||r.ten)&&!r.imp),prev={date:yd,ch:py.length,tl:py.filter(r=>r.mode==="TL").length,until:Math.max(0,L-2)};
   const rows=[];
-  for(let T=0;T<TLN;T++){
-    const date=tlDate(T),wd=tlDO(T).getDay(),ch=tlNum(d.ch[date]),r=rg(T);
+  for(let T=0;T<N;T++){
+    const date=tlDate(T),wd=tlDO(T).getDay(),ch=tlNum(d.ch[date]),r=rg(T),stage=T===0?"d0":T===1?"d1":"dn";
     let mn=Infinity,lim=T;for(let o=T;o<=T+L-1&&o<H;o++)if(free[o]<mn){mn=free[o];lim=o}
     let add=Math.max(0,mn),capped=false;if(capDay>0&&add>capDay){add=capDay;capped=true}
-    rows.push({T,date,wd,ch,reg:r,real:real[T],free:free[T],mn,lim,add,capped})}
-  return{rows,bad,cap0,total,nowN,L,capDay}}
+    rows.push({T,date,wd,ch,reg:r,real:real[T],age:realAge[T],hold:hold[T],free:free[T],mn,lim,add,capped,stage,done:T===0?todayN:0})}
+  return{rows,bad,cap0,total,nowN,L,capDay,N,prev}}
 const tlPill=r=>r.mn<0?["no","Quá tải"]:r.add===0?["no","Hết chỗ"]:[r.add<=4?"lo":"ok",String(r.add)];
 const tlWhy=(r,c)=>r.mn<0?"quá tải":r.capped?"trần "+c.capDay+"/ngày":r.lim>r.T?"do "+tlDM(r.lim):"";
-const tlTag=T=>T===0?"Hôm nay":"+"+T+" ngày";
+/* Mốc ngày: D-1 = hôm qua, ĐÃ CHỐT (số ca chọc + số ca nuôi TL thực tế, nay đang chiếm buồng) ; D0 = hôm nay (chọc hút) ; D1, D2, D3 = số ca DỰ KIẾN các ngày kế tiếp */
+const tlTag=T=>T===0?"D0 · hôm nay":"D"+T+(T===1?" · ngày mai":" · dự kiến");
+const tlTagCls=T=>T===0?" d0":" m";
+const tlAge=(a,T)=>{const k=Object.keys(a).map(Number).sort((x,y)=>y-x);return k.length?k.map(i=>"D"+(T-i)+"·"+a[i]).join("  "):"—"};
+const tlRegNote=r=>r.stage==="d0"?(r.done?"đã nhập "+r.done+" ca hôm nay":"chưa nhập ca nào"):"dự kiến";
 const tlPhone=()=>matchMedia("(max-width:700px)").matches;
 const tlVal=(o,k)=>o[k]===undefined||o[k]===""?"":o[k];
 function tlStats(){
@@ -1904,19 +1911,22 @@ function drawTl(){
   const inp=(k,r)=>`<input type="number" min="0" inputmode="numeric" data-k="${k}" data-d="${r.date}" value="${tlVal(k==="ch"?tlD.ch:tlD.reg,r.date)}">`;
   const pill=r=>`<span class="tlp" data-c="add" data-t="${r.T}" ${ph?'data-pre="Còn nhận "':""}></span><small class="tlw" data-c="why" data-t="${r.T}"></small>`;
   if(!ph){
-    $("#tlBody").innerHTML='<table class="tl"><colgroup><col style="width:25%"><col style="width:13%"><col style="width:15%"><col style="width:12%"><col style="width:15%"><col style="width:20%"></colgroup><tr><th>Ngày CH</th><th>CH dự kiến</th><th>Đã đăng ký TL</th><th>Đang nuôi</th><th>Trống sau ĐK</th><th>Còn nhận thêm</th></tr>'
-    +c.rows.map(r=>`<tr class="${r.T===0?"w":""}"><td><b>${f(r)}</b> ${TLW[r.wd]}<span class="tg${r.T===0?"":" m"}">${tlTag(r.T)}</span></td><td>${inp("ch",r)}</td><td>${inp("reg",r)}</td><td data-c="real" data-t="${r.T}"></td><td data-c="free" data-t="${r.T}"></td><td>${pill(r)}</td></tr>`).join("")+'</table>'}
+    $("#tlBody").innerHTML='<table class="tl"><colgroup><col style="width:25%"><col style="width:13%"><col style="width:15%"><col style="width:12%"><col style="width:15%"><col style="width:20%"></colgroup><tr><th>Ngày CH</th><th>Ca chọc dự kiến</th><th>Ca TL dự kiến</th><th>Đang nuôi (theo ngày CH)</th><th>Trống sau ĐK</th><th>Còn nhận thêm</th></tr>'
+    +c.rows.map(r=>`<tr class="${r.T===0?"w":""}"><td><b>${f(r)}</b> ${TLW[r.wd]}<span class="tg${tlTagCls(r.T)}">${tlTag(r.T)}</span></td><td>${inp("ch",r)}</td><td>${inp("reg",r)}<small class="tls">${tlRegNote(r)}</small></td><td><span data-c="real" data-t="${r.T}"></span><small class="tls" data-c="age" data-t="${r.T}"></small></td><td><span data-c="free" data-t="${r.T}"></span><small class="tls" data-c="hold" data-t="${r.T}"></small></td><td>${pill(r)}</td></tr>`).join("")+'</table>'}
   else{
-    $("#tlBody").innerHTML=c.rows.map(r=>`<div class="tlc${r.T===0?" cur":""}"><div class="h"><span><b>${f(r)}</b> ${TLW[r.wd]}<span class="tg${r.T===0?"":" m"}">${tlTag(r.T)}</span></span><span class="r">${pill(r)}</span></div><div class="g2"><label>CH dự kiến${inp("ch",r)}</label><label>Đã đăng ký TL${inp("reg",r)}</label></div><p class="s">Đang nuôi <span data-c="real" data-t="${r.T}"></span> · Trống sau đăng ký <span data-c="free" data-t="${r.T}"></span></p></div>`).join("")}
+    $("#tlBody").innerHTML=c.rows.map(r=>`<div class="tlc${r.T===0?" cur":""}"><div class="h"><span><b>${f(r)}</b> ${TLW[r.wd]}<span class="tg${tlTagCls(r.T)}">${tlTag(r.T)}</span></span><span class="r">${pill(r)}</span></div><div class="g2"><label>Ca chọc dự kiến${inp("ch",r)}</label><label>Ca TL dự kiến${inp("reg",r)}<small class="tls">${tlRegNote(r)}</small></label></div><p class="s">Đang nuôi <span data-c="real" data-t="${r.T}"></span> (<span data-c="age" data-t="${r.T}"></span>) · <span data-c="hold" data-t="${r.T}"></span> · Trống <span data-c="free" data-t="${r.T}"></span></p></div>`).join("")}
   $("#tlStat").innerHTML=tlStats();$("#tlSet").innerHTML=tlSetHtml();
   tlUpdate()}
 function tlUpdate(){
   const c=tlCalc(tlD),r2=c.rows[2],p2=tlPill(r2);
   $("#tlSum").innerHTML=`<div><small>Buồng TL dùng được</small><b>${c.cap0} / ${c.total}</b><small>${c.bad?c.bad+" buồng sửa chữa":"không có buồng sửa chữa"}${tlNum(tlD.rsv)?" · "+tlNum(tlD.rsv)+" dự phòng":""}</small></div><div><small>Đang nuôi TL</small><b>${c.nowN}</b><small>đĩa có thông tin bệnh nhân</small></div><div class="${p2[0]==="ok"?"g":p2[0]==="lo"?"w":p2[0]==="no"?"r":""}"><small>Còn nhận ngày ${dmy(r2.date).slice(0,5)} (+2)</small><b>${p2[0]==="ok"||p2[0]==="lo"?p2[1]:"0"}</b><small>${p2[0]==="no"&&r2.mn<0?"quá tải "+(-r2.mn)+" buồng":"ngày đăng ký trước 2 ngày"}</small></div>`;
+  $("#tlPrev").innerHTML=`<b>D-1 · hôm qua ${dmy(c.prev.date).slice(0,5)} (đã chốt)</b>: ${c.prev.ch} ca chọc · ${c.prev.tl} ca nuôi TL${c.prev.tl?` — các đĩa này vẫn chiếm buồng đến ${c.prev.until>0?tlDM(c.prev.until):"hôm nay"}`:""}`;
   document.querySelectorAll("#tlBody [data-c]").forEach(el=>{
     const r=c.rows[+el.dataset.t],k=el.dataset.c;
     if(k==="real")el.textContent=r.real;
     else if(k==="free")el.textContent=r.free;
+    else if(k==="age")el.textContent=tlAge(r.age,r.T);
+    else if(k==="hold")el.textContent="ĐK giữ "+r.hold;
     else if(k==="why")el.textContent=tlWhy(r,c);
     else{const p=tlPill(r);el.className="tlp "+p[0];el.textContent=(/^\d+$/.test(p[1])&&el.dataset.pre?el.dataset.pre:"")+p[1]}});
   const ex=c.rows.find(r=>r.lim>r.T);
@@ -1931,7 +1941,7 @@ $("#tlSave").onclick=()=>{
   if(!tlAdm()||!tlD)return;
   const keep=tlDate(-1),pr=o=>{const x={};Object.keys(o).forEach(k=>{if(k>=keep&&o[k]!==""&&tlNum(o[k])>0)x[k]=tlNum(o[k])});return x};
   const v={reg:pr(tlD.reg),ch:pr(tlD.ch),L:Math.max(1,Math.min(10,tlNum(tlD.L)||5)),cap:tlNum(tlD.cap),rsv:tlNum(tlD.rsv)};
-  btFix();S.bt.tl=v;delete S.tl;save();
+  S.tl=v;save();
   close($("#ovTl"));
   askAlert({title:"Đã lưu đăng ký TL",tone:"info",html:"<div>Đã lưu và đồng bộ giữa các thiết bị. Chỉ tài khoản admin xem và sửa được số liệu này.</div>"})};
 matchMedia("(max-width:700px)").addEventListener("change",()=>{if($("#ovTl").classList.contains("show")&&tlD)drawTl()});
@@ -2341,17 +2351,17 @@ const FB_CFG={
 
   /* ---------- dữ liệu ---------- */
   const clean=o=>JSON.parse(JSON.stringify(o));
-  const payload=()=>clean({rooms:S.rooms,log:S.log,pts:S.pts,srcRows:(S.srcRows||[]).map(r=>JSON.stringify(r)),bt:S.bt,nv:(S.ui&&S.ui.nv)||{},t:Date.now()});
+  const payload=()=>clean({rooms:S.rooms,log:S.log,pts:S.pts,srcRows:(S.srcRows||[]).map(r=>JSON.stringify(r)),bt:S.bt,tl:S.tl||null,nv:(S.ui&&S.ui.nv)||{},t:Date.now()});
   const fillRooms=()=>{for(let c=1;c<=CABS;c++)for(let r=1;r<=ROOMS;r++){const k=c+"-"+r;if(!S.rooms[k])S.rooms[k]={st:"empty",pl:[]};if(!S.rooms[k].pl)S.rooms[k].pl=[]}};
   const applyRemote=d=>{
-    S.rooms=d.rooms||S.rooms;S.log=d.log||[];S.pts=d.pts||[];if(d.bt)S.bt=d.bt;if(d.nv&&typeof d.nv==="object"){S.ui=S.ui||{};S.ui.nv=Object.assign({},S.ui.nv||{},d.nv);try{localStorage.setItem("geri_nv_links",JSON.stringify(S.ui.nv))}catch(e){}}btFix();S.srcRows=(d.srcRows||[]).map(r=>{if(typeof r!=="string")return r;try{return JSON.parse(r)}catch(e){return[]}});
+    S.rooms=d.rooms||S.rooms;S.log=d.log||[];S.pts=d.pts||[];if(d.bt)S.bt=d.bt;if(d.tl&&typeof d.tl==="object")S.tl=d.tl;if(d.nv&&typeof d.nv==="object"){S.ui=S.ui||{};S.ui.nv=Object.assign({},S.ui.nv||{},d.nv);try{localStorage.setItem("geri_nv_links",JSON.stringify(S.ui.nv))}catch(e){}}btFix();S.srcRows=(d.srcRows||[]).map(r=>{if(typeof r!=="string")return r;try{return JSON.parse(r)}catch(e){return[]}});
     fillRooms();
     G=Array.isArray(S.srcRows)?S.srcRows.map(r=>SG.map((_,j)=>String(r[j]||""))):[];ensureRows(10);
     try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
     if(!window._revDone){window._revDone=true;window._revWant=true}
     render()};
   // Xóa dữ liệu bệnh nhân khỏi bộ nhớ trình duyệt (giữ lại tên người thực hiện + giao diện)
-  const wipeLocal=()=>{S.rooms={};S.log=[];S.pts=[];S.srcRows=[];S.bt=null;btFix();fillRooms();G=[];ensureRows(10);
+  const wipeLocal=()=>{S.rooms={};S.log=[];S.pts=[];S.srcRows=[];S.bt=null;S.tl=null;btFix();fillRooms();G=[];ensureRows(10);
     try{localStorage.setItem(KEY,JSON.stringify({rooms:S.rooms,log:[],pts:[],ui:S.ui,who:S.who,who2:S.who2}))}catch(e){}};
 
   /* ---------- Nút "Xóa toàn bộ dữ liệu": CHỈ tài khoản quản trị mới thấy ---------- */
@@ -2988,3 +2998,81 @@ new MutationObserver(all).observe(document.body,{childList:true});
 })();
 </script>
 </body></html>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap">
+<style id="stripeTheme">
+/* ===== STRIPE-INSPIRED THEME (theo awesome-design-md/stripe) ===== */
+:root{--pri:#533afd;--pri-d:#4434d4;--pri-p:#2e2b8c;--pri-s:#b9b9f9;--ink:#0d253d;
+--bg:#f6f9fc;--bg2:#f6f9fc;--bg3:#ffffff;--card:#ffffff;--tx:#0d253d;--mu:#64748d;--bd:#e3e8ee;
+--gb:#e6f8ee;--yb:#fdf3dc;--rb:#fde8ef;--r:#ea2261;--g:#15be53;--o:#ff7a45;--y:#9b6829;--ab:#ffe9d6;--ob:#fcd3e0;
+--h1:#533afd;--h2:#ea2261;--h3:#ff7a45;--h4:#00a6c8;--h5:#9b6ff0;
+--sh:0 15px 35px -12px rgba(50,50,93,.14),0 5px 15px -5px rgba(0,0,0,.07);
+--sh2:0 30px 60px -12px rgba(50,50,93,.25),0 18px 36px -18px rgba(0,0,0,.3);
+--ff:"Be Vietnam Pro","SF Pro Display",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a0f2c;--bg2:#0a0f2c;--bg3:#0d1235;--card:#131a47;--tx:#e9eefb;--mu:#98a4c8;--bd:#262f66;--gb:#0f3324;--yb:#3a2f10;--rb:#3d1428;--ab:#4a2a14;--ob:#55162f;--pri:#665efd}}
+:root[data-theme="dark"]{--bg:#0a0f2c;--bg2:#0a0f2c;--bg3:#0d1235;--card:#131a47;--tx:#e9eefb;--mu:#98a4c8;--bd:#262f66;--gb:#0f3324;--yb:#3a2f10;--rb:#3d1428;--ab:#4a2a14;--ob:#55162f;--pri:#665efd}
+body{font-family:var(--ff);font-weight:300;font-feature-settings:"tnum";background:var(--bg)!important;color:var(--tx)}
+/* gradient mesh phía trên */
+body::before{inset:0 0 auto 0!important;height:340px;z-index:-1;opacity:.75;animation:none!important;transform:none;will-change:auto;
+ background:radial-gradient(45% 90% at 8% 0%,#f5e9d4 0%,transparent 70%),radial-gradient(40% 100% at 32% -10%,#ffb27a 0%,transparent 70%),radial-gradient(40% 100% at 58% -10%,#b9b9f9 0%,transparent 70%),radial-gradient(40% 110% at 82% -10%,#665efd 0%,transparent 70%),radial-gradient(35% 100% at 100% 0%,#ea2261 0%,transparent 70%)!important;
+ -webkit-mask-image:linear-gradient(#000 25%,transparent);mask-image:linear-gradient(#000 25%,transparent)}
+:root[data-theme="dark"] body::before{opacity:.38}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) body::before{opacity:.38}}
+/* tiêu đề */
+h1,h1 .ttl{font-weight:300!important;letter-spacing:-.6px!important;color:var(--tx)}
+h1 .ttl{font-size:26px!important}
+h1 small{color:var(--mu);font-weight:300;letter-spacing:0}
+/* thanh đầu */
+.hrow{background:rgba(255,255,255,.88);border:1px solid var(--bd);border-radius:12px;box-shadow:var(--sh);backdrop-filter:blur(10px)}
+:root[data-theme="dark"] .hrow{background:rgba(19,26,71,.85)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .hrow{background:rgba(19,26,71,.85)}}
+.dtab{background:var(--bg)!important;border-radius:12px}
+.pill{background:var(--card);border:1px solid var(--bd);border-radius:9999px;box-shadow:none;font-weight:400;font-size:12.5px;letter-spacing:-.2px}
+/* nút dạng viên thuốc */
+button{font-family:var(--ff);font-weight:400;border-radius:9999px;background:var(--pri);color:#fff;box-shadow:0 1px 2px rgba(50,50,93,.18)}
+button:hover{background:var(--pri-d);filter:none;transform:none;box-shadow:0 6px 12px -2px rgba(50,50,93,.25),0 3px 7px -3px rgba(0,0,0,.2)}
+button:active{background:var(--pri-p);transform:scale(.97)}
+button.ghost,.tools .ghost{background:var(--card);color:var(--pri);border:1px solid var(--bd);box-shadow:none}
+button.ghost:hover{background:var(--card);border-color:var(--pri-s);color:var(--pri-d)}
+.b1{background:var(--g)}.b2{background:var(--o)}.b3{background:var(--pri)}.b4{background:var(--r)}
+.b1:hover{background:#0fa347}.b2:hover{background:#f0642c}.b4:hover{background:#cf1850}
+/* ô nhập */
+input,select,textarea{font-family:var(--ff);font-weight:300;border-radius:6px;border:1px solid var(--bd);background:var(--card);color:var(--tx)}
+input:focus,select:focus,textarea:focus{outline:none!important;border-color:var(--pri);box-shadow:0 0 0 3px rgba(83,58,253,.18)}
+/* thẻ tủ */
+.cab,.cab[class*=" c"]{background:var(--card)!important;border:1px solid var(--bd)!important;border-top:3px solid var(--h)!important;border-radius:12px;box-shadow:var(--sh)!important;transition:box-shadow .3s,transform .3s}
+.cab[class*=" c"]:hover{box-shadow:0 30px 60px -12px rgba(50,50,93,.22),0 18px 36px -18px rgba(0,0,0,.25)!important;border-color:var(--bd)!important}
+.cab h2,.cab[class*=" c"] h2{background:none!important;box-shadow:none!important;color:var(--tx)!important;text-shadow:none!important;font-weight:400;letter-spacing:-.2px}
+.cab[class*=" c"] h2 b,.cab[class*=" c"] h2 b.nm{color:var(--tx)!important;text-shadow:none!important;font-weight:400}
+.cab[class*=" c"] h2 span,.cab h2 span{color:var(--mu)!important;font-weight:300}
+.cab[class*=" c"] h2 span.btw,.cab h2 span.btw{color:var(--o)!important;font-weight:500}
+.cab[class*=" c"] .cdots i{background:var(--bd)}
+.cab[class*=" c"] .cdots i.ok{background:var(--g)}.cab[class*=" c"] .cdots i.bad{background:var(--r)}.cab[class*=" c"] .cdots i.due{background:var(--o)}
+/* ô tile */
+.cab .tile{border-radius:8px;box-shadow:none}
+.cab .tile:not(.ok):not(.bad):not(.due){border-color:var(--bd);background:var(--bg)}
+.cab .tile .no{background:var(--card);border-color:var(--bd);color:var(--mu);font-weight:400}
+.cab .tile:hover{box-shadow:0 8px 18px -6px rgba(83,58,253,.28);border-color:var(--pri-s)}
+/* popup */
+.ov{background:rgba(13,37,61,.5);backdrop-filter:blur(4px)}
+.modal{border-radius:12px;box-shadow:var(--sh2);border:1px solid var(--bd)}
+.ov:not(#ovEdit):not(#ovNv) .modal[data-pb]:not(#btM){border:1px solid var(--bd);border-top:3px solid var(--pb);box-shadow:var(--sh2)}
+.modal h3{font-weight:300;font-size:22px;letter-spacing:-.3px}
+.modal h4{font-weight:500}
+.seg label{border:1px solid var(--bd);border-radius:8px;font-weight:300}
+.seg label:has(input:checked){border-color:var(--pri);background:rgba(83,58,253,.06);box-shadow:0 0 0 3px rgba(83,58,253,.12)}
+.due-item{border-radius:8px}
+/* bảng */
+table{font-feature-settings:"tnum"}
+th{font-weight:500;color:var(--mu);font-size:12px;letter-spacing:0}
+.badge,.cnt,.cab h2 em.ca{border-radius:9999px;font-weight:500}
+.dsec{color:var(--pri)}.dsec.bt{color:#00a6c8}
+.dpl .t2 em.m.pi{background:#665efd}
+.empty-msg{font-weight:300}
+</style>
+<style id="tlD1css">
+.tg.d0{background:color-mix(in srgb,var(--pri) 14%,var(--card));color:var(--pri-d,var(--pri));font-weight:500}
+.tg.d1{background:color-mix(in srgb,var(--o) 18%,var(--card));color:color-mix(in srgb,var(--o) 70%,var(--tx));font-weight:500}
+.tls{display:block;font-size:10.5px;color:var(--mu);margin-top:3px;line-height:1.25;white-space:normal}
+table.tl td{vertical-align:top}
+.tlprev{background:color-mix(in srgb,var(--pri) 8%,var(--card));border:1px solid var(--bd);border-radius:8px;padding:8px 12px;font-size:13px;margin:0 0 8px}
+</style>
