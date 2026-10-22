@@ -1289,12 +1289,13 @@ button.tli{width:26px;height:26px;min-height:0!important;padding:0!important;bor
 <div class="tlinfo" id="tlInfo" hidden>
 <b>Cách dùng</b>
 <ul>
-<li>Nhập số dự tính cho từng ngày rồi bấm <b>Lưu</b>: số liệu được đồng bộ giữa các thiết bị (chỉ admin xem và sửa). Mỗi ngày bảng tự dịch một ngày, số đã nhập đi theo ngày thật.</li>
+<li>Nhập số dự tính cho từng ngày rồi bấm <b>Lưu</b>: số liệu được đồng bộ giữa các thiết bị (mọi tài khoản được cấp quyền đều xem và sửa được). Mỗi ngày bảng tự dịch một ngày, số đã nhập đi theo ngày thật.</li>
 <li><b>Mốc ngày</b>: <b>D0</b> là hôm nay (ngày chọc hút hiện tại). <b>D-1</b> là hôm qua, đã chốt số ca chọc và số ca nuôi TL (dòng phía trên bảng, lấy từ ca đã nhập vào app). Bảng chỉ hiện D0, D1 (ngày mai), D2, D3; số của các ngày này là <b>dự kiến</b>.</li>
 <li><b>Ca chọc</b>: số ca chọc dự tính, chỉ để tham khảo, không ảnh hưởng phép tính.</li>
 <li><b>Ca TL</b>: số đĩa TL dự tính. Mỗi đĩa giữ 1 buồng trong nhiều ngày liên tiếp (mục Thiết lập, mặc định 5). Ở D0, các ca đã nhập vào app trong ngày được trừ khỏi số dự kiến còn lại.</li>
+<li><b>Phôi đang nuôi N4, N5, N6, N7+</b>: số đĩa TL đang nuôi (cùng cách tính với cột Đang nuôi) có ngày phôi 4, 5, 6 và từ 7 trở lên; ngày phôi tính từ ngày chọc hút (N0).</li>
 <li><b>Đang nuôi</b>: số đĩa TL có thông tin bệnh nhân còn chiếm buồng vào ngày đó. Rê chuột vào số để xem chia theo ngày chọc hút (D-3, D-2, D-1, D0). Đĩa chưa đủ ngày chiếm hết số ngày quy định; đĩa quá hạn chỉ tính cho hôm nay; đĩa P.I và buồng KIỂM TRA BÌNH ẨM không tính.</li>
-<li><b>Buồng trống (bổ sung)</b>: nhập số buồng sẽ trống thêm ngoài số trống hiện tại của ngày đó (ví dụ biết trước có đĩa ra sớm). Trống tối đa = (buồng dùng được − đang nuôi) + số bổ sung, không vượt số buồng dùng được. Để trống ô = không bổ sung. Rê chuột vào ô để xem phép cộng.</li>
+<li><b>Buồng trống (thêm)</b>: nhập số buồng sẽ trống thêm ngoài số trống hiện tại của ngày đó (ví dụ biết trước có đĩa ra sớm). Trống tối đa = (buồng dùng được − đang nuôi) + số thêm, không vượt số buồng dùng được. Để trống ô = không thêm. Rê chuột vào ô để xem phép cộng.</li>
 <li><b>Còn nhận</b>: số TL có thể đăng ký thêm cho ngày đó = số trống ít nhất trong khoảng giữ buồng của ngày đó, sau khi trừ đăng ký đang giữ buồng, không vượt trần mỗi ngày. Vì vậy có thể nhỏ hơn số trống của chính ngày đó. Rê chuột vào số để xem lý do (do ngày nào, trần, quá tải). Nhập thêm đăng ký ở một ngày thì các ngày trước đó trong khoảng giữ buồng bị giảm theo; số tăng lại khi đĩa đang nuôi đủ ngày và trả buồng.</li>
 <li><b>Màu</b>: <span class="tlp ok">5 trở lên</span> <span class="tlp lo">1 đến 4</span> <span class="tlp no">Hết chỗ / quá tải</span></li>
 <li><b>Thiết lập</b>: số ngày chiếm buồng, trần TL mỗi ngày (0 = không giới hạn), buồng dự phòng (trừ khỏi buồng dùng được).</li>
@@ -1303,7 +1304,7 @@ button.tli{width:26px;height:26px;min-height:0!important;padding:0!important;bor
 <div id="tlStat" class="tlstat"></div>
 </div>
 <div class="tlsum" id="tlSum"></div>
-<div class="tlprev" id="tlPrev"></div><div id="tlBody"></div>
+<div class="tlprev" id="tlPrev"></div><div class="tlprev" id="tlNd"></div><div id="tlBody"></div>
 <details class="tlcfg"><summary>Thiết lập</summary><div class="tlst" id="tlSet"></div></details>
 <div class="row" style="justify-content:flex-end"><button class="ghost" data-close>Đóng</button><button id="tlSave">Lưu</button></div>
 </div></div>
@@ -1846,10 +1847,10 @@ $("#ptBody").addEventListener("click",e=>{const b=e.target.closest("button[data-
   const m=b.dataset.dm,gs=ptGroups().filter(g=>g.fin&&ymd(new Date(g.end)).slice(0,7)===m),pl=gs.flatMap(g=>g.pl);if(!pl.length)return;
   const[y,mo]=m.split("-"),q=$("#ptQ").value.trim();
   ptDelFin(pl,"Xóa tất cả ca tháng "+mo+"/"+y,`<div>Xóa <b>${gs.length}</b> bệnh nhân (${pl.length} đĩa) đã hoàn thành trong tháng <b>${mo}/${y}</b>${q?" theo bộ lọc tìm kiếm hiện tại":""}?</div>`,false)});
-/* ===== ĐĂNG KÝ TIMELAPSE (chỉ admin). Số đăng ký là DỰ TÍNH, lưu trong S.tl và ĐỒNG BỘ giữa các thiết bị cùng dữ liệu app ===== */
+/* ===== ĐĂNG KÝ TIMELAPSE (mọi tài khoản được cấp quyền). Số đăng ký là DỰ TÍNH, lưu trong S.tl và ĐỒNG BỘ giữa các thiết bị cùng dữ liệu app ===== */
 const TLN=4,TLW=["CN","T2","T3","T4","T5","T6","T7"],TLK="geri_tl";
 let tlD=null;
-const tlAdm=()=>ptAdm();
+const tlAdm=()=>!!(window.__isAuth&&window.__isAuth());   /* mọi tài khoản đã xác minh + có quyền (staff), không chỉ admin */
 const tlDO=o=>{const t=new Date();return new Date(t.getFullYear(),t.getMonth(),t.getDate()+o)};
 const tlDate=o=>ymd(tlDO(o));
 const tlDM=o=>dmy(tlDate(o)).slice(0,5);
@@ -1861,10 +1862,10 @@ const tlLoad=()=>{const x=S.tl&&typeof S.tl==="object"?S.tl:tlRead();return{reg:
 function tlCalc(d){
   const L=Math.max(1,Math.min(10,tlNum(d.L)||5)),capDay=tlNum(d.cap),N=TLN,H=N+L;
   let bad=0;Object.values(S.rooms).forEach(x=>{if(x&&x.st==="bad")bad++});
-  const total=CABS*ROOMS,cap0=Math.max(0,total-bad-tlNum(d.rsv)),td=todayStr(),real=Array(H).fill(0),realAge=Array.from({length:H},()=>({}));let nowN=0,todayN=0;
+  const total=CABS*ROOMS,cap0=Math.max(0,total-bad-tlNum(d.rsv)),td=todayStr(),real=Array(H).fill(0),realAge=Array.from({length:H},()=>({}));let nowN=0,todayN=0;const nd=[0,0,0,0];
   Object.values(S.rooms).forEach(x=>roomPts(x).forEach(q=>{
     if(q.mode!=="TL"||!(q.hs||q.ten))return;
-    nowN++;let a=q.ch?days(q.ch):0;if(!(a>=0))a=0;if(q.ch===td)todayN++;
+    nowN++;let a=q.ch?days(q.ch):0;if(!(a>=0))a=0;if(q.ch===td)todayN++;if(a>=4)nd[Math.min(a,7)-4]++;
     const R=a<L?L:a+1;for(let o=0;o<H;o++)if(a+o<R){real[o]++;realAge[o][a+o]=(realAge[o][a+o]||0)+1}}));
   const rg=o=>o<N?tlNum(d.reg[tlDate(o)]):0;
   const reg=Array.from({length:H},(_,o)=>o===0?Math.max(0,rg(0)-todayN):rg(o));
@@ -1879,7 +1880,7 @@ function tlCalc(d){
     let mn=Infinity,lim=T;for(let o=T;o<=T+L-1&&o<H;o++)if(free[o]<mn){mn=free[o];lim=o}
     let add=Math.max(0,mn),capped=false;if(capDay>0&&add>capDay){add=capDay;capped=true}
     rows.push({T,date,wd,ch,reg:r,real:real[T],age:realAge[T],hold:hold[T],free:free[T],maxF:maxF[T],maxAuto:cap0-real[T],mxSet:mxIn(T)!==null,mn,lim,add,capped,stage,done:T===0?todayN:0})}
-  return{rows,bad,cap0,total,nowN,L,capDay,N,prev}}
+  return{rows,bad,cap0,total,nowN,L,capDay,N,prev,nd}}
 const tlPill=r=>r.mn<0?["no","Quá tải"]:r.add===0?["no","Hết chỗ"]:[r.add<=4?"lo":"ok",String(r.add)];
 const tlWhy=(r,c)=>r.mn<0?"quá tải":r.capped?"trần "+c.capDay+"/ngày":r.lim>r.T?"do "+tlDM(r.lim):"";
 /* Mốc ngày: D-1 = hôm qua, ĐÃ CHỐT (số ca chọc + số ca nuôi TL thực tế, nay đang chiếm buồng) ; D0 = hôm nay (chọc hút) ; D1, D2, D3 = số ca DỰ KIẾN các ngày kế tiếp */
@@ -1907,20 +1908,21 @@ function drawTl(){
   const inp=(k,r)=>`<input type="number" min="0" inputmode="numeric" data-k="${k}" data-d="${r.date}"${k==="mx"?' data-c="mxph" data-t="'+r.T+'"':k==="reg"?' title="'+tlRegNote(r)+'"':""} value="${tlVal(k==="ch"?tlD.ch:k==="mx"?tlD.mx:tlD.reg,r.date)}">`;
   const pill=r=>`<span class="tlp" data-c="add" data-t="${r.T}" ${ph?'data-pre="Còn nhận "':""}></span>`;
   if(!ph){
-    $("#tlBody").innerHTML='<table class="tl"><colgroup><col style="width:25%"><col style="width:13%"><col style="width:15%"><col style="width:12%"><col style="width:15%"><col style="width:20%"></colgroup><tr><th>Ngày CH</th><th>Ca chọc</th><th>Ca TL</th><th>Đang nuôi</th><th>Buồng trống (bổ sung)</th><th>Còn nhận</th></tr>'
+    $("#tlBody").innerHTML='<table class="tl"><colgroup><col style="width:25%"><col style="width:13%"><col style="width:15%"><col style="width:12%"><col style="width:15%"><col style="width:20%"></colgroup><tr><th>Ngày CH</th><th>Ca chọc</th><th>Ca TL</th><th>Đang nuôi</th><th>Buồng trống (thêm)</th><th>Còn nhận</th></tr>'
     +c.rows.map(r=>`<tr class="${r.T===0?"w":""}"><td><b>${f(r)}</b> ${TLW[r.wd]}<span class="tg${tlTagCls(r.T)}">${tlTag(r.T)}</span></td><td>${inp("ch",r)}</td><td>${inp("reg",r)}</td><td><span data-c="real" data-t="${r.T}"></span></td><td>${inp("mx",r)}</td><td>${pill(r)}</td></tr>`).join("")+'</table>'}
   else{
-    $("#tlBody").innerHTML=c.rows.map(r=>`<div class="tlc${r.T===0?" cur":""}"><div class="h"><span><b>${f(r)}</b> ${TLW[r.wd]}<span class="tg${tlTagCls(r.T)}">${tlTag(r.T)}</span></span><span class="r">${pill(r)}</span></div><div class="g2"><label>Ca chọc${inp("ch",r)}</label><label>Ca TL${inp("reg",r)}</label><label>Trống (bổ sung)${inp("mx",r)}</label></div><p class="s">Đang nuôi <span data-c="real" data-t="${r.T}"></span></p></div>`).join("")}
+    $("#tlBody").innerHTML=c.rows.map(r=>`<div class="tlc${r.T===0?" cur":""}"><div class="h"><span><b>${f(r)}</b> ${TLW[r.wd]}<span class="tg${tlTagCls(r.T)}">${tlTag(r.T)}</span></span><span class="r">${pill(r)}</span></div><div class="g2"><label>Ca chọc${inp("ch",r)}</label><label>Ca TL${inp("reg",r)}</label><label>Trống (thêm)${inp("mx",r)}</label></div><p class="s">Đang nuôi <span data-c="real" data-t="${r.T}"></span></p></div>`).join("")}
   $("#tlStat").innerHTML=tlStats();$("#tlSet").innerHTML=tlSetHtml();
   tlUpdate()}
 function tlUpdate(){
   const c=tlCalc(tlD),r2=c.rows[2],p2=tlPill(r2);
   $("#tlSum").innerHTML=`<div><small>Buồng TL dùng được</small><b>${c.cap0} / ${c.total}</b><small>${c.bad?c.bad+" buồng sửa chữa":"không có buồng sửa chữa"}${tlNum(tlD.rsv)?" · "+tlNum(tlD.rsv)+" dự phòng":""}</small></div><div><small>Đang nuôi TL</small><b>${c.nowN}</b><small>đĩa có thông tin bệnh nhân</small></div><div class="${p2[0]==="ok"?"g":p2[0]==="lo"?"w":p2[0]==="no"?"r":""}"><small>Còn nhận ngày ${dmy(r2.date).slice(0,5)} (+2)</small><b>${p2[0]==="ok"||p2[0]==="lo"?p2[1]:"0"}</b><small>${p2[0]==="no"&&r2.mn<0?"quá tải "+(-r2.mn)+" buồng":"ngày đăng ký trước 2 ngày"}</small></div>`;
   $("#tlPrev").innerHTML=`<b>D-1 · hôm qua ${dmy(c.prev.date).slice(0,5)} (đã chốt)</b>: ${c.prev.ch} ca chọc · ${c.prev.tl} ca nuôi TL${c.prev.tl?` — các đĩa này vẫn chiếm buồng đến ${c.prev.until>0?tlDM(c.prev.until):"hôm nay"}`:""}`;
+  $("#tlNd").innerHTML="<b>Phôi đang nuôi</b>: "+["N4","N5","N6","N7+"].map((l,i)=>`<span class="tlnd"><i>${l}</i> <b>${c.nd[i]}</b></span>`).join("");
   document.querySelectorAll("#tlBody [data-c]").forEach(el=>{
     const r=c.rows[+el.dataset.t],k=el.dataset.c;
     if(k==="real"){el.textContent=r.real;el.title="Theo ngày chọc hút: "+tlAge(r.age,r.T)}
-    else if(k==="mxph"){el.placeholder="0";el.title="Trống "+r.maxAuto+(r.mxSet?" + "+(r.maxF-r.maxAuto)+" bổ sung":"")+" = tối đa "+r.maxF+" · ĐK giữ "+r.hold+" → còn "+r.free}
+    else if(k==="mxph"){el.placeholder="0";el.title="Trống "+r.maxAuto+(r.mxSet?" + "+(r.maxF-r.maxAuto)+" thêm":"")+" = tối đa "+r.maxF+" · ĐK giữ "+r.hold+" → còn "+r.free}
     else{const p=tlPill(r);el.title=tlWhy(r,c);el.className="tlp "+p[0];el.textContent=(/^\d+$/.test(p[1])&&el.dataset.pre?el.dataset.pre:"")+p[1]}});
   const ex=c.rows.find(r=>r.lim>r.T);
   $("#tlEx").innerHTML=ex?`<b>Ví dụ với số liệu hiện tại:</b> ngày ${tlDM(ex.T)} còn trống ${ex.free} buồng, nhưng ngày ${tlDM(ex.lim)} (trong cùng khoảng giữ buồng) chỉ còn trống ${ex.mn} nên ngày ${tlDM(ex.T)} chỉ nhận thêm tối đa ${Math.max(0,ex.mn)} ca.`:`<b>Ví dụ:</b> hiện chưa có ngày nào bị ngày sau giới hạn. Khi bạn nhập đăng ký lớn ở một ngày, các ngày CH trước đó trong khoảng giữ buồng sẽ bị giảm số "Còn nhận thêm".`}
@@ -1937,7 +1939,7 @@ $("#tlSave").onclick=()=>{
   const v={reg:pr(tlD.reg),ch:pr(tlD.ch),mx:pm(tlD.mx),L:Math.max(1,Math.min(10,tlNum(tlD.L)||5)),cap:tlNum(tlD.cap),rsv:tlNum(tlD.rsv)};
   S.tl=v;save();
   close($("#ovTl"));
-  askAlert({title:"Đã lưu đăng ký TL",tone:"info",html:"<div>Đã lưu và đồng bộ giữa các thiết bị. Chỉ tài khoản admin xem và sửa được số liệu này.</div>"})};
+  askAlert({title:"Đã lưu đăng ký TL",tone:"info",html:"<div>Đã lưu và đồng bộ giữa các thiết bị. Mọi tài khoản được cấp quyền đều xem và sửa được số liệu này.</div>"})};
 matchMedia("(max-width:700px)").addEventListener("change",()=>{if($("#ovTl").classList.contains("show")&&tlD)drawTl()});
 $("#ptQ").oninput=drawPt;$("#bPt").onclick=()=>{if(!gateWho())return;drawPt();open("#ovPt")};
 {const sel=$("#peRoom");let h="";for(let c=1;c<=CABS;c++)for(let r=1;r<=ROOMS;r++)h+=`<option value="${c}-${r}">${c}.${r}</option>`;sel.innerHTML=h}
@@ -2361,7 +2363,7 @@ const FB_CFG={
   /* ---------- Nút "Xóa toàn bộ dữ liệu": CHỈ tài khoản quản trị mới thấy ---------- */
   /* Quyền admin = tài liệu staff/<uid> có admin:true (tạo trong Firebase Console). Không lưu email/UID trong code; quyền thật do Firestore Rules quyết định. */
   const loadRole=async()=>{adminOK=false;if(!user||!user.emailVerified)return;const u=user;try{const sn=await M.getDoc(M.doc(db,"staff",u.uid));if(user===u)adminOK=sn.exists()&&sn.data().admin===true}catch(e){adminOK=false}};
-  const isAdmin=()=>authorized()&&adminOK;window.__isAdmin=isAdmin;
+  const isAdmin=()=>authorized()&&adminOK;window.__isAdmin=isAdmin;window.__isAuth=authorized;
   const wipeAll=async()=>{if(!isAdmin())return;
     if(!await askConfirm({title:"Xóa TOÀN BỘ dữ liệu?",tone:"warn",danger:true,ok:"Tiếp tục",html:"<div>Toàn bộ dữ liệu <b>GERI và BT37</b> (buồng, bệnh nhân, lịch sử thao tác, danh sách nhận bệnh) sẽ bị xóa khỏi <b>cloud và mọi thiết bị</b>.</div><div class=\"dnote\">Một file sao lưu (.json) sẽ tự tải về trước khi xóa. Thao tác không thể hoàn tác trong ứng dụng.</div>"}))return;
     if(!await askConfirm({title:"Xác nhận lần cuối",tone:"warn",danger:true,ok:"Xóa toàn bộ",cancel:"Hủy",html:"<div>Bạn <b>chắc chắn</b> muốn xóa sạch dữ liệu?</div>"}))return;
@@ -2589,7 +2591,7 @@ const FB_CFG={
     if(!user)return;
     if(MN){const same=MN._el===el;closeMenu();if(same)return}
     const m=document.createElement("div");m.className="acm";m.setAttribute("role","menu");m._el=el;
-    const AI=[["src","📝","Nhận bệnh"],["ch","📈","Biểu đồ"],...(isAdmin()?[["xl","📊","Xuất Excel"]]:[]),["ui","🎨","Giao diện"],...(isAdmin()?[["hist","🕘","Lịch sử thao tác"]]:[]),["pt","👥","Danh sách bệnh nhân"],...(isAdmin()?[["tl","📅","Đăng ký TL"]]:[]),["nav","🧭","Điều hướng GERI"],["pw","🔑","Đổi mật khẩu"]];if(isAdmin())AI.push(["imp","📥","IMPORT"],["empty","🗑","EMPTY"]);
+    const AI=[["src","📝","Nhận bệnh"],["ch","📈","Biểu đồ"],...(isAdmin()?[["xl","📊","Xuất Excel"]]:[]),["ui","🎨","Giao diện"],...(isAdmin()?[["hist","🕘","Lịch sử thao tác"]]:[]),["pt","👥","Danh sách bệnh nhân"],["tl","📅","Đăng ký TL"],["nav","🧭","Điều hướng GERI"],["pw","🔑","Đổi mật khẩu"]];if(isAdmin())AI.push(["imp","📥","IMPORT"],["empty","🗑","EMPTY"]);
     m.classList.add("wide");
     m.innerHTML='<div class="who"><small>Đang đăng nhập</small><b title="'+esc(lab(user))+'">'+esc(lab(user))+'</b></div>'
       +'<div class="acr">'+AI.map(i=>'<button type="button" role="menuitem" data-m="'+i[0]+'"><span class="ai">'+i[1]+'</span><span>'+i[2]+'</span></button>').join("")+'</div>'
@@ -2601,7 +2603,7 @@ const FB_CFG={
     if(up){m.style.bottom=(innerHeight-r.top+8)+"px";m.style.setProperty("--o","bottom right")}
     else{m.style.top=(r.bottom+8)+"px";m.style.setProperty("--o","top right")}
     const items=[...m.querySelectorAll("button")];
-    m.onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;closeMenu();const k=b.dataset.m;if((k==="xl"||k==="hist"||k==="tl")&&!isAdmin())return;if(k==="pw")openPw();else if(k==="nav"){if(window.nvManage)window.nvManage()}else if(k==="empty")wipeAll();else if(k==="out")doLogout();else{const T={src:"#bSrc",ch:"#bCh",xl:"#bXl",ui:"#bUi",hist:"#bHist",pt:"#bPt",imp:"#bImp",tl:"#bTl"}[k],x=T&&document.querySelector(T);if(x)x.click()}};
+    m.onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;closeMenu();const k=b.dataset.m;if((k==="xl"||k==="hist")&&!isAdmin())return;if(k==="pw")openPw();else if(k==="nav"){if(window.nvManage)window.nvManage()}else if(k==="empty")wipeAll();else if(k==="out")doLogout();else{const T={src:"#bSrc",ch:"#bCh",xl:"#bXl",ui:"#bUi",hist:"#bHist",pt:"#bPt",imp:"#bImp",tl:"#bTl"}[k],x=T&&document.querySelector(T);if(x)x.click()}};
     m._o=e=>{if(!m.contains(e.target)&&!el.contains(e.target))closeMenu()};
     m._k=e=>{
       if(e.key==="Escape"){e.preventDefault();closeMenu(true)}
@@ -3085,3 +3087,4 @@ table.tl td{vertical-align:top}
 .tlprev{font-size:12.5px;padding:6px 10px}
 #ovTl .tlc .g2{grid-template-columns:1fr 1fr 1fr}
 </style>
+<style id="tlNdCss">.tlnd{display:inline-block;margin-left:12px}.tlnd i{font-style:normal;color:var(--mu);font-size:12px}#tlNd{margin-top:-4px}</style>
