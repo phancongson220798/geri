@@ -1126,7 +1126,9 @@ animation:rmIn .45s cubic-bezier(.2,.9,.3,1.2) both}
 .tile:hover .no{transform:translateY(-50%);box-shadow:none}
 #ttlCab{color:#fff!important;padding:0 .38em;margin-left:.12em;border-radius:.3em;text-shadow:0 1px 3px rgba(0,0,0,.3);transition:background .5s,box-shadow .5s}
 #ttlCab[data-v=geri],#ttlCab:not([data-v]){background:linear-gradient(135deg,#f97316,#e11d48);box-shadow:0 4px 18px rgba(225,29,72,.45)}
-#ttlCab[data-v=bt]{background:linear-gradient(135deg,#06b6d4,#10b981);box-shadow:0 4px 18px rgba(6,182,212,.5)}
+#ttlCab[data-v=bt]{background:none!important;box-shadow:none!important;padding:0;margin-left:.2em;font-weight:800!important;letter-spacing:.04em;color:#0891b2!important;text-shadow:0 2px 14px rgba(8,145,178,.28)}
+:root[data-theme="dark"] #ttlCab[data-v=bt]{color:#22d3ee!important;text-shadow:0 2px 16px rgba(34,211,238,.4)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) #ttlCab[data-v=bt]{color:#22d3ee!important;text-shadow:0 2px 16px rgba(34,211,238,.4)}}
 #ttlCab[data-v=geri],#ttlCab:not([data-v]){background:none!important;box-shadow:none!important;padding:0;margin-left:.2em;font-weight:800!important;letter-spacing:.04em;color:#e11d48!important;text-shadow:0 2px 14px rgba(225,29,72,.28)}
 :root[data-theme="dark"] #ttlCab[data-v=geri],:root[data-theme="dark"] #ttlCab:not([data-v]){color:#fb7185!important;text-shadow:0 2px 16px rgba(251,113,133,.4)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]) #ttlCab[data-v=geri],:root:not([data-theme="light"]) #ttlCab:not([data-v]){color:#fb7185!important;text-shadow:0 2px 16px rgba(251,113,133,.4)}}
@@ -2199,9 +2201,9 @@ const btTx=q=>`<div class="tx"><div class="r1"><b>${esc(q.ten||q.hs||"—")}</b>
 let _bc={},_bready=false,_bseen=new Set();
 function btCard(i){const x=S.bt.rooms[i];
 if(x.st==="bad")return`<div class="btc c${i} bad" data-r="${i}" style="--n:${i}"><div class="bth"><b class="btn">BT37 ${i}</b>${BTSUB[i]?`<small class="btsub">(${BTSUB[i]})</small>`:""}<span class="btm">Sửa chữa</span></div><div class="btx">Sửa chữa / chưa dùng</div></div>`;
-const col=(s,lab)=>{const L=x.pl.filter(q=>q.side===s);let r="";for(let k=0;k<BTCAP;k++){const q=L[k];if(q){const nw=_bready&&!_bseen.has(q.id);_bseen.add(q.id);r+=`<div class="bts on${btHotQ(q)?" bhot":""}${nw?" nw":""}" data-id="${q.id}" title="${esc(btFull(q))}"><b>${k+1}</b>${btTx(q)}</div>`}else r+=`<div class="bts"><b>${k+1}</b><span>trống</span></div>`}
+const col=(s,lab)=>{const L=x.pl.filter(q=>q.side===s);let r="";for(let k=0;k<BTCAP;k++){const q=L[k];if(q){const nw=_bready&&!_bseen.has(q.id);_bseen.add(q.id);r+=`<div class="bts on${btHotQ(q)?" bhot":""}${nw?" nw":""}" data-id="${q.id}" title="${esc(btFull(q))}"><b>${k+1}</b>${btTx(q)}</div>`}else r+=`<div class="bts"><b>${k+1}</b><span>Trống</span></div>`}
 return`<div class="btcol" data-s="${s}"><div class="btl"><span>${lab}</span><span>${L.length}/${BTCAP}</span></div><div class="btg">${r}</div></div>`};
-return`<div class="btc c${i}${x.pl.length?" ok":""}" data-r="${i}" style="--n:${i}"><div class="bth"><b class="btn">BT37 ${i}</b>${BTSUB[i]?`<small class="btsub">(${BTSUB[i]})</small>`:""}<span class="btm">${x.pl.length}/${2*BTCAP}</span></div><div class="btb">${col("T","TRÁI")}<i class="btv"></i>${col("P","PHẢI")}</div></div>`}
+return`<div class="btc c${i}${x.pl.length?" ok":""}" data-r="${i}" style="--n:${i}"><div class="bth"><b class="btn">BT37 ${i}</b>${BTSUB[i]?`<small class="btsub">(${BTSUB[i]})</small>`:""}<span class="btm">${x.pl.length?x.pl.length+"/"+2*BTCAP:"Trống"}</span></div><div class="btb">${col("T","TRÁI")}<i class="btv"></i>${col("P","PHẢI")}</div></div>`}
 let _bh="",_bt="";
 function btTabs(){const t=$("#tabs");if(!t)return;const cur=S.ui&&S.ui.tab==="bt"?"bt":"geri",lk=window.LOCKED,g=lk?0:dueRooms().length,b=lk?0:btHot();
 const h=`<button type="button" class="tbtn${cur==="geri"?" on":""}${cur==="bt"&&g?" blink":""}" data-t="geri">GERI${g?` <i>${g}</i>`:""}</button><button type="button" class="tbtn${cur==="bt"?" on":""}${cur==="geri"&&b?" blink":""}" data-t="bt">BT37${b?` <i>${b}</i>`:""}</button>`;
@@ -3121,3 +3123,44 @@ table.tl td{vertical-align:top}
 #ovTl .tlc .g2{grid-template-columns:1fr 1fr 1fr}
 </style>
 <style id="tlNdCss">.tlnd{display:inline-block;margin-left:12px}.tlnd i{font-style:normal;color:var(--mu);font-size:12px}#tlNd{margin-top:-4px}</style>
+<style id="mHeadCss">
+/* ===== Điện thoại: đầu trang xếp gọn 1 cột, bỏ hiệu ứng để thao tác ổn định ===== */
+@media(max-width:700px){
+body::before{display:none!important}
+*,*::before,*::after{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+header,header *,.cab,.cab *,#mNav,#mNav *{animation:none!important;transition:none!important}
+header{padding:6px 8px 0;overflow-x:clip;max-width:100%}
+header .hrow{display:flex!important;flex-direction:column;align-items:stretch;gap:10px;width:100%;box-sizing:border-box;padding:12px!important;background:var(--card)!important;border:1px solid var(--bd);border-radius:16px;box-shadow:none!important}
+header .hrow>*{width:100%;min-width:0;max-width:100%;grid-column:auto!important;box-sizing:border-box}
+/* 1. Tiêu đề + ngày */
+header .head{order:1;display:flex;flex-direction:column;gap:10px}
+header .hTop{display:flex;flex-direction:column;align-items:stretch;gap:10px;flex-wrap:nowrap}
+header .head h1{display:flex;flex-direction:column;align-items:flex-start;gap:3px;margin:0;min-width:0}
+header .head h1 .ttl{display:block;font-size:16.5px!important;line-height:1.35;font-weight:700!important;letter-spacing:0!important;white-space:normal;word-break:normal;color:var(--tx)}
+header .head h1 small{font-size:12.5px;margin:0;line-height:1.3}
+header .head h1 .ttl{text-wrap:balance}
+header .stats .pill:nth-child(2){background:var(--bg)!important;border-color:color-mix(in srgb,var(--mu) 40%,transparent)}
+/* 2. Tab GERI / BT37 */
+header #tabs{width:100%;min-width:0;margin:0;box-shadow:none}
+header #tabs::before{box-shadow:none}
+header #tabs .tbtn{min-height:44px;padding:8px;font-size:15px;font-weight:700}
+/* 3. Thống kê: 4 ô đều nhau */
+header .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;width:100%}
+header .stats .pill{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;min-height:56px;padding:8px 2px 6px;font-size:10.5px;line-height:1.2;text-align:center;white-space:normal;box-shadow:none}
+header .stats .pill b{order:-1;font-size:19px;line-height:1}
+header .stats .pill i.dot{position:absolute;top:6px;left:7px;width:7px;height:7px;margin:0}
+/* 4. Người thực hiện + nút */
+header .tools{order:2;display:flex;flex-direction:column;align-items:stretch;gap:8px;width:100%;justify-self:stretch}
+header .tools .trow1{display:flex;align-items:center;gap:8px;width:100%;min-width:0}
+header .tools .trow1 .who{display:flex;flex:1 1 0;gap:8px;min-width:0;width:auto;margin:0}
+header .tools .who input{flex:1 1 0;min-width:0;width:100%;min-height:44px;font-size:16px;box-shadow:none}
+header .tools .trow1 .ib,header .tools .bar.acts .ib{flex:0 0 44px;width:44px;height:44px}
+header .tools .bar.acts{display:flex;flex-wrap:nowrap;gap:8px;width:100%;justify-content:stretch}
+header .tools .bar.acts #bDue{flex:1 1 0;min-width:0;min-height:44px;font-size:15px;box-shadow:none}
+header .whoMsg{width:100%;white-space:normal}
+/* 5. Bảng ngày phôi */
+header #mDayBtn{order:3;min-height:44px;box-shadow:none}
+header .hrow .dtab{order:4;max-width:100%}
+#mNav{background:var(--bg)!important}
+}
+</style>
