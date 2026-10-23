@@ -1146,6 +1146,10 @@ animation:rmIn .45s cubic-bezier(.2,.9,.3,1.2) both}
 #ovNvM .modal{width:min(760px,100%);padding:0;overflow:hidden;display:flex;flex-direction:column;max-height:88vh}
 #ovNvM .mh{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--bd)}
 #ovNvM .mh b{font-size:18px;flex:1}
+html:not(.nvOn) .tile .nv{display:none!important}
+#ovNvM .nvT{display:flex;align-items:center;gap:10px;margin:0;padding:10px 18px;border-bottom:1px solid var(--bd);font-size:14px;font-weight:600;cursor:pointer;user-select:none}
+#ovNvM .nvT input{width:18px;height:18px;margin:0;accent-color:var(--pri);cursor:pointer;flex:none}
+#ovNvM .nvT small{margin-left:auto;font-weight:400;color:var(--mu);font-size:12.5px}
 #ovNvM .mx.del{color:var(--r);display:flex;align-items:center}#ovNvM .mx{background:transparent;color:var(--mu);border:1px solid var(--bd);padding:4px 10px}
 #ovNvM .tabs{display:flex;gap:6px;padding:10px 18px 0;flex-wrap:wrap}
 #ovNvM .tabs button{background:color-mix(in srgb,var(--h) 14%,var(--card));color:color-mix(in srgb,var(--h) 60%,var(--tx));border:2px solid transparent;font-weight:700;padding:7px 14px}
@@ -2702,7 +2706,7 @@ const FB_CFG={
     syncLock()});
 })();
 </script>
-<div class="ov" id="ovNvM"><div class="modal"><div class="mh"><b>🧭 Điều hướng GERI</b><button type="button" class="mx del" id="nvmDelAll" title="Xóa toàn bộ link" aria-label="Xóa toàn bộ link"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button><button type="button" class="mx" id="nvmX" aria-label="Đóng">✕</button></div><div class="tabs" id="nvmTabs"></div><div class="list" id="nvmList"></div></div></div>
+<div class="ov" id="ovNvM"><div class="modal"><div class="mh"><b>🧭 Điều hướng GERI</b><button type="button" class="mx del" id="nvmDelAll" title="Xóa toàn bộ link" aria-label="Xóa toàn bộ link"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button><button type="button" class="mx" id="nvmX" aria-label="Đóng">✕</button></div><label class="nvT" for="nvShow"><input type="checkbox" id="nvShow"><span>Hiện biểu tượng điều hướng ↗ trên các buồng</span><small>Tắt = ẩn toàn bộ</small></label><div class="tabs" id="nvmTabs"></div><div class="list" id="nvmList"></div></div></div>
 <div class="ov" id="ovNv"><div class="modal">
 <h3 id="nvTitle"></h3>
 <div class="row"><label class="fl" style="flex:1"><span>Đường link của buồng này (mở bằng tab mới khi bấm nút ↗)</span><input id="nvUrl" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://..."></label></div>
@@ -2748,7 +2752,12 @@ const IC_D='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="
 const drawM=()=>{tabsM.innerHTML=Array.from({length:CABS},(_,i)=>`<button type="button" data-c="${i+1}" style="--h:var(--h${i+1})" class="${tabM===i+1?"on":""}">GERI ${i+1}</button>`).join("");
 listM.style.setProperty("--h",`var(--h${tabM})`);
 listM.innerHTML=Array.from({length:ROOMS},(_,i)=>{const k=tabM+"-"+(i+1),u=nvGet(k);return `<div class="nr" data-k="${k}"><span class="lb">${tabM}.${i+1}</span><input type="text" readonly value="${esc(u)}" placeholder="Chưa có link" autocomplete="off" spellcheck="false" aria-label="Link buồng ${tabM}.${i+1}"><button type="button" class="ic ed" title="Chỉnh sửa" aria-label="Chỉnh sửa">${IC_E}</button><button type="button" class="ic del" title="Xóa link" aria-label="Xóa link"${u?"":" disabled"}>${IC_D}</button><button type="button" class="up" disabled>Cập nhật</button><div class="st"></div></div>`}).join("")};
-const openMgr=()=>{drawM();ovM.classList.add("show")};
+const NVS="geri_nv_show",chkS=q("#nvShow");
+const nvOn=()=>{try{return localStorage.getItem(NVS)==="1"}catch(e){return false}};
+const nvApply=on=>document.documentElement.classList.toggle("nvOn",!!on);
+nvApply(nvOn());
+chkS.onchange=()=>{try{localStorage.setItem(NVS,chkS.checked?"1":"0")}catch(e){}nvApply(chkS.checked)};
+const openMgr=()=>{chkS.checked=nvOn();drawM();ovM.classList.add("show")};
 q("#nvmDelAll").onclick=async()=>{const d=nvData(),n=Object.keys(d).filter(k=>d[k]).length;
 if(!n){askAlert({title:"Điều hướng GERI",tone:"info",html:"<div>Chưa có link nào để xóa.</div>"});return}
 if(!await askConfirm({title:"Xóa toàn bộ link",danger:true,ok:"Xóa tất cả",html:`<div>Xóa <b>${n}</b> link điều hướng của tất cả các buồng GERI?</div><div style="margin-top:8px;color:var(--r)">Thao tác này không thể hoàn tác.</div>`}))return;
