@@ -1366,12 +1366,19 @@ button.tli{width:26px;height:26px;min-height:0!important;padding:0!important;bor
 <div class="row" style="justify-content:flex-end"><button class="ghost" data-close>Đóng</button></div>
 </div></div>
 <div class="ov" id="ovSrc"><div class="modal" style="width:min(1000px,100%)">
-<h3>Nhận bệnh</h3>
+<div class="srch"><h3>Nhận bệnh</h3><button type="button" class="ghost" id="srcZoom" aria-pressed="false" title="Phóng to vừa đủ để xem đủ các cột và nút thao tác (Esc để thu nhỏ)">⤢ Phóng to</button></div>
 <div class="tblw" id="srcGrid" style="max-height:55vh;overflow:auto"></div>
 <div id="srcWarn" style="color:var(--r);font-size:13px;min-height:18px;margin-top:6px"></div>
 <div class="row"><button class="ghost" id="srcXl">Nhập excel chọc hút</button><input type="file" id="srcFile" accept=".xls,.xlsx,.csv" hidden><button class="ghost" id="srcAdd">Thêm dòng</button><button class="ghost dng" id="srcClr">Xóa bảng</button><span id="srcSum" style="color:var(--mu);font-size:13px"></span></div>
 <div id="srcInfo" style="font-size:13px;color:var(--mu);min-height:18px"></div>
 <div class="row" style="justify-content:flex-end"><button class="ghost" data-close>Đóng</button><button id="srcGo">Xác nhận</button></div>
+</div></div>
+<div class="ov" id="ovHum"><div class="modal" style="width:min(460px,100%)">
+<h3>Sửa trạng thái bình ẩm</h3>
+<div id="humWho" style="font-size:13px;color:var(--mu);margin-bottom:8px"></div>
+<div id="humOpts" class="humopts"></div>
+<div id="humWarn" style="color:var(--r);font-size:13px;min-height:18px;margin-top:6px"></div>
+<div class="row" style="justify-content:space-between"><button class="ghost" id="humAuto" title="Bỏ chỉnh sửa tay, tính lại từ nhật ký">Tự động theo nhật ký</button><span style="display:flex;gap:8px"><button class="ghost" data-close>Đóng</button><button id="humSave">Lưu</button></span></div>
 </div></div>
 <script>
 const CABS=5,ROOMS=6,KEY="geri_humid_v1";const DAY=5;
@@ -1394,7 +1401,7 @@ for(let c=1;c<=CABS;c++)for(let r=1;r<=ROOMS;r++){const k=c+"-"+r;if(!S.rooms[k]
 const dcl=d=>d<=1?"dc0":d<=3?"dc1":d===4?"dc2":"dc3";
 function btFix(){if(!S.bt||typeof S.bt!=="object")S.bt={rooms:{},pts:[]};if(!S.bt.rooms)S.bt.rooms={};if(!S.bt.pts)S.bt.pts=[];for(let i=1;i<=5;i++){const x=S.bt.rooms[i]||(S.bt.rooms[i]={});if(!x.st)x.st="empty";if(!x.pl)x.pl=[]}}
 btFix();S.ui=S.ui||{theme:"auto",pal:"diu"};
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(window.cloudPush)window.cloudPush()};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(window.cloudPush)window.cloudPush();try{logChk()}catch(e){}};
 const roomPts=x=>x.st==="using"?(x.pl||[]):[];
 const dueList=x=>roomPts(x).filter(q=>q.ch&&days(q.ch)>=DAY&&q.snooze!==todayStr());
 const roomDay=x=>{const a=roomPts(x).filter(q=>q.ch).map(q=>days(q.ch));return a.length?Math.max(...a):null};
@@ -1444,6 +1451,7 @@ const nvGet=k=>{let v=nvData()[k];if(typeof v!=="string"||!v){try{const o=JSON.p
 const nvBackup=()=>{try{localStorage.setItem(NVK,JSON.stringify(nvData()))}catch(e){}};
 const nvBtn=k=>{const u=nvGet(k);return `<a class="nv${u?" set":""}" data-nv="${k}" draggable="false" tabindex="0" role="link"${u?` href="${esc(u)}" target="_blank" rel="noopener noreferrer"`:""} title="${u?"Bấm: mở link trong tab mới · Chuột phải / giữ lâu: chỉnh sửa link":"Chưa có link — bấm để nhập link"}" aria-label="Điều hướng buồng ${k.replace("-",".")}"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>`};
 function render(){
+try{logChk()}catch(e){}
 if(window.LOCKED){$("#main").innerHTML="";window._lh="";window._revDone=false;window._revWant=false;$("#dTab").innerHTML="";_dh="";_dp=[];["nOk","nEm","nBad"].forEach(i=>{const e=$("#"+i);e.textContent="0";delete e.dataset.s});$("#nDue").textContent="0/0";$("#cnt").style.display="none";$("#noteBar").style.display="none";if(window.btRender)btRender();return}
 const m=$("#main"),td=todayStr();let out="",ok=0,em=0,bad=0,due=0;const notes=[];
 for(let c=1;c<=CABS;c++){
@@ -1549,16 +1557,37 @@ setTimeout(showDue,300)});
 $("#bDue").onclick=()=>showDue(true);$("#pDue").onclick=()=>showDue(true);
 
 let histN=7,dueN=7;
-const ACT_MAP={"Nhập bệnh nhân":"Nhận bệnh","Kết thúc nuôi bệnh nhân":"Kết thúc","Sửa thông tin bệnh nhân":"Sửa thông tin","Chuyển bệnh nhân đi":"Chuyển đi","Chuyển bệnh nhân đến":"Chuyển đến","Xóa bệnh nhân":"Xóa bệnh nhân"};
+const ACT_MAP={"Nhập bệnh nhân":"Nhận bệnh","Kết thúc nuôi bệnh nhân":"Kết thúc","Sửa thông tin bệnh nhân":"Sửa thông tin","Chuyển bệnh nhân đi":"Chuyển đi","Chuyển bệnh nhân đến":"Chuyển đến","Xóa bệnh nhân":"Xóa bệnh nhân","Xóa ca hoàn thành":"Xóa ca hoàn thành","Cảnh báo – Nuôi tiếp":"Nuôi tiếp","Cảnh báo – Kết thúc nuôi cấy":"Kết thúc","Sửa trạng thái bình ẩm":"Sửa bình ẩm"};
 const splitA=a=>{a=String(a);const i=a.indexOf(": ");if(i>0&&ACT_MAP[a.slice(0,i)])return[ACT_MAP[a.slice(0,i)],a.slice(i+2)];return[a.startsWith("Thay mới")?"Thay mới":a,""]};
 const actOf=a=>splitA(a)[0];
 const isPtAct=a=>{a=String(a);const i=a.indexOf(": ");return i>0&&!!ACT_MAP[a.slice(0,i)]};
 const patNote=x=>{if(!isPtAct(x.a))return"";let q=x.q;if(q&&q.mode==="CK"||/Check bình ẩm|KIỂM TRA BÌNH ẨM/.test(splitA(x.a)[1]))return"KIỂM TRA BÌNH ẨM";const txt=splitA(x.a)[1];
-if(!q){const[t1,t2]=txt.split(" · ");q=[...S.pts].reverse().find(r=>(t2&&r.hs===t2)||(!t2&&(r.hs===t1||r.ten===t1))||(t2&&r.ten===t1&&r.hs===t2))}
+if(!q){const[t1,t2]=txt.split(" · ");q=[...(x.c==="BT37"?S.bt.pts:S.pts)].reverse().find(r=>(t2&&r.hs===t2)||(!t2&&(r.hs===t1||r.ten===t1))||(t2&&r.ten===t1&&r.hs===t2))}
 if(!q)return txt;
 const main=[q.stt?q.stt+".":"",q.ten,q.ns,q.hs].filter(Boolean).join(" ");
 return main+(q.ch?" · CH "+dmy(q.ch):"")};
-const noteOf=x=>[patNote(x)||splitA(x.a)[1],x.n||""].filter(Boolean).join(" · ");
+/* BT37: ghi chú chỉ hiện thông tin bệnh nhân như GERI (tủ + bên T/P đã có ở cột Vị trí, không lặp lại trong ghi chú) */
+const btSideOf=x=>{const m=x.c==="BT37"?String(x.n||"").match(/^BT37.*? ([TP])(?:\s|$)/):null;return m?" · "+(m[1]==="T"?"Trái":"Phải"):""};
+const posOf=x=>x.r?(x.c==="BT37"?btNm(x.r)+btSideOf(x):"Buồng "+x.c+"."+x.r):"Tủ "+x.c;
+const btN=x=>{const n=String(x.n||"");return x.c==="BT37"&&/^BT37/.test(n)?n.replace(/^BT37.*? [TP](?=\s|$)\s*/,"").replace(/^BT37[^→]*/,"").trim():n};
+/* ===== Nhật ký thao tác: tối đa LOG_MAX dòng, cảnh báo từ LOG_WARN để admin tải dữ liệu lịch sử trước khi dòng cũ bị xóa ===== */
+const LOG_MAX=2000,LOG_WARN=1800,LOG_DLK="geri_log_dl";
+const logDlInfo=()=>{try{return JSON.parse(localStorage.getItem(LOG_DLK)||"null")}catch(e){return null}};
+const logNewSince=()=>{const d=logDlInfo();if(!d||!d.t)return Infinity;let n=0;for(const e of S.log){if(e.t>d.t)n++;else break}return n};
+const logWarnHtml=()=>{const n=S.log.length;if(n<LOG_WARN)return"";const full=n>=LOG_MAX,d=logDlInfo(),ns=logNewSince();
+return`<div class="logwarn${full?" full":""}"><span class="lwi">⚠</span><div class="lwt"><b>${full?"Nhật ký đã đầy":"Nhật ký sắp đầy"}: ${n}/${LOG_MAX} dòng.</b> ${full?"Mỗi thao tác mới sẽ xóa dòng cũ nhất.":"Khi đủ "+LOG_MAX+" dòng, các dòng cũ nhất sẽ bị xóa."} Hãy tải dữ liệu lịch sử để lưu trữ.${d&&d.t?`<br><small>Lần tải gần nhất: ${new Date(d.at||d.t).toLocaleString("vi-VN")}${isFinite(ns)?" · "+ns+" dòng mới kể từ đó":""}</small>`:""}</div><button type="button" id="logDl">Tải dữ liệu lịch sử</button></div>`};
+function logChk(){const bar=$("#noteBar");if(!bar)return;const adm=!!(window.__isAdmin&&window.__isAdmin()),n=S.log.length,show=adm&&n>=LOG_WARN&&logNewSince()>=100;
+if(!show){if(bar.dataset.lw){bar.dataset.lw="";bar.style.display="";bar.innerHTML=""}return}
+const t=(n>=LOG_MAX?"Nhật ký đã đầy ":"Nhật ký sắp đầy ")+n+"/"+LOG_MAX+" dòng";if(bar.dataset.lw===t)return;bar.dataset.lw=t;bar.style.display="block";
+bar.innerHTML=`<span class="lwbar">⚠ ${t} – <button type="button" class="ghost" id="logDl2">Tải dữ liệu lịch sử</button></span>`;
+if(!window._lwToast){window._lwToast=1;try{nthToast("⚠ "+t+". Hãy tải dữ liệu lịch sử.")}catch(e){}}}
+async function logDownload(){const rows=S.log.map(x=>[typeof fmtDT==="function"?fmtDT(x.t):new Date(x.t).toLocaleString("vi-VN"),posOf(x),actOf(x.a),x.p||"",x.p2||"",noteOf(x)]),head=["Ngày","Vị trí","Hành động","Người thực hiện 1","Người thực hiện 2","Ghi chú"],name="Lich-su-thao-tac_"+ymd(new Date());
+try{if(typeof XLSX!=="undefined"){const ws=XLSX.utils.aoa_to_sheet([head,...rows]);ws["!cols"]=[20,26,22,22,22,60].map(w=>({wch:w}));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Lịch sử thao tác");await saveFile(name+".xlsx",new Blob([XLSX.write(wb,{bookType:"xlsx",type:"array"})],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}))}
+else{const q=v=>'"'+String(v).replace(/"/g,'""')+'"';await saveFile(name+".csv","\ufeff"+[head,...rows].map(r=>r.map(q).join(",")).join("\r\n"))}
+try{localStorage.setItem(LOG_DLK,JSON.stringify({t:S.log[0]?S.log[0].t:"",at:new Date().toISOString(),n:S.log.length}))}catch(e){}
+nthToast("✅ Đã tải "+rows.length+" dòng lịch sử");logChk();if($("#ovHist").classList.contains("show"))hist()}
+catch(e){askAlert({title:"Không thể tải dữ liệu",html:"<div>"+esc((e&&e.message)||"Lỗi không xác định")+"</div>"})}}
+const noteOf=x=>[patNote(x)||splitA(x.a)[1],btN(x)].filter(Boolean).join(" · ");
 const moreBtn=(id,left)=>left>0?`<div class="row" style="justify-content:center"><button class="ghost" id="${id}">Xem thêm (${left} dòng nữa)</button></div>`:"";
 /* Cảnh báo: ca hoàn thành nhưng ngày phôi (từ ngày CH đến lúc kết thúc) < HIST_MIN ngày */
 const HIST_MIN=5;
@@ -1576,8 +1605,9 @@ const histIc=x=>{const d=histDays(x),e=d>=0&&d<HIST_MIN?d:-1;
   if(e<0)return{e,ic:"",tip:"",alert:false};
   return{e,ic:`<span class="hwi" title="Ngày phôi ${e} ngày (dưới ${HIST_MIN} ngày)">⚠</span>`,tip:`⚠ Ngày phôi ${e} ngày (dưới ${HIST_MIN} ngày). `,alert:String(x.a).startsWith("Cảnh báo –")}};
 function hist(){const f=$("#hCab").value,all=S.log.filter(x=>!String(x.a).startsWith("Đặt trạng thái")&&(!f||x.c==f)),l=all.slice(0,histN);
-$("#hBody").innerHTML=l.length?(()=>{const wl=l.map(histIc),nw=wl.filter(w=>w.e>=0).length;return(nw?`<div class="hwn"><span class="hwi">⚠</span> ${nw} ca hoàn thành có ngày phôi dưới ${HIST_MIN} ngày trong danh sách đang hiển thị (rê chuột vào biểu tượng để xem số ngày).</div>`:"")+`<table class="hl"><tr><th>Ngày</th><th>Vị trí</th><th>Hành động</th><th>NTH 1</th><th>NTH 2</th><th>Ghi chú</th></tr>${l.map((x,i)=>{const w=wl[i];return`<tr><td>${dspan(x.t)}</td><td>${x.r?(x.c==="BT37"?btNm(x.r):"Buồng "+x.c+"."+x.r):"Tủ "+x.c}</td><td>${w.alert?w.ic:""}${esc(actOf(x.a))}</td><td>${esc(x.p)}</td><td>${esc(x.p2||"")}</td><td class="nc" title="${esc(w.tip+noteOf(x))}">${w.alert?"":w.ic}${esc(noteOf(x))}</td></tr>`}).join("")}</table>`+moreBtn("hMore",all.length-l.length)})():'<div class="empty-msg">Chưa có lịch sử.</div>'}
-$("#hBody").addEventListener("click",e=>{if(e.target.id==="hMore"){histN+=20;hist()}});
+$("#hBody").innerHTML=logWarnHtml()+(l.length?(()=>{const wl=l.map(histIc),nw=wl.filter(w=>w.e>=0).length;return(nw?`<div class="hwn"><span class="hwi">⚠</span> ${nw} ca hoàn thành có ngày phôi dưới ${HIST_MIN} ngày trong danh sách đang hiển thị (rê chuột vào biểu tượng để xem số ngày).</div>`:"")+`<table class="hl"><tr><th>Ngày</th><th>Vị trí</th><th>Hành động</th><th>NTH 1</th><th>NTH 2</th><th>Ghi chú</th></tr>${l.map((x,i)=>{const w=wl[i];return`<tr><td>${dspan(x.t)}</td><td>${posOf(x)}</td><td>${w.alert?w.ic:""}${esc(actOf(x.a))}</td><td>${esc(x.p)}</td><td>${esc(x.p2||"")}</td><td class="nc" title="${esc(w.tip+noteOf(x))}">${w.alert?"":w.ic}${esc(noteOf(x))}</td></tr>`}).join("")}</table>`+moreBtn("hMore",all.length-l.length)})():'<div class="empty-msg">Chưa có lịch sử.</div>')}
+$("#hBody").addEventListener("click",e=>{if(e.target.id==="hMore"){histN+=20;hist()}else if(e.target.id==="logDl")logDownload()});
+$("#noteBar").addEventListener("click",e=>{if(e.target.id==="logDl2")logDownload()});
 $("#dueHist").addEventListener("click",e=>{if(e.target.id==="dueMore"){dueN+=20;dueExtra()}});
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 for(let c=1;c<=CABS;c++)$("#hCab").insertAdjacentHTML("beforeend",`<option value="${c}">Tủ GERI ${c}</option>`);$("#hCab").insertAdjacentHTML("beforeend",'<option value="BT37">Tủ BT37</option>');
@@ -1599,7 +1629,7 @@ return[r.hs||"",r.ten||"",r.ns||"",r.ch?dmy(r.ch):"",r.stt||"",mFull(r.mode),"GE
 const xlData={
 pt:xlPts,
 wc:()=>xlRows().filter(x=>HANDLE(x.a)||x.a==="Đã thêm nước").map(x=>[fmtDT(x.t),actOf(x.a),"GERI "+x.c,x.r?x.c+"."+x.r:"",x.p||"",x.p2||""]),
-op:()=>xlRows().filter(x=>!String(x.a).startsWith("Đặt trạng thái")).map(x=>[fmtDT(x.t),x.r?(x.c==="BT37"?btNm(x.r):"Buồng "+x.c+"."+x.r):"Tủ "+x.c,actOf(x.a),x.p||"",x.p2||"",noteOf(x)])};
+op:()=>xlRows().filter(x=>!String(x.a).startsWith("Đặt trạng thái")).map(x=>[fmtDT(x.t),posOf(x),actOf(x.a),x.p||"",x.p2||"",noteOf(x)])};
 const xOpen=new Set();
 const xlGet=sh=>{S.ui=S.ui||{};const o=S.ui.xl||(S.ui.xl={});const st=o[sh.id]||(o[sh.id]={on:true,cols:sh.cols.map((_,i)=>i),v:3});if(sh.id==="pt"&&st.v!==3){if(st.v!==2)st.cols=[...new Set(st.cols.filter(i=>i!==9).map(i=>i>9?i-1:i).concat(14))];const m={6:7,7:6,12:9,13:10,14:11};st.cols=[...new Set(st.cols.filter(i=>i<=8||i>=12).map(i=>m[i]!==undefined?m[i]:i).concat(11))];st.v=3}return st};
 const xlIdx=sh=>{const st=xlGet(sh);if(!st.on)return[];return sh.pick?st.cols.filter(i=>i<sh.cols.length).sort((a,b)=>a-b):sh.cols.map((_,i)=>i)};
@@ -1728,7 +1758,7 @@ const ptBuN=p=>p.t==="BT37"?1000+p.room*10+(p.side==="T"?0:1):(p.c||0)*10+(p.rm|
 const ptBuL=p=>p.t==="BT37"?p.room+p.side:(p.c?p.c+"."+p.rm:"—");
 const ptBuT=p=>p.t==="BT37"?btNm(p.room)+" "+btSd(p.side):(p.c?"GERI "+p.c+" - buồng "+p.c+"."+p.rm:"Chưa rõ buồng");
 const ptPpo={"TL":0,"P.I":1,"Check":2,"—":3};
-const ptPlates=()=>[...S.pts.map(r=>({id:r.id,t:"GERI",hs:r.hs||"",ten:r.ten||"",ns:r.ns||"",ch:r.ch||"",stt:r.stt||"",pp:mShort(r.mode),c:r.c,rm:r.r,end:r.end,imp:r.imp,p:r.p,p2:r.p2})),...S.bt.pts.map(r=>({id:r.id,t:"BT37",hs:r.hs||"",ten:r.ten||"",ns:r.ns||"",ch:r.ch||"",stt:r.stt||"",pp:"—",room:r.room,side:r.side,end:r.end,imp:r.imp,p:r.p,p2:r.p2}))];
+const ptPlates=()=>[...S.pts.map(r=>({id:r.id,t:"GERI",hs:r.hs||"",ten:r.ten||"",ns:r.ns||"",ch:r.ch||"",stt:r.stt||"",pp:mShort(r.mode),c:r.c,rm:r.r,end:r.end,imp:r.imp,p:r.p,p2:r.p2,start:r.start,hum:r.hum})),...S.bt.pts.map(r=>({id:r.id,t:"BT37",hs:r.hs||"",ten:r.ten||"",ns:r.ns||"",ch:r.ch||"",stt:r.stt||"",pp:"—",room:r.room,side:r.side,end:r.end,imp:r.imp,p:r.p,p2:r.p2,start:r.start,hum:r.hum}))];
 const ptGv=(g,k)=>k==="loai"?g.ln[0].t:k==="mode"?g.ln[0].pp:k==="bu"?ptBuN(g.pl[0]):k==="end"?(g.end||"9999"):String(g[k]||"");
 function ptGroups(){const q=$("#ptQ").value.trim().toLowerCase(),m=new Map();
 ptPlates().forEach(p=>{if(q&&![p.hs,p.ten,p.stt,p.ns].join(" ").toLowerCase().includes(q))return;
@@ -1747,16 +1777,29 @@ const ptActs=l=>l.pl.map(p=>`<div class="pa">${l.pl.length>1?`<span class="ptn">
 const ptEarly=p=>{if(!p.end||p.imp||p.pp==="Check"||!p.ch||!(p.hs||p.ten))return -1;const d=Math.round((Date.parse(ymd(new Date(p.end)))-Date.parse(p.ch))/864e5);return d>=0&&d<HIST_MIN?d:-1};
 const ptWi=p=>{const d=ptEarly(p);return d<0?"":`<span class="hwi" title="Ngày phôi ${d} ngày (dưới ${HIST_MIN} ngày)">⚠</span>`};
 const ptWN=gs=>gs.reduce((n,g)=>n+g.ln.filter(l=>ptEarly(l.pl[0])>=0).length,0);
-const ptTbl=(gs,done)=>{
+/* Trạng thái bình ẩm của ca đã hoàn thành: tổng hợp các lần xử lý cảnh báo bình ẩm trong nhật ký (GERI: Thay nước / Đã kiểm tra / Nuôi tiếp / Thay mới ; BT37: Nuôi tiếp / Kết thúc nuôi cấy) trong thời gian ca được nuôi */
+const HUM_A=["Thay nước","Đã kiểm tra","Nuôi tiếp","Thay mới"],HUM_CLS={"Thay nước":"hb-w","Đã kiểm tra":"hb-c","Nuôi tiếp":"hb-k","Thay mới":"hb-n","Kết thúc nuôi cấy":"hb-e"};
+const ptHumIdx=()=>{const o={};S.log.forEach(e=>{let a=String(e.a),tx=e.n||"",k;if(e.c==="BT37"){const m=/^Cảnh báo – (Nuôi tiếp|Kết thúc nuôi cấy): (.*)$/.exec(a);if(!m)return;a=m[1];tx=m[2];k="B"+e.r}else{if(!HUM_A.includes(a))return;k=e.c+"-"+e.r}(o[k]=o[k]||[]).push({t:e.t,a,tx:String(tx),p:e.p})});return o};
+const ptHumOf=(p,H)=>{const tx=[p.ten,p.hs].filter(Boolean).join(" · ");if(!tx||p.pp==="Check")return[];const k=p.t==="BT37"?"B"+p.room:p.c+"-"+p.rm,t0=p.start?Date.parse(p.start)-6e4:0,t1=p.end?Date.parse(p.end)+6e4:Infinity;return(H[k]||[]).filter(e=>{const t=Date.parse(e.t);return t>=t0&&t<=t1&&e.tx.includes(tx)}).sort((a,b)=>Date.parse(a.t)-Date.parse(b.t))};
+/* Trạng thái hiệu lực của một dòng: admin đã chỉnh tay (p.hum) thì ưu tiên, nếu không thì tổng hợp từ nhật ký */
+const ptHumEff=(l,H)=>{const o=l.pl.find(p=>p.hum&&Array.isArray(p.hum.v));if(o)return{ov:true,v:[...o.hum.v],by:o.hum.by,t:o.hum.t,evs:[]};
+const all=[];l.pl.forEach(p=>ptHumOf(p,H).forEach(e=>{if(!all.some(z=>z.t===e.t&&z.a===e.a))all.push(e)}));all.sort((a,b)=>Date.parse(a.t)-Date.parse(b.t));
+const v=[];all.forEach(e=>{if(!v.includes(e.a))v.push(e.a)});return{ov:false,v,evs:all}};
+const ptHumCell=(l,H)=>{const ef=ptHumEff(l,H),cnt={};ef.evs.forEach(e=>{cnt[e.a]=(cnt[e.a]||0)+1});
+const tip=ef.ov?"Đã chỉnh sửa"+(ef.by?" bởi "+ef.by:"")+(ef.t?" lúc "+new Date(ef.t).toLocaleString("vi-VN"):""):ef.evs.map(e=>new Date(e.t).toLocaleString("vi-VN")+" – "+e.a+(e.p?" ("+e.p+")":"")).join("\n");
+const bd=ef.v.length?ef.v.map(a=>`<span class="hb ${HUM_CLS[a]||""}">${esc(a)}${cnt[a]>1?" ×"+cnt[a]:""}</span>`).join(""):`<span class="hbn" title="Không có cảnh báo bình ẩm nào được xử lý trong thời gian nuôi">—</span>`;
+const ed=ptAdm()?`<button type="button" class="hbe ghost" data-hum="${l.pl.map(p=>p.id).join(",")}" title="Sửa trạng thái bình ẩm (admin)">✎</button>`:"";
+return`<td class="hbt" title="${esc(tip)}">${bd}${ef.ov?'<span class="hbo" title="Đã chỉnh sửa tay">✎ đã sửa</span>':""}${ed}</td>`};
+const ptTbl=(gs,done)=>{const HUM=done?ptHumIdx():null;
 const H=[["hs","Mã hồ sơ"],["ten","Tên"],["ns","Ngày sinh"],["loai","Loại"],["mode","PP"],["ch","Ngày CH"],["stt","STT"]].map(ptSth).join("")
 +`<th data-s="bu">Buồng${ptExp?" 1":""}${ptSort.k==="bu"?(ptSort.d>0?" ▲":" ▼"):""}<button type="button" class="bx ghost" title="${ptExp?"Thu gọn các cột buồng":"Hiện thêm cột Buồng 2 - 4"}">${ptExp?"−":"+"}</button></th>`
-+(ptExp?"<th>Buồng 2</th><th>Buồng 3</th><th>Buồng 4</th>":"")+(done?ptSth(["end","Ra"])+(ptAdm()?"<th></th>":""):"<th></th>");
++(ptExp?"<th>Buồng 2</th><th>Buồng 3</th><th>Buồng 4</th>":"")+(done?ptSth(["end","Ra"])+"<th>Trạng thái bình ẩm</th>"+(ptAdm()?"<th></th>":""):"<th></th>");
 const B=gs.map(g=>{const n=g.ln.length;return g.ln.map((l,i)=>{const p0=l.pl[0],cls=p0.t==="BT37"?"pcb":p0.c?"pc"+((p0.c-1)%5+1):"pcn";
 const pa=i?"":`<td rowspan="${n}" class="pti">${esc(g.hs)}</td><td rowspan="${n}" class="pti">${esc(g.ten)}${!ptExp&&g.nb>1?`<span class="ptn">${g.nb} buồng</span>`:""}</td><td rowspan="${n}" class="pti">${esc(g.ns)}</td>`;
 const pb=i?"":`<td rowspan="${n}" class="pti">${dsd(g.ch)}</td><td rowspan="${n}" class="pti">${esc(g.stt)}</td>`;
 const bc=l.pl.map(p=>`<td title="${esc(ptBuT(p))}">${ptBuL(p)}</td>`);let cells;
 if(ptExp){cells=[0,1,2].map(j=>bc[j]||"<td></td>");cells.push(l.pl.length>4?`<td>${l.pl.slice(3).map(ptBuL).join(", ")}</td>`:bc[3]||"<td></td>");cells=cells.join("")}else cells=bc[0]||"<td></td>";
-return `<tr class="${cls}">${pa}<td>${l.t}</td><td>${l.pp}</td>${pb}${cells}${done?`<td>${p0.imp?"Updated":ptWi(p0)+dspan(p0.end)}</td>${ptAdm()?`<td><button class="ghost dng" data-fd="${l.pl.map(p=>p.id).join(",")}" title="Xóa ca này" style="padding:3px 9px;font-size:12px">Xóa</button></td>`:""}`:`<td>${ptActs(l)}</td>`}</tr>`}).join("")}).join("");
+return `<tr class="${cls}">${pa}<td>${l.t}</td><td>${l.pp}</td>${pb}${cells}${done?`<td>${p0.imp?"Updated":ptWi(p0)+dspan(p0.end)}</td>${ptHumCell(l,HUM)}${ptAdm()?`<td><button class="ghost dng" data-fd="${l.pl.map(p=>p.id).join(",")}" title="Xóa ca này" style="padding:3px 9px;font-size:12px">Xóa</button></td>`:""}`:`<td>${ptActs(l)}</td>`}</tr>`}).join("")}).join("");
 return `<table><tr>${H}</tr>${B}</table>`};
 function drawPt(){const gs=ptGroups(),q=$("#ptQ").value.trim(),act=gs.filter(g=>!g.fin),fin=gs.filter(g=>g.fin),gm={};
 if(!S.pts.length&&!S.bt.pts.length){$("#ptBody").innerHTML='<div class="empty-msg">Chưa có dữ liệu bệnh nhân.</div>';return}
@@ -3164,3 +3207,76 @@ header .hrow .dtab{order:4;max-width:100%}
 #mNav{background:var(--bg)!important}
 }
 </style>
+
+<style id="srcZoomCss">
+#ovSrc .srch{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+#ovSrc .srch h3{margin:0}
+#ovSrc .srch button{padding:5px 12px;font-size:12.5px;white-space:nowrap;flex:none}
+#ovSrc .sres{white-space:normal;min-width:120px;line-height:1.3}
+#ovSrc .sg th{position:sticky;top:0;z-index:2;background:var(--card)}
+#ovSrc.zoomOv{padding:10px!important;align-items:center!important;justify-content:center!important}
+#ovSrc .modal.zoom{width:min(1360px,96vw)!important;max-width:96vw!important;height:auto;max-height:94dvh!important;margin:0;display:flex;flex-direction:column;overflow:hidden!important;border-radius:16px!important;transform:none!important;clip-path:none!important}
+#ovSrc .modal.zoom::before,#ovSrc .modal.zoom::after{display:none!important}
+#ovSrc .modal.zoom>*{flex:none}
+#ovSrc .modal.zoom #srcGrid{flex:1 1 auto;min-height:140px;max-height:none!important;overflow:auto}
+#ovSrc .modal.zoom .sg{width:100%}
+#ovSrc .modal.zoom .sg input{min-width:120px;font-size:13.5px;padding:6px 8px}
+#ovSrc .modal.zoom .sg th{font-size:13px;padding:7px 6px}
+#ovSrc .modal.zoom .sres{min-width:240px;font-size:13px}
+#ovSrc .modal.zoom>.row:last-child{position:static;margin:8px 0 0;padding:0;border:0;background:none}
+/* cột Trạng thái bình ẩm (danh sách bệnh nhân – Hoàn thành) */
+#ptBody td.hbt{white-space:normal;min-width:110px}
+.hb{display:inline-block;margin:1px 4px 1px 0;padding:2px 8px;border-radius:999px;font-size:11.5px;font-weight:600;line-height:1.35;white-space:nowrap;background:color-mix(in srgb,var(--mu) 18%,var(--card));color:var(--tx)}
+.hb.hb-w{background:color-mix(in srgb,var(--pri) 18%,var(--card));color:color-mix(in srgb,var(--pri) 80%,var(--tx))}
+.hb.hb-c{background:color-mix(in srgb,var(--g) 20%,var(--card));color:color-mix(in srgb,var(--g) 70%,var(--tx))}
+.hb.hb-k{background:color-mix(in srgb,var(--o) 20%,var(--card));color:color-mix(in srgb,var(--o) 70%,var(--tx))}
+.hb.hb-n{background:color-mix(in srgb,#8b5cf6 20%,var(--card));color:color-mix(in srgb,#8b5cf6 75%,var(--tx))}
+.hb.hb-e{background:color-mix(in srgb,var(--r) 18%,var(--card));color:color-mix(in srgb,var(--r) 75%,var(--tx))}
+.hbn{color:var(--mu)}
+</style>
+<script>
+(function(){const b=document.getElementById("srcZoom"),ov=document.getElementById("ovSrc");if(!b||!ov)return;const m=ov.querySelector(".modal");
+const set=z=>{m.classList.toggle("zoom",z);ov.classList.toggle("zoomOv",z);b.textContent=z?"⤡ Thu nhỏ":"⤢ Phóng to";b.setAttribute("aria-pressed",String(z))};
+b.addEventListener("click",()=>set(!m.classList.contains("zoom")));
+ov.querySelector("h3").addEventListener("dblclick",()=>set(!m.classList.contains("zoom")));
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&m.classList.contains("zoom")&&ov.classList.contains("show")){e.stopPropagation();set(false)}},true);
+})();
+</script>
+
+<style id="humEditCss">
+.hbe{padding:1px 7px!important;font-size:12px!important;margin-left:4px;vertical-align:middle;min-height:0}
+.hbo{display:inline-block;margin:0 2px;font-size:10.5px;color:var(--mu);white-space:nowrap}
+.humopts{display:flex;flex-direction:column;gap:8px;margin:6px 0}
+.humo{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--bd);border-radius:10px;cursor:pointer}
+.humo input{width:18px;height:18px}
+.humo:has(input:checked){border-color:var(--pri);background:color-mix(in srgb,var(--pri) 8%,var(--card))}
+.logwarn{display:flex;align-items:center;gap:12px;margin:0 0 10px;padding:10px 12px;border-radius:12px;border:1px solid color-mix(in srgb,var(--o) 55%,var(--bd));background:color-mix(in srgb,var(--o) 13%,var(--card));font-size:13px}
+.logwarn.full{border-color:color-mix(in srgb,var(--r) 55%,var(--bd));background:color-mix(in srgb,var(--r) 11%,var(--card))}
+.logwarn .lwi{font-size:20px;flex:none}.logwarn .lwt{flex:1;min-width:0}.logwarn small{color:var(--mu)}
+.logwarn button{flex:none;white-space:nowrap}
+.lwbar{display:inline-flex;align-items:center;gap:8px;padding:3px 10px;margin-top:4px;border-radius:999px;background:color-mix(in srgb,var(--o) 16%,var(--card));color:color-mix(in srgb,var(--o) 70%,var(--tx));font-weight:600}
+.lwbar button{padding:2px 10px;font-size:12px}
+@media(max-width:560px){.logwarn{flex-wrap:wrap}.logwarn button{width:100%}}
+</style>
+<script>
+(function(){
+const ALL=["Thay nước","Đã kiểm tra","Nuôi tiếp","Thay mới","Kết thúc nuôi cấy"];let cur=null;
+const pb=document.getElementById("ptBody");if(!pb)return;
+pb.addEventListener("click",e=>{const b=e.target.closest("button[data-hum]");if(!b||!ptAdm())return;
+ const ids=b.dataset.hum.split(","),pls=ptPlates().filter(p=>ids.includes(String(p.id)));if(!pls.length)return;
+ const ef=ptHumEff({pl:pls},ptHumIdx()),p0=pls[0];cur={ids};
+ document.getElementById("humWho").innerHTML="<b>"+esc(p0.ten||"—")+"</b>"+(p0.hs?" · "+esc(p0.hs):"")+" · "+(p0.t==="BT37"?esc(btNm(p0.room)):"GERI "+p0.c+" · buồng "+p0.c+"."+p0.rm)+(ef.ov?" · <i>đã chỉnh tay</i>":" · <i>đang theo nhật ký</i>");
+ document.getElementById("humOpts").innerHTML=ALL.map(a=>`<label class="humo"><input type="checkbox" value="${a}"${ef.v.includes(a)?" checked":""}><span class="hb ${HUM_CLS[a]||""}">${a}</span></label>`).join("");
+ document.getElementById("humWarn").textContent="";open("#ovHum")});
+const recOf=id=>S.pts.find(z=>String(z.id)===String(id))||S.bt.pts.find(z=>String(z.id)===String(id));
+const logHum=(r,p,txt)=>{const bt=!!r.room&&!r.c,q={stt:r.stt||"",ten:r.ten||"",ns:r.ns||"",hs:r.hs||"",ch:r.ch||"",mode:bt?"BT37":(r.mode||"")};
+ if(!bt){addLog(r.c+"-"+r.r,"Sửa trạng thái bình ẩm: "+ptTxt(r),p,"→ "+txt,r);return}
+ const e={t:new Date().toISOString(),c:"BT37",r:r.room,a:"Sửa trạng thái bình ẩm: "+([r.ten,r.hs].filter(Boolean).join(" · ")||"—"),p,p2:(typeof p2of==="function"?p2of():""),n:btNm(r.room)+" "+(r.side==="T"?"T":"P")+" → "+txt,q};S.log.unshift(e);if(S.log.length>LOG_MAX)S.log.length=LOG_MAX};
+const apply=sel=>{if(!cur||!ptAdm())return;const p=who();if(!p)return;let first=true;
+ cur.ids.forEach(id=>{const r=recOf(id);if(!r)return;if(sel===null)delete r.hum;else r.hum={v:sel,by:p,t:new Date().toISOString()};
+  if(first){first=false;logHum(r,p,sel===null?"tự động theo nhật ký":(sel.join(", ")||"Không có"))}});
+ save();drawPt();close(document.getElementById("ovHum"));if(document.getElementById("ovHist").classList.contains("show"))hist()};
+document.getElementById("humSave").onclick=()=>apply([...document.querySelectorAll("#humOpts input:checked")].map(i=>i.value));
+document.getElementById("humAuto").onclick=()=>apply(null);
+})();
+</script>
