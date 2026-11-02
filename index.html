@@ -1520,8 +1520,12 @@ if(a.some(q=>q.ch>todayStr()))return fail("⚠ Ngày CH không được lớn h�
 const note=$("#eNote").value.trim(),{items,ending,ended}=diffRoom(x,a,sv);
 if(!items.length&&!note){close($("#ovEdit"));return}
 if(!await askEndEarly({title:"Xác nhận lưu thay đổi?",tone:ending?"end":"info",ok:"Lưu thay đổi",cancel:"Quay lại",html:`<div><b>GERI ${cur.split("-")[0]} - BUỒNG ${cur.replace("-",".")}</b> sẽ được cập nhật:</div>${items.length?`<ul class="dul">${items.join("")}</ul>`:""}${note?`<div style="margin-top:8px"><b>Ghi chú:</b> ${esc(note)}</div>`:""}${ending?'<div class="dnote">Bệnh nhân kết thúc nuôi cấy sẽ được ghi nhận kết thúc và chuyển sang danh sách “Hoàn thành”.</div>':""}`},ended)){resetRoom();return}
+/* Kết thúc nuôi cấy thủ công: hỏi trạng thái bình ẩm giống cảnh báo ngày 5 (Thay nước / Đã kiểm tra / Thay mới) */
+let hv="";const endP=ended.filter(q=>q.mode!=="CK"&&(q.hs||q.ten));
+if(endP.length&&typeof askHumEnd==="function"){const h=await askHumEnd(endP);if(h===false)return;hv=h}
 const nst=sv==="bad"?"bad":a.length?"using":"empty";x.st=nst;delete x.date;
 if(nst!==was||note)addLog(cur,{using:"Đặt trạng thái Đang nuôi",empty:"Đặt trạng thái Trống",bad:"Đặt trạng thái Sửa chữa"}[nst],p,$("#eNote").value);
+if(hv)endP.forEach(q=>{addLog(cur,"Kết thúc + "+hv+": "+ptTxt(q),p,"",q)});
 savePt(cur,nst,p);save();close($("#ovEdit"));render()};
 $("#eSave").onclick=async()=>{if(eBusy)return;eBusy=true;try{await saveRoom()}finally{eBusy=false}};
 
@@ -1557,7 +1561,7 @@ setTimeout(showDue,300)});
 $("#bDue").onclick=()=>showDue(true);$("#pDue").onclick=()=>showDue(true);
 
 let histN=7,dueN=7;
-const ACT_MAP={"Nhập bệnh nhân":"Nhận bệnh","Kết thúc nuôi bệnh nhân":"Kết thúc","Sửa thông tin bệnh nhân":"Sửa thông tin","Chuyển bệnh nhân đi":"Chuyển đi","Chuyển bệnh nhân đến":"Chuyển đến","Xóa bệnh nhân":"Xóa bệnh nhân","Xóa ca hoàn thành":"Xóa ca hoàn thành","Cảnh báo – Nuôi tiếp":"Nuôi tiếp","Cảnh báo – Kết thúc nuôi cấy":"Kết thúc","Sửa trạng thái bình ẩm":"Sửa bình ẩm"};
+const ACT_MAP={"Nhập bệnh nhân":"Nhận bệnh","Kết thúc nuôi bệnh nhân":"Kết thúc","Sửa thông tin bệnh nhân":"Sửa thông tin","Chuyển bệnh nhân đi":"Chuyển đi","Chuyển bệnh nhân đến":"Chuyển đến","Xóa bệnh nhân":"Xóa bệnh nhân","Xóa ca hoàn thành":"Xóa ca hoàn thành","Cảnh báo – Nuôi tiếp":"Nuôi tiếp","Cảnh báo – Kết thúc nuôi cấy":"Kết thúc","Sửa trạng thái bình ẩm":"Sửa bình ẩm","Kết thúc + Thay nước":"Kết thúc + Thay nước","Kết thúc + Đã kiểm tra":"Kết thúc + Đã kiểm tra","Kết thúc + Thay mới":"Kết thúc + Thay mới"};
 const splitA=a=>{a=String(a);const i=a.indexOf(": ");if(i>0&&ACT_MAP[a.slice(0,i)])return[ACT_MAP[a.slice(0,i)],a.slice(i+2)];return[a.startsWith("Thay mới")?"Thay mới":a,""]};
 const actOf=a=>splitA(a)[0];
 const isPtAct=a=>{a=String(a);const i=a.indexOf(": ");return i>0&&!!ACT_MAP[a.slice(0,i)]};
@@ -1779,8 +1783,12 @@ const ptWi=p=>{const d=ptEarly(p);return d<0?"":`<span class="hwi" title="Ngày 
 const ptWN=gs=>gs.reduce((n,g)=>n+g.ln.filter(l=>ptEarly(l.pl[0])>=0).length,0);
 /* Trạng thái bình ẩm của ca đã hoàn thành: tổng hợp các lần xử lý cảnh báo bình ẩm trong nhật ký (GERI: Thay nước / Đã kiểm tra / Nuôi tiếp / Thay mới ; BT37: Nuôi tiếp / Kết thúc nuôi cấy) trong thời gian ca được nuôi */
 const HUM_A=["Thay nước","Đã kiểm tra","Nuôi tiếp","Thay mới"],HUM_CLS={"Thay nước":"hb-w","Đã kiểm tra":"hb-c","Nuôi tiếp":"hb-k","Thay mới":"hb-n","Kết thúc nuôi cấy":"hb-e"};
-const ptHumIdx=()=>{const o={};S.log.forEach(e=>{let a=String(e.a),tx=e.n||"",k;if(e.c==="BT37"){const m=/^Cảnh báo – (Nuôi tiếp|Kết thúc nuôi cấy): (.*)$/.exec(a);if(!m)return;a=m[1];tx=m[2];k="B"+e.r}else{if(!HUM_A.includes(a))return;k=e.c+"-"+e.r}(o[k]=o[k]||[]).push({t:e.t,a,tx:String(tx),p:e.p})});return o};
-const ptHumOf=(p,H)=>{const tx=[p.ten,p.hs].filter(Boolean).join(" · ");if(!tx||p.pp==="Check")return[];const k=p.t==="BT37"?"B"+p.room:p.c+"-"+p.rm,t0=p.start?Date.parse(p.start)-6e4:0,t1=p.end?Date.parse(p.end)+6e4:Infinity;return(H[k]||[]).filter(e=>{const t=Date.parse(e.t);return t>=t0&&t<=t1&&e.tx.includes(tx)}).sort((a,b)=>Date.parse(a.t)-Date.parse(b.t))};
+const ptHumIdx=()=>{const o={};S.log.forEach(e=>{let a=String(e.a),tx=e.n||"",k,man=0;if(e.c==="BT37"){const m=/^Cảnh báo – (Nuôi tiếp|Kết thúc nuôi cấy): (.*)$/.exec(a);if(!m)return;a=m[1];tx=m[2];k="B"+e.r}else{const mm=/^Kết thúc \+ (Thay nước|Đã kiểm tra|Thay mới): (.*)$/.exec(a);if(mm){a=mm[1];tx=mm[2];man=1}else if(!HUM_A.includes(a))return;k=e.c+"-"+e.r}(o[k]=o[k]||[]).push({t:e.t,a,tx:String(tx),p:e.p,man})});return o};
+const ptHumOf=(p,H)=>{const tx=[p.ten,p.hs].filter(Boolean).join(" · ");if(!tx||p.pp==="Check")return[];const k=p.t==="BT37"?"B"+p.room:p.c+"-"+p.rm,t0=p.start?Date.parse(p.start)-6e4:0,t1=p.end?Date.parse(p.end)+6e4:Infinity;
+const ev=(H[k]||[]).filter(e=>{const t=Date.parse(e.t);return t>=t0&&t<=t1&&e.tx.includes(tx)});
+/* Kết thúc bằng nút "Kết thúc nuôi cấy" (không đi qua các lựa chọn Thay nước/Đã kiểm tra/Nuôi tiếp/Thay mới của cảnh báo ngày 5) → vẫn hiện trạng thái "Kết thúc nuôi cấy" */
+if(p.end&&!p.imp){const te=Date.parse(p.end);if(!ev.some(e=>(e.a==="Kết thúc nuôi cấy"||!e.man)&&Math.abs(Date.parse(e.t)-te)<12e4))ev.push({t:p.end,a:"Kết thúc nuôi cấy",tx,p:"",syn:1})}
+return ev.sort((a,b)=>Date.parse(a.t)-Date.parse(b.t))};
 /* Trạng thái hiệu lực của một dòng: admin đã chỉnh tay (p.hum) thì ưu tiên, nếu không thì tổng hợp từ nhật ký */
 const ptHumEff=(l,H)=>{const o=l.pl.find(p=>p.hum&&Array.isArray(p.hum.v));if(o)return{ov:true,v:[...o.hum.v],by:o.hum.by,t:o.hum.t,evs:[]};
 const all=[];l.pl.forEach(p=>ptHumOf(p,H).forEach(e=>{if(!all.some(z=>z.t===e.t&&z.a===e.a))all.push(e)}));all.sort((a,b)=>Date.parse(a.t)-Date.parse(b.t));
@@ -3259,6 +3267,12 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&m.classList.contain
 @media(max-width:560px){.logwarn{flex-wrap:wrap}.logwarn button{width:100%}}
 </style>
 <script>
+/* Hỏi trạng thái bình ẩm khi kết thúc nuôi cấy thủ công (tương tự cảnh báo ngày 5). Trả về: tên trạng thái | "" (không ghi nhận) | false (quay lại) */
+async function askHumEnd(list){const L=(list||[]).filter(q=>q&&q.mode!=="CK"&&(q.hs||q.ten));if(!L.length)return"";
+const rows=L.map(q=>`<div class="dp"><span class="dtg ${q.mode==="PI"?"pi":"tl"}">${mShort(q.mode)}</span><b>${esc(q.ten||q.hs||"—")}</b><small>${q.ch?"ngày "+days(q.ch):""}</small></div>`).join("");
+const opts=[["Thay nước","Thay nước"],["Đã kiểm tra","Đã kiểm tra"],["Thay mới","Thay mới"],["","Không ghi nhận"]].map(([v,t],i)=>`<label class="humo"><input type="radio" name="hmEnd" value="${v}"${i===3?" checked":""}><span class="hb ${HUM_CLS[v]||""}">${t}</span></label>`).join("");
+const r=await askConfirm({title:"Trạng thái bình ẩm khi kết thúc",tone:"info",ok:"Tiếp tục",cancel:"Quay lại",html:`<div>Kết thúc chu kì nuôi cấy của:</div><div class="dpl">${rows}</div><div class="dq">Bình ẩm đã được xử lý thế nào?</div><div class="humopts">${opts}</div>`});
+if(!r)return false;const c=[...document.querySelectorAll("input[name=hmEnd]:checked")].pop();return c?c.value:""}
 (function(){
 const ALL=["Thay nước","Đã kiểm tra","Nuôi tiếp","Thay mới","Kết thúc nuôi cấy"];let cur=null;
 const pb=document.getElementById("ptBody");if(!pb)return;
