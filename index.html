@@ -3079,6 +3079,123 @@ new MutationObserver(all).observe(document.body,{childList:true});
   later();
 })();
 </script>
+<style id="xoCss">
+#xoFab{flex:0 0 auto;width:36px;height:30px;min-width:0;padding:0;border-radius:999px;border:1px solid var(--bd);background:var(--card);color:var(--pri);font:800 13px/1 var(--ff);letter-spacing:-1px;box-shadow:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+#xoFab:hover{background:var(--card);border-color:var(--pri);color:var(--pri);box-shadow:none}
+@media(max-width:1180px){header .tools .trow1 #xoFab{flex:0 0 44px;width:44px;height:44px;font-size:15px}}
+#xoFab b{color:var(--o);font-weight:800}
+#xoOv{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;background:var(--card);color:var(--tx);font-family:var(--ff)}
+#xoOv[hidden]{display:none}
+#xoOv .xoBar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:calc(8px + env(safe-area-inset-top,0px)) 12px 8px;border-bottom:1px solid var(--bd);background:var(--card)}
+#xoOv .xoT{font-weight:700;font-size:16px;margin-right:auto;white-space:nowrap}
+#xoOv .xoT small{font-weight:400;color:var(--mu);font-size:12px;margin-left:6px}
+#xoOv .xoS{font-size:14px;font-weight:600;padding:6px 12px;border-radius:999px;background:color-mix(in srgb,var(--mu) 14%,var(--card));white-space:nowrap}
+#xoOv .xoS .x{color:#533afd}#xoOv .xoS .o{color:#e8590c}
+#xoOv .xoS.win{background:color-mix(in srgb,var(--g) 22%,var(--card))}
+#xoOv .xoSc{font-size:13px;color:var(--mu);white-space:nowrap}
+#xoOv .xoBt{display:flex;flex-wrap:wrap;gap:6px}
+#xoOv button.xb{min-width:40px;min-height:40px;padding:0 12px;border-radius:999px;border:1px solid var(--bd);background:var(--card);color:var(--pri);font:600 14px/1 var(--ff);box-shadow:none;cursor:pointer;transform:none}
+#xoOv button.xb:hover{background:var(--card);border-color:var(--pri);color:var(--pri);box-shadow:none}
+#xoOv button.xb.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+#xoOv button.xb:disabled{opacity:.4;cursor:default}
+#xoOv .xoCv{position:relative;flex:1;min-height:0;background:var(--card)}
+#xoOv canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair;display:block}
+#xoOv .xoH{padding:6px 12px calc(6px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--bd);font-size:12px;color:var(--mu);text-align:center}
+@media(max-width:700px){#xoOv .xoT small{display:none}#xoOv .xoBar{gap:6px}}
+</style>
+<button type="button" id="xoFab" aria-label="Mini game X-O" title="Mini game X-O vô hạn">✕<b>○</b></button>
+<div id="xoOv" hidden role="dialog" aria-label="X-O vô hạn">
+ <div class="xoBar">
+  <span class="xoT">X-O vô hạn<small>Luật Caro Việt Nam · đúng 5 quân, không bị chặn 2 đầu</small></span>
+  <span class="xoS" id="xoS"></span><span class="xoSc" id="xoSc"></span>
+  <div class="xoBt">
+   <button type="button" class="xb" id="xoAi" title="Chơi với máy (bạn là X, máy là O)">Chơi với máy</button>
+   <button type="button" class="xb" id="xoUn" title="Đi lại">↶ Đi lại</button>
+   <button type="button" class="xb" id="xoNw">Ván mới</button>
+   <button type="button" class="xb" id="xoCt" title="Về giữa bàn cờ">◎</button>
+   <button type="button" class="xb" id="xoZm" title="Thu nhỏ">−</button>
+   <button type="button" class="xb" id="xoZp" title="Phóng to">+</button>
+   <button type="button" class="xb" id="xoX" title="Đóng" aria-label="Đóng">✕</button>
+  </div>
+ </div>
+ <div class="xoCv" id="xoCvW"><canvas id="xoCv"></canvas></div>
+ <div class="xoH">X đi trước · Đúng 5 quân liên tiếp (ngang, dọc, chéo) và không bị chặn cả 2 đầu thì thắng; 6 quân trở lên không tính · Kéo để di chuyển · Cuộn / chụm để phóng to · Chạm vào giao điểm để đánh</div>
+</div>
+<script>
+(()=>{
+const $=s=>document.querySelector(s),ov=$("#xoOv"),cv=$("#xoCv"),wrap=$("#xoCvW"),g=cv.getContext("2d");
+const B=new Map(),mv=[];let cs=40,cam={x:0,y:0},turn=1,win=null,ai=false,sc=[0,0,0],hov=null,busy=false,W=0,H=0,dpr=1;
+const key=(x,y)=>x+","+y,get=(x,y)=>B.get(key(x,y))||0,NM=["","X","O"];
+const dirs=[[1,0],[0,1],[1,1],[1,-1]];
+const dark=()=>{const t=document.documentElement.dataset.theme;return t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme:dark)").matches)};
+function size(){const r=wrap.getBoundingClientRect();dpr=Math.min(window.devicePixelRatio||1,3);W=r.width;H=r.height;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);draw()}
+const sx=wx=>W/2+(wx-cam.x)*cs,sy=wy=>H/2+(wy-cam.y)*cs;
+const wx=px=>Math.round(cam.x+(px-W/2)/cs),wy=py=>Math.round(cam.y+(py-H/2)/cs);
+function draw(){if(ov.hidden)return;const d=dark();g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,W,H);
+ const x0=Math.floor(cam.x-W/2/cs)-1,x1=Math.ceil(cam.x+W/2/cs)+1,y0=Math.floor(cam.y-H/2/cs)-1,y1=Math.ceil(cam.y+H/2/cs)+1;
+ g.lineWidth=1;g.strokeStyle=d?"rgba(160,170,200,.22)":"rgba(100,115,140,.28)";g.beginPath();
+ for(let x=x0;x<=x1;x++){const p=Math.round(sx(x))+.5;g.moveTo(p,0);g.lineTo(p,H)}
+ for(let y=y0;y<=y1;y++){const p=Math.round(sy(y))+.5;g.moveTo(0,p);g.lineTo(W,p)}g.stroke();
+ g.strokeStyle=d?"rgba(160,170,200,.5)":"rgba(100,115,140,.55)";g.beginPath();const ox=Math.round(sx(0))+.5,oy=Math.round(sy(0))+.5;g.moveTo(ox,0);g.lineTo(ox,H);g.moveTo(0,oy);g.lineTo(W,oy);g.stroke();
+ const cX=d?"#9d90ff":"#533afd",cO=d?"#ff9a62":"#e8590c",r=cs*.34;
+ if(win){g.fillStyle=d?"rgba(250,204,21,.28)":"rgba(250,204,21,.45)";win.forEach(([x,y])=>{g.beginPath();g.arc(sx(x),sy(y),cs*.46,0,7);g.fill()})}
+ g.lineCap="round";g.lineWidth=Math.max(2,cs*.09);
+ B.forEach((p,k)=>{const [x,y]=k.split(",").map(Number),px=sx(x),py=sy(y);if(px<-cs||py<-cs||px>W+cs||py>H+cs)return;
+  if(p===1){g.strokeStyle=cX;g.beginPath();g.moveTo(px-r,py-r);g.lineTo(px+r,py+r);g.moveTo(px+r,py-r);g.lineTo(px-r,py+r);g.stroke()}
+  else{g.strokeStyle=cO;g.beginPath();g.arc(px,py,r*1.05,0,7);g.stroke()}});
+ const l=mv[mv.length-1];if(l){g.strokeStyle=d?"#fff":"#111";g.lineWidth=2;g.setLineDash([4,3]);g.strokeRect(sx(l[0])-cs*.44,sy(l[1])-cs*.44,cs*.88,cs*.88);g.setLineDash([])}
+ if(hov&&!win&&!busy&&!get(hov[0],hov[1])&&!(ai&&turn===2)){g.globalAlpha=.35;g.lineWidth=Math.max(2,cs*.09);
+  const px=sx(hov[0]),py=sy(hov[1]);if(turn===1){g.strokeStyle=cX;g.beginPath();g.moveTo(px-r,py-r);g.lineTo(px+r,py+r);g.moveTo(px+r,py-r);g.lineTo(px-r,py+r);g.stroke()}else{g.strokeStyle=cO;g.beginPath();g.arc(px,py,r*1.05,0,7);g.stroke()}g.globalAlpha=1}}
+function status(){const s=$("#xoS");s.className="xoS"+(win?" win":"");
+ if(win){const p=B.get(key(win[0][0],win[0][1]));s.innerHTML=`🏆 <span class="${p===1?"x":"o"}">${NM[p]}</span> thắng!`}
+ else s.innerHTML=`Lượt: <span class="${turn===1?"x":"o"}">${NM[turn]}</span>${ai&&turn===2?" (máy nghĩ…)":""}`;
+ $("#xoSc").textContent=`X ${sc[1]} – ${sc[2]} O`;$("#xoUn").disabled=!mv.length||busy;$("#xoAi").classList.toggle("on",ai)}
+/* Caro Việt Nam: đúng 5 quân liên tiếp (6 trở lên không tính) và không bị đối thủ chặn cả hai đầu */
+function check(x,y,p){const q=3-p;for(const [dx,dy] of dirs){const L=[[x,y]];let e=0;for(const s of [1,-1]){let k=1;while(get(x+dx*s*k,y+dy*s*k)===p){L.push([x+dx*s*k,y+dy*s*k]);k++}if(get(x+dx*s*k,y+dy*s*k)===q)e++}if(L.length===5&&e<2)return L}return null}
+function place(x,y){if(win||get(x,y))return false;B.set(key(x,y),turn);mv.push([x,y,turn]);const w=check(x,y,turn);
+ if(w){win=w;sc[turn]++}else turn=3-turn;status();draw();
+ if(!win&&ai&&turn===2){busy=true;status();setTimeout(aiMove,260)}return true}
+function undo(){if(busy||!mv.length)return;if(win){sc[mv[mv.length-1][2]]--;win=null}
+ let m=mv.pop();B.delete(key(m[0],m[1]));turn=m[2];
+ if(ai&&turn===2&&mv.length){m=mv.pop();B.delete(key(m[0],m[1]));turn=m[2]}
+ status();draw()}
+function reset(){B.clear();mv.length=0;win=null;turn=1;busy=false;status();draw()}
+/* ---- máy ---- */
+const S=(c,o)=>c>5?0:c===5?(o>0?1e6:0):c===4?(o===2?5e4:o===1?5e3:0):c===3?(o===2?5e3:o===1?300:0):c===2?(o===2?200:o===1?20:0):(o?2:0);
+function ev(x,y,p){let t=0;for(const [dx,dy] of dirs){let c=1,o=0;for(const s of [1,-1]){let k=1;while(get(x+dx*s*k,y+dy*s*k)===p){c++;k++}if(!get(x+dx*s*k,y+dy*s*k))o++}t+=S(c,o)}return t}
+function aiMove(){if(win){busy=false;return}const C=new Set();B.forEach((p,k)=>{const [x,y]=k.split(",").map(Number);for(let i=-2;i<=2;i++)for(let j=-2;j<=2;j++)if(!get(x+i,y+j))C.add(key(x+i,y+j))});
+ let best=-1,pick=[];C.forEach(k=>{const [x,y]=k.split(",").map(Number),s=ev(x,y,2)*1.02+ev(x,y,1);if(s>best){best=s;pick=[[x,y]]}else if(s===best)pick.push([x,y])});
+ busy=false;const m=pick.length?pick[Math.floor(Math.random()*pick.length)]:[0,0];place(m[0],m[1]);
+ if(!win){const mx=sx(m[0]),my=sy(m[1]);if(mx<40||my<40||mx>W-40||my>H-40){cam.x=m[0];cam.y=m[1];draw()}}}
+/* ---- thao tác chạm / chuột ---- */
+const P=new Map();let drag=null,pinch=null,moved=false;
+const pos=e=>{const r=cv.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}};
+const zoomAt=(px,py,ncs)=>{ncs=Math.max(14,Math.min(100,ncs));const ax=cam.x+(px-W/2)/cs,ay=cam.y+(py-H/2)/cs;cs=ncs;cam.x=ax-(px-W/2)/cs;cam.y=ay-(py-H/2)/cs;draw()};
+cv.addEventListener("pointerdown",e=>{cv.setPointerCapture(e.pointerId);P.set(e.pointerId,pos(e));
+ if(P.size===1){const p=P.get(e.pointerId);drag={x:p.x,y:p.y,cx:cam.x,cy:cam.y};moved=false}
+ else if(P.size===2){moved=true;const [a,b]=[...P.values()];pinch={d:Math.hypot(a.x-b.x,a.y-b.y)||1,cs}}});
+cv.addEventListener("pointermove",e=>{const p=pos(e);if(P.has(e.pointerId))P.set(e.pointerId,p);
+ if(P.size===2&&pinch){const [a,b]=[...P.values()];zoomAt((a.x+b.x)/2,(a.y+b.y)/2,pinch.cs*Math.hypot(a.x-b.x,a.y-b.y)/pinch.d)}
+ else if(P.size===1&&drag){const dx=p.x-drag.x,dy=p.y-drag.y;if(!moved&&Math.hypot(dx,dy)>6)moved=true;if(moved){cam.x=drag.cx-dx/cs;cam.y=drag.cy-dy/cs;draw()}}
+ else if(e.pointerType==="mouse"){const h=[wx(p.x),wy(p.y)];if(!hov||hov[0]!==h[0]||hov[1]!==h[1]){hov=h;draw()}}});
+const up=e=>{const was=P.has(e.pointerId),p=pos(e);P.delete(e.pointerId);
+ if(was&&P.size===0&&drag&&!moved&&e.type==="pointerup"&&!busy&&!(ai&&turn===2))place(wx(p.x),wy(p.y));
+ if(P.size<2)pinch=null;if(P.size===1){const q=[...P.values()][0];drag={x:q.x,y:q.y,cx:cam.x,cy:cam.y};moved=true}if(P.size===0)drag=null};
+cv.addEventListener("pointerup",up);cv.addEventListener("pointercancel",up);
+cv.addEventListener("pointerleave",()=>{hov=null;draw()});
+cv.addEventListener("wheel",e=>{e.preventDefault();const p=pos(e);zoomAt(p.x,p.y,cs*(e.deltaY<0?1.12:1/1.12))},{passive:false});
+/* ---- nút ---- */
+const open=()=>{ov.hidden=false;document.body.style.overflow="hidden";size();status();$("#xoX").focus()},close=()=>{ov.hidden=true;document.body.style.overflow=""};
+{const tr=document.querySelector("header .trow1"),fb=$("#xoFab");if(tr&&fb)tr.insertBefore(fb,$("#bAuth")||null)}
+$("#xoFab").onclick=open;$("#xoX").onclick=close;$("#xoUn").onclick=undo;$("#xoNw").onclick=()=>{if(!mv.length||win||confirm("Bắt đầu ván mới? Ván hiện tại sẽ bị hủy."))reset()};
+$("#xoCt").onclick=()=>{cam.x=0;cam.y=0;if(mv.length){let sxs=0,sys=0;mv.forEach(m=>{sxs+=m[0];sys+=m[1]});cam.x=sxs/mv.length;cam.y=sys/mv.length}draw()};
+$("#xoZp").onclick=()=>zoomAt(W/2,H/2,cs*1.25);$("#xoZm").onclick=()=>zoomAt(W/2,H/2,cs/1.25);
+$("#xoAi").onclick=()=>{if(mv.length&&!win&&!confirm("Đổi chế độ sẽ bắt đầu ván mới. Tiếp tục?"))return;ai=!ai;sc=[0,0,0];reset()};
+document.addEventListener("keydown",e=>{if(!ov.hidden&&e.key==="Escape"){e.stopPropagation();close()}},true);
+new ResizeObserver(()=>{if(!ov.hidden)size()}).observe(wrap);
+})();
+</script>
+
 </body></html>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap">
 <style id="stripeTheme">
